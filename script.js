@@ -341,7 +341,7 @@
   updateCount(); renderMemories(); renderWorkflows();
   fetch("/api/health").then(response => response.json()).then(data => {
     features = data.features || {};
-    if (modelStatusText && data.model) modelStatusText.textContent = data.model.includes("120b") ? "GPT-OSS 120B" : data.model.includes("20b") ? "GPT-OSS 20B · Reasoning" : "AI · " + data.model.split("/").pop();
+    if (modelStatusText && data.model) modelStatusText.textContent = data.model.includes("120b") ? "GPT-OSS 120B · Reasoning" : data.model.includes("20b") ? "GPT-OSS 20B · Reasoning" : "AI · " + data.model.split("/").pop();
     if (!data.configured) showToast("Setup needed: add GROQ_API_KEY to Render Environment.");
     if (features.webSearch) webStatus.textContent = "Ready";
     else { webSearchToggle.title = "Set FIRECRAWL_API_KEY in Render to enable live search."; webStatus.textContent = "Setup"; }

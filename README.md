@@ -48,7 +48,7 @@ Keep `GROQ_API_KEY` configured as it is. After the new commit deploys, open Rend
 | Variable | Required? | Purpose |
 |---|---|---|
 | `TAVILY_API_KEY` | Optional, for live search | Tavily API key. Create one at https://app.tavily.com/home |
-| `GROQ_VISION_MODEL` | Optional | Defaults to `qwen/qwen3.6-27b`; must be enabled for your Groq account |
+| `GROQ_VISION_MODEL` | Optional | Defaults to `qwen/qwen3.8-27b`; must be enabled for your Groq account |
 | `AUTOMATION_WEBHOOK_URL` | Optional, for external automation | HTTPS URL of a trusted automation service you control, such as a workflow webhook |
 | `AUTOMATION_WEBHOOK_TOKEN` | Optional | Bearer token sent to that trusted webhook |
 | `GROQ_MODEL` | Optional | Defaults to `openai/gpt-oss-20b` |

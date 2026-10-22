@@ -4,13 +4,14 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const multer = require("multer");
 const mammoth = require("mammoth");
+const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
-const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.6-27b";
+const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
 const AUTOMATION_WEBHOOK_URL = process.env.AUTOMATION_WEBHOOK_URL;
 const AUTOMATION_WEBHOOK_TOKEN = process.env.AUTOMATION_WEBHOOK_TOKEN;
@@ -103,7 +104,7 @@ app.post("/api/upload", (req, res) => {
     try {
       let extracted = "";
       if (req.file.mimetype === "application/pdf") {
-        const parser = new PDFParse({ data: req.file.buffer });
+        const parser = new PDFParse({ data: req.file.buffer, CanvasFactory });
         try { const result = await parser.getText(); extracted = result.text || ""; }
         finally { await parser.destroy(); }
       } else if (req.file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {

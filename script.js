@@ -69,7 +69,24 @@
       container.append(p); paragraph = [];
     };
     const closeList = () => { list = null; };
-    for (const line of lines) {
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      const line = lines[lineIndex];
+      if (line.includes("|") && lineIndex + 1 < lines.length && /^\\s*\\|?\\s*:?-{3,}:?\\s*(\\|\\s*:?-{3,}:?\\s*)+\\|?\\s*$/.test(lines[lineIndex + 1])) {
+        flushParagraph(); closeList();
+        const cells = (row) => row.trim().replace(/^\\|/, "").replace(/\\|$/, "").split("|").map(cell => cell.trim());
+        const table = document.createElement("table"); table.className = "response-table";
+        const thead = document.createElement("thead"), headRow = document.createElement("tr");
+        cells(line).forEach(value => { const th = document.createElement("th"); renderInline(th, value); headRow.append(th); });
+        thead.append(headRow); table.append(thead);
+        lineIndex += 2;
+        const tbody = document.createElement("tbody");
+        while (lineIndex < lines.length && lines[lineIndex].includes("|") && lines[lineIndex].trim()) {
+          const row = document.createElement("tr");
+          cells(lines[lineIndex]).forEach(value => { const td = document.createElement("td"); renderInline(td, value); row.append(td); });
+          tbody.append(row); lineIndex++;
+        }
+        table.append(tbody); container.append(table); lineIndex--; continue;
+      }
       if (line.trim().startsWith("```")) {
         flushParagraph(); closeList();
         if (codeLines) {
@@ -115,6 +132,15 @@
     if (options.typing) text.innerHTML = '<div class="typing-indicator" aria-label="SeenAi is thinking"><span></span><span></span><span></span></div>';
     else renderMarkdown(text, content);
     body.append(meta, text);
+    if (role === "assistant" && !options.typing && content) {
+      const actions = document.createElement("div"); actions.className = "message-actions";
+      const copy = document.createElement("button"); copy.type = "button"; copy.className = "message-action"; copy.textContent = "Copy";
+      copy.addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(content); copy.textContent = "Copied"; setTimeout(() => { copy.textContent = "Copy"; }, 1400); }
+        catch { showToast("Copy failed. Select the response text and copy it manually."); }
+      });
+      actions.append(copy); body.append(actions);
+    }
     if (options.sources?.length) {
       const sourceBox = document.createElement("div"); sourceBox.className = "message-sources";
       const label = document.createElement("strong"); label.textContent = "Sources"; sourceBox.append(label);

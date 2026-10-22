@@ -372,6 +372,14 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           }
         }] : [])
       ];
+      const latestUserText = messages[messages.length - 1].content;
+      const forceCalculator = !images.length &&
+        /\b(calculate|compute|solve|multiply|arithmetic)\b/i.test(latestUserText) &&
+        /\d/.test(latestUserText) &&
+        (/[+*×÷-]|\//.test(latestUserText) || /\b(times|multiplied by|plus|minus|divided by)\b/i.test(latestUserText));
+      const requestTools = forceCalculator
+        ? groqTools.filter(tool => tool.function.name === "calculate")
+        : groqTools;
       let searchCount = 0;
       let completed = false;
       for (let step = 0; step < 5; step++) {
@@ -381,7 +389,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           body: JSON.stringify({
             model: images.length ? GROQ_VISION_MODEL : GROQ_MODEL,
             messages: groqMessages,
-            ...(groqTools.length ? { tools: groqTools, tool_choice: "auto", parallel_tool_calls: false } : {}),
+            ...(requestTools.length ? { tools: requestTools, tool_choice: forceCalculator ? "required" : "auto", parallel_tool_calls: false } : {}),
             temperature: 0.35,
             max_completion_tokens: 4000,
             ...(!images.length && GROQ_MODEL.startsWith("openai/gpt-oss-") ? { reasoning_effort: process.env.GROQ_REASONING_EFFORT || "high" } : {})

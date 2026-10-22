@@ -26,12 +26,12 @@ Set the key for the provider you intend to use. Do not set keys in frontend code
 macOS/Linux examples:
 
 ```bash
-export AI_PROVIDER="openai"
-export OPENAI_API_KEY="your-openai-key"
-# Optional: use Claude instead
-# export AI_PROVIDER="anthropic"
-# export ANTHROPIC_API_KEY="your-anthropic-key"
-# Fallback option
+export AI_PROVIDER="anthropic"
+export ANTHROPIC_API_KEY="your-anthropic-key"
+# Alternative: use OpenAI instead
+# export AI_PROVIDER="openai"
+# export OPENAI_API_KEY="your-openai-key"
+# Alternative: keep using Groq
 # export AI_PROVIDER="groq"
 # export GROQ_API_KEY="your-groq-key"
 export FIRECRAWL_API_KEY="your-firecrawl-key"
@@ -41,8 +41,8 @@ npm start
 PowerShell examples:
 
 ```powershell
-$env:AI_PROVIDER="openai"
-$env:OPENAI_API_KEY="your-openai-key"
+$env:AI_PROVIDER="anthropic"
+$env:ANTHROPIC_API_KEY="your-anthropic-key"
 $env:FIRECRAWL_API_KEY="your-firecrawl-key"
 npm start
 ```
@@ -85,7 +85,17 @@ The selected provider is configured server-side. By default, `AI_PROVIDER=auto` 
 
 The system prompt emphasizes careful reasoning, software-engineering discipline, grounded research, explicit uncertainty, context tracking, security, and testable recommendations. When Anthropic is selected, SeenAi can call a bounded live web-search tool (requires FIRECRAWL_API_KEY) and a restricted arithmetic calculator. Tool execution is server-side, search calls are capped per response, and retrieved content is treated as untrusted data. A prompt and tool loop can improve behavior but cannot reproduce another model's training or guarantee equal benchmark performance.
 
-### Automated quality evaluation
+### Automated tests
+
+Run deterministic tests for the safe calculator and web-search result parsing:
+
+```bash
+npm test
+```
+
+GitHub Actions runs JavaScript syntax checks and these deterministic tests on pushes and pull requests to `main`. These checks do not call a paid model API.
+
+## Automated quality evaluation
 The repository includes a lightweight model-based regression suite. Run it locally with an Anthropic API key:
 
 ```bash

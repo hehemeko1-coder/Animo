@@ -89,3 +89,74 @@ kbd{margin-left:auto;font:9px var(--font-body);color:#77798c;border:1px solid #3
 @media(max-width:620px){body{overflow:hidden}.app-shell{position:relative}.sidebar{position:absolute;top:0;bottom:0;left:0;width:270px;transform:translateX(-101%);transition:transform .22s ease;box-shadow:20px 0 50px #0005}.sidebar.open{transform:translateX(0)}.topbar{height:58px;flex-basis:58px;padding:0 14px;gap:12px}.mobile-menu{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0}.mobile-menu span{height:1.5px;width:14px;background:#c9c8d8;border-radius:3px}.topbar-title{gap:9px}.desktop-chat-title{display:none}.mobile-brand{display:inline;font:700 18px var(--font-display);letter-spacing:-.8px;color:#f4f3fa}.model-pill{font-size:8px;padding:3px 6px}.icon-button{width:32px;height:32px}.welcome{width:calc(100% - 34px);padding:25px 0;margin:auto}.welcome-orb{width:55px;height:55px;border-radius:18px;margin-bottom:20px;font-size:25px}.welcome h1{font-size:clamp(31px,8vw,39px);letter-spacing:-1.7px}.welcome>p{font-size:11px;max-width:360px}.suggestion-grid{gap:8px;margin-top:24px}.suggestion-card{min-height:68px;padding:9px;gap:8px}.suggestion-icon{width:27px;height:27px;font-size:13px}.suggestion-card strong{font-size:9px}.suggestion-card small{font-size:8px;line-height:1.5}.suggestion-arrow{display:none}.message-list{width:calc(100% - 32px);padding:23px 0;gap:22px}.message{grid-template-columns:27px minmax(0,1fr);gap:10px}.message-avatar{width:27px;height:27px}.message-content{font-size:11px}.composer-wrap{width:calc(100% - 22px);padding:8px 0 10px}.composer{padding:10px 10px 8px}.composer textarea{font-size:12px}.composer-hint{font-size:8px}.character-count{display:none}.disclaimer{font-size:8px;margin-top:7px}.conversation{overscroll-behavior:contain}}
 @media(max-width:370px){.suggestion-grid{grid-template-columns:1fr}.suggestion-card{min-height:57px}.welcome{padding:18px 0}.welcome-orb{margin-bottom:14px}.welcome h1{margin-top:14px}.welcome>p{font-size:10px}.suggestion-grid{margin-top:16px}.composer-hint{max-width:190px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Feature controls */
+.feature-nav{margin-top:5px;background:transparent;border:0;color:#a9a9ba;cursor:pointer;transition:background .2s,color .2s}
+.feature-nav:hover{background:rgba(255,255,255,.04);color:#f5f3ff}
+.feature-nav .sidebar-icon{width:18px;text-align:center}
+.nav-count{margin-left:auto;font-size:9px;color:#77798c}
+.composer-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 2px 9px;border-bottom:1px solid rgba(255,255,255,.055);margin-bottom:8px}
+.tool-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tool-button{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid #333443;border-radius:7px;background:#171822;color:#b8b7c8;font-size:9px;cursor:pointer}
+.tool-button:hover{border-color:#8174b8;color:#e7e1ff}
+.tool-button:disabled{opacity:.4;cursor:not-allowed}
+.tool-button span{font-size:14px;line-height:1}
+.tool-toggle{display:inline-flex;align-items:center;gap:6px;font-size:9px;color:#aaaabc;cursor:pointer;user-select:none}
+.tool-toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle-track{position:relative;width:25px;height:14px;border-radius:20px;background:#3b3c4b;transition:background .2s}
+.toggle-track:after{content:"";position:absolute;left:2px;top:2px;width:10px;height:10px;border-radius:50%;background:#a4a4b4;transition:transform .2s,background .2s}
+.tool-toggle input:checked+.toggle-track{background:#65579e}
+.tool-toggle input:checked+.toggle-track:after{transform:translateX(11px);background:#d9d0ff}
+.tool-toggle input:focus-visible+.toggle-track{outline:2px solid var(--cyan);outline-offset:3px}
+.tool-status{font-size:8px;color:#7be4da}
+.tool-note{font-size:8px;color:#686a7b;text-align:right}
+.attachment-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.attachment-list:empty{display:none}
+.attachment-chip{display:flex;align-items:center;gap:8px;max-width:100%;padding:5px 8px;border:1px solid #39364e;background:#191824;border-radius:7px;color:#c7c1e7;font-size:9px}
+.attachment-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.attachment-chip button{border:0;background:transparent;color:#aaa5c0;font-size:16px;cursor:pointer;padding:0 1px}
+.message-sources{display:flex;flex-direction:column;gap:5px;margin-top:13px;padding:10px 12px;border:1px solid #343044;border-radius:8px;background:#12121b}
+.message-sources strong{font-size:10px;color:#b8a8ff;margin-bottom:2px}
+.message-sources a{font-size:10px;color:#a9d9d4;text-decoration:none;overflow-wrap:anywhere}
+.message-sources a:hover{text-decoration:underline}
+.modal-backdrop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:18px;background:rgba(3,4,8,.78);backdrop-filter:blur(8px)}
+.modal-backdrop[hidden]{display:none}
+.modal-card{width:min(520px,100%);max-height:min(85dvh,760px);overflow:auto;padding:22px;border:1px solid #353347;border-radius:15px;background:#101119;box-shadow:0 28px 100px #0009}
+.modal-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.modal-kicker{font-size:9px;letter-spacing:1.5px;font-weight:700;color:#a99bff}
+.modal-heading h2{font:600 25px/1.25 var(--font-display);letter-spacing:-.7px;margin:6px 0 0}
+.modal-close{width:30px;height:30px;border:1px solid #343443;border-radius:8px;background:#181923;color:#b5b4c5;font-size:23px;line-height:1;cursor:pointer}
+.modal-description{font-size:11px;line-height:1.8;color:#9293a5;margin:14px 0 18px}
+.stack-form{display:flex;flex-direction:column;gap:8px}
+.stack-form label{font-size:10px;color:#c3c1d4;font-weight:600;margin-top:4px}
+.stack-form textarea,.stack-form input{width:100%;border:1px solid #343443;border-radius:8px;background:#0c0d13;color:#f3f1fb;padding:10px;font:11px/1.7 var(--font-body);resize:vertical;outline:none}
+.stack-form textarea:focus,.stack-form input:focus{border-color:#8b7cce}
+.stack-form textarea::placeholder,.stack-form input::placeholder{color:#686a7d}
+.primary-button{align-self:flex-start;border:0;border-radius:8px;padding:9px 13px;background:linear-gradient(120deg,#b7a2ff,#82e3db);color:#12121a;font-size:10px;font-weight:700;cursor:pointer}
+.subtle-button{border:1px solid #343443;border-radius:8px;padding:8px 10px;background:#171821;color:#aaaabc;font-size:9px;cursor:pointer}
+.subtle-button:hover{color:#eee;border-color:#5b5874}
+.saved-memory-list{display:flex;flex-direction:column;gap:8px;margin:17px 0}
+.saved-item{display:flex;align-items:flex-start;gap:12px;justify-content:space-between;padding:10px;border:1px solid #292a37;border-radius:8px;background:#14151d}
+.saved-item p{font-size:10px;line-height:1.7;color:#c4c3d1;margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.saved-item strong{font:600 11px var(--font-display);color:#e8e5f5;overflow-wrap:anywhere}
+.saved-item>div:first-child p{margin-top:4px}
+.remove-item{border:0;background:transparent;color:#cf929e;font-size:9px;cursor:pointer;flex-shrink:0;padding:3px}
+.remove-item:hover{color:#ffb4c2;text-decoration:underline}
+.empty-state{font-size:10px;color:#77798a;text-align:center;padding:13px 8px;border:1px dashed #30313e;border-radius:8px}
+.modal-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.workflow-item{align-items:center}
+.workflow-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.mini-button{border:1px solid #50486f;border-radius:6px;padding:5px 9px;background:#242035;color:#d0c4ff;font-size:9px;cursor:pointer}
+.mini-button:hover{background:#302848}
+.fine-print{font-size:9px;line-height:1.7;color:#727487;margin:12px 0 0}
+@media(max-width:620px){
+  .composer-tools{align-items:flex-start}
+  .tool-left{gap:5px}
+  .tool-button{padding:5px 6px;font-size:8px}
+  .tool-toggle{font-size:8px;gap:4px}
+  .tool-note{max-width:82px;font-size:7px;line-height:1.5}
+  .modal-card{padding:17px}
+  .saved-item{gap:8px}
+  .workflow-item{align-items:flex-start}
+}

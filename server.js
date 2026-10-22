@@ -12,7 +12,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
-const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY;
+const SERPER_API_KEY = process.env.SERPER_API_KEY;
 const AUTOMATION_WEBHOOK_URL = process.env.AUTOMATION_WEBHOOK_URL;
 const AUTOMATION_WEBHOOK_TOKEN = process.env.AUTOMATION_WEBHOOK_TOKEN;
 
@@ -59,7 +59,7 @@ app.get("/api/health", (_req, res) => {
   res.json({
     ok: true, provider: "Groq", configured: Boolean(GROQ_API_KEY),
     features: {
-      webSearch: Boolean(SERPAPI_API_KEY),
+      webSearch: Boolean(SERPER_API_KEY),
       memory: "browser-local",
       documents: true,
       imageUnderstanding: Boolean(GROQ_API_KEY),
@@ -69,26 +69,22 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.post("/api/search", searchLimiter, async (req, res) => {
-  if (!SERPAPI_API_KEY) return res.status(503).json({ error: "Live web search needs a SERPAPI_API_KEY in Render Environment." });
+  if (!SERPER_API_KEY) return res.status(503).json({ error: "Live web search needs a SERPER_API_KEY in Render Environment." });
   const query = typeof req.body?.query === "string" ? req.body.query.trim() : "";
   if (!query || query.length > 400) return res.status(400).json({ error: "Enter a search query of 1–400 characters." });
   try {
-    const searchUrl = new URL("https://serpapi.com/search.json");
-    searchUrl.searchParams.set("engine", "google");
-    searchUrl.searchParams.set("q", query);
-    searchUrl.searchParams.set("num", "5");
-    searchUrl.searchParams.set("api_key", SERPAPI_API_KEY);
-    const response = await fetch(searchUrl, { signal: AbortSignal.timeout(15000) });
+    const response = await fetch("https://google.serper.dev/search", {
+      method: "POST",
+      headers: { "X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query, num: 5 }),
+      signal: AbortSignal.timeout(15000)
+    });
     if (!response.ok) {
-      console.error("Web search provider returned status:", response.status);
-      return res.status(502).json({ error: "Web search couldn't complete. Check the search provider configuration and try again." });
+      console.error("Serper search provider returned status:", response.status);
+      return res.status(502).json({ error: "Web search couldn't complete. Check the Serper API key and usage limit." });
     }
     const data = await response.json();
-    if (data.error) {
-      console.error("SerpApi search error:", String(data.error).slice(0, 300));
-      return res.status(502).json({ error: "The search provider rejected the request. Check the API key and usage limit." });
-    }
-    const sources = (Array.isArray(data.organic_results) ? data.organic_results : []).slice(0, 5).map(item => ({
+    const sources = (Array.isArray(data.organic) ? data.organic : []).slice(0, 5).map(item => ({
       title: String(item.title || "Source").slice(0, 200),
       url: typeof item.link === "string" && /^https?:\/\//i.test(item.link) ? item.link : "",
       content: String(item.snippet || "").slice(0, 1800)

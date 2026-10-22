@@ -373,7 +373,19 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
-      const forceCalculator = !images.length && shouldForceCalculator(latestUserText);
+      let forceCalculator = !images.length && shouldForceCalculator(latestUserText);
+      if (forceCalculator) {
+        const expression = latestUserText.trim()
+          .replace(/^(?:(?:calculate|compute|solve|evaluate|what is|what's|how much is)\\s+)/i, "")
+          .replace(/[?=]$/, "")
+          .trim();
+        const calculation = safeCalculate(expression);
+        if (typeof calculation.result === "number") {
+          return res.json({ reply: String(calculation.result), provider: AI_PROVIDER, model: AI_MODEL });
+        }
+        // If the prompt contains words rather than a plain expression, let the model handle it normally.
+        forceCalculator = false;
+      }
       const requestTools = forceCalculator
         ? groqTools.filter(tool => tool.function.name === "calculate")
         : groqTools;

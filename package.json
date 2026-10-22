@@ -5,7 +5,8 @@
   "description": "SeenAi AI chatbot with secure search, document extraction, vision and approved automation hooks",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "eval": "node evals.js"
   },
   "engines": {
     "node": ">=20.16.0"

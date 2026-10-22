@@ -193,3 +193,51 @@ kbd{margin-left:auto;font:9px var(--font-body);color:#77798c;border:1px solid #3
 .message-actions{opacity:.8;transition:opacity .2s}
 .message:hover .message-actions{opacity:1}
 @media(prefers-reduced-motion:no-preference){.message{animation:fade-up .22s ease both}}
+
+
+/* Accessibility and layout refinements */
+:root{--text:#f4f3fa;--muted:#a6a7b8}
+html{scroll-behavior:smooth}
+button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
+button{transition:background-color .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
+button:active{transform:translateY(1px)}
+.brand:focus-visible,.provider-link:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
+.sidebar-label{letter-spacing:1.35px}
+.topbar{backdrop-filter:blur(14px)}
+.suggestion-card{min-width:0;transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.suggestion-card:hover{transform:translateY(-2px);border-color:rgba(177,160,255,.38)}
+.composer textarea{line-height:1.65}
+.composer:focus-within{border-color:rgba(177,160,255,.48);box-shadow:0 0 0 3px rgba(177,160,255,.045)}
+.message-content{overflow-wrap:anywhere}
+.message-content img{max-width:100%;height:auto;border-radius:10px}
+.message-content table{display:block;overflow-x:auto;border-collapse:collapse}
+.modal-card{scrollbar-width:thin;scrollbar-color:#454256 transparent}
+.tool-button,.subtle-button,.mini-button,.primary-button{min-height:34px}
+@media(max-width:620px){
+  .welcome>p{font-size:13px;line-height:1.75}
+  .welcome-eyebrow{font-size:9px;letter-spacing:1.3px}
+  .suggestion-card{min-height:76px;padding:11px;gap:9px}
+  .suggestion-card strong{font-size:11px;line-height:1.35}
+  .suggestion-card small{font-size:10px;line-height:1.45}
+  .composer textarea{font-size:14px;min-height:42px}
+  .composer-hint{font-size:10px}
+  .disclaimer{font-size:9px;line-height:1.5}
+  .tool-button{font-size:10px;padding:6px 8px}
+  .tool-toggle{font-size:10px}
+  .tool-note{font-size:9px;max-width:100px}
+  .modal-description{font-size:13px;line-height:1.7}
+  .stack-form label{font-size:12px}
+  .stack-form textarea,.stack-form input{font-size:13px}
+  .primary-button,.subtle-button{font-size:12px;min-height:38px}
+  .saved-item p{font-size:12px;line-height:1.65}
+  .remove-item{font-size:11px}
+}
+@media(max-width:370px){
+  .topbar-title{gap:6px}
+  .model-pill{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .composer-wrap{width:calc(100% - 16px)}
+  .tool-note{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+}

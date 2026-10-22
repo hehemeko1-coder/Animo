@@ -12,7 +12,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-20b";
 const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
-const SERPER_API_KEY = process.env.SERPER_API_KEY;
+const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
 const AUTOMATION_WEBHOOK_URL = process.env.AUTOMATION_WEBHOOK_URL;
 const AUTOMATION_WEBHOOK_TOKEN = process.env.AUTOMATION_WEBHOOK_TOKEN;
 
@@ -59,7 +59,7 @@ app.get("/api/health", (_req, res) => {
   res.json({
     ok: true, provider: "Groq", configured: Boolean(GROQ_API_KEY),
     features: {
-      webSearch: Boolean(SERPER_API_KEY),
+      webSearch: Boolean(FIRECRAWL_API_KEY),
       memory: "browser-local",
       documents: true,
       imageUnderstanding: Boolean(GROQ_API_KEY),
@@ -69,25 +69,26 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.post("/api/search", searchLimiter, async (req, res) => {
-  if (!SERPER_API_KEY) return res.status(503).json({ error: "Live web search needs a SERPER_API_KEY in Render Environment." });
+  if (!FIRECRAWL_API_KEY) return res.status(503).json({ error: "Live web search needs a FIRECRAWL_API_KEY in Render Environment." });
   const query = typeof req.body?.query === "string" ? req.body.query.trim() : "";
   if (!query || query.length > 400) return res.status(400).json({ error: "Enter a search query of 1–400 characters." });
   try {
-    const response = await fetch("https://google.serper.dev/search", {
+    const response = await fetch("https://api.firecrawl.dev/v2/search", {
       method: "POST",
-      headers: { "X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ q: query, num: 5 }),
-      signal: AbortSignal.timeout(15000)
+      headers: { "Authorization": `Bearer ${FIRECRAWL_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ query, limit: 5, sources: [{ type: "web" }], scrapeOptions: { formats: ["markdown"] } }),
+      signal: AbortSignal.timeout(20000)
     });
     if (!response.ok) {
-      console.error("Serper search provider returned status:", response.status);
-      return res.status(502).json({ error: "Web search couldn't complete. Check the Serper API key and usage limit." });
+      console.error("Firecrawl search provider returned status:", response.status);
+      return res.status(502).json({ error: "Web search couldn't complete. Check the Firecrawl API key and usage limit." });
     }
     const data = await response.json();
-    const sources = (Array.isArray(data.organic) ? data.organic : []).slice(0, 5).map(item => ({
+    const results = Array.isArray(data.data) ? data.data : [];
+    const sources = results.slice(0, 5).map(item => ({
       title: String(item.title || "Source").slice(0, 200),
-      url: typeof item.link === "string" && /^https?:\/\//i.test(item.link) ? item.link : "",
-      content: String(item.snippet || "").slice(0, 1800)
+      url: typeof item.url === "string" && /^https?:\/\//i.test(item.url) ? item.url : "",
+      content: String(item.description || item.markdown || item.content || "").slice(0, 1800)
     })).filter(item => item.url);
     if (!sources.length) return res.status(502).json({ error: "No useful sources were returned. Try a more specific query." });
     return res.json({ sources });

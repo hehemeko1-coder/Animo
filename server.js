@@ -455,6 +455,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       if (response.ok && !completed && !reply.trim()) {
         reply = "I reached the tool-use limit before completing the task. Please ask me to continue or narrow the request.";
       }
+    }
     if (!response.ok) {
       const status = response.status;
       if (status === 429) return res.status(429).json({ error: "The AI provider is at its current usage limit. Please wait a little and try again." });

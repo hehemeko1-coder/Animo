@@ -270,53 +270,6 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           }
         }
       ];
-      const safeCalculate = (expression) => {
-        if (typeof expression !== "string" || expression.length > 120 || !/^[0-9+\-*/%.()\s]+$/.test(expression)) {
-          return { error: "Only basic arithmetic characters are allowed." };
-        }
-        const tokens = expression.match(/\d+(?:\.\d+)?|[()+\-*/%]/g);
-        if (!tokens || tokens.join("") !== expression.replace(/\s/g, "")) return { error: "Invalid arithmetic expression." };
-        let index = 0;
-        const primary = () => {
-          const token = tokens[index++];
-          if (token === "(") {
-            const value = sum();
-            if (tokens[index++] !== ")") throw new Error("Missing closing parenthesis.");
-            return value;
-          }
-          if (token === "+" || token === "-") {
-            const value = primary();
-            return token === "-" ? -value : value;
-          }
-          const value = Number(token);
-          if (!Number.isFinite(value)) throw new Error("Invalid number.");
-          return value;
-        };
-        const product = () => {
-          let value = primary();
-          while (["*", "/", "%"].includes(tokens[index])) {
-            const op = tokens[index++], right = primary();
-            if ((op === "/" || op === "%") && right === 0) throw new Error("Division by zero.");
-            value = op === "*" ? value * right : op === "/" ? value / right : value % right;
-          }
-          return value;
-        };
-        const sum = () => {
-          let value = product();
-          while (["+", "-"].includes(tokens[index])) {
-            const op = tokens[index++], right = product();
-            value = op === "+" ? value + right : value - right;
-          }
-          return value;
-        };
-        try {
-          const value = sum();
-          if (index !== tokens.length || !Number.isFinite(value)) return { error: "Expression is invalid or result is not finite." };
-          return { result: value };
-        } catch (error) {
-          return { error: error.message || "Could not calculate expression." };
-        }
-      };
       const executeTool = async (name, input) => {
         if (name === "calculate") return safeCalculate(input?.expression);
         if (name === "web_search") {

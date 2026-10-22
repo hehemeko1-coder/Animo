@@ -60,8 +60,19 @@ kbd{margin-left:auto;font:9px var(--font-body);color:#77798c;border:1px solid #3
 .message-body{min-width:0;padding-top:2px}
 .message-meta{display:flex;align-items:center;gap:9px;margin-bottom:7px}
 .message-meta strong{font:600 11px var(--font-display);color:#e9e7f2}.message-meta time{font-size:9px;color:#6f7183}
-.message-content{font-size:12px;line-height:1.85;color:#c5c5d2;white-space:pre-wrap;overflow-wrap:anywhere}
+.message-content{font-size:12px;line-height:1.85;color:#f4f3fa;white-space:normal;overflow-wrap:anywhere}
 .message.user .message-content{color:#eeeef5}
+.message-content p{margin:0 0 10px}
+.message-content p:last-child{margin-bottom:0}
+.message-content strong{font-weight:750;color:#fff}
+.message-content em{font-style:italic}
+.message-content h2,.message-content h3,.message-content h4{color:#fff;font-weight:750;line-height:1.45;margin:15px 0 7px}
+.message-content h2{font-size:1.2em}.message-content h3{font-size:1.1em}.message-content h4{font-size:1.03em}
+.message-content ul,.message-content ol{padding-left:22px;margin:5px 0 12px}
+.message-content li{padding-left:3px;margin:3px 0}
+.message-content hr{border:0;border-top:1px solid #353546;margin:12px 0}
+.message-content pre{white-space:pre-wrap}
+
 .message-content a{color:#b6a6ff;text-decoration:underline}
 .message-content code{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;background:#222330;border:1px solid #303141;border-radius:4px;padding:2px 5px}
 .message-content pre{padding:12px;background:#0c0d13;border:1px solid var(--line);border-radius:8px;overflow:auto}

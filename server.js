@@ -70,7 +70,7 @@ app.get("/api/health", (_req, res) => {
       webSearch: Boolean(FIRECRAWL_API_KEY),
       memory: "browser-local",
       documents: true,
-      imageUnderstanding: Boolean(GROQ_API_KEY),
+      imageUnderstanding: Boolean(OPENAI_API_KEY || ANTHROPIC_API_KEY || GROQ_API_KEY),
       automation: Boolean(AUTOMATION_WEBHOOK_URL)
     }
   });
@@ -312,5 +312,5 @@ app.use((_req, res) => res.status(404).json({ error: "Not found." }));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`SeenAi is listening on port ${PORT}`);
-  if (!GROQ_API_KEY) console.warn("GROQ_API_KEY is missing. Add it to the server environment to enable AI replies.");
+  if (!(AI_PROVIDER === "openai" ? OPENAI_API_KEY : AI_PROVIDER === "anthropic" ? ANTHROPIC_API_KEY : GROQ_API_KEY)) console.warn("The selected AI provider API key is missing. Configure its key in the server environment.");
 });

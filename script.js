@@ -157,6 +157,7 @@
     if (content.length > 4000) { showToast("Please keep your message under 4,000 characters."); return; }
     welcome.hidden = true;
     let userContent = content;
+    if (!userContent && documents.length) userContent = "Please review the attached document(s) and summarize their key points.";
     if (documents.length) userContent += (userContent ? "\n\n" : "") + "Attached document text (combined and truncated if needed):\n" + documents.map(d => "[File: " + d.name + "]\n" + d.text).join("\n\n").slice(0, 26_000);
     if (images.length) userContent += (userContent ? "\n\n" : "") + "Please inspect the " + images.length + " attached image(s) and answer my question.";
     messages.push({ role: "user", content: userContent });

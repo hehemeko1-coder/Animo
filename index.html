@@ -3,72 +3,58 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#08090d">
-  <meta name="description" content="SeenAi turns your next big idea into a clear next step. Explore a more thoughtful way to work with AI.">
-  <title>SeenAi — See what's possible</title>
+  <meta name="theme-color" content="#090a0f">
+  <meta name="description" content="Meet SeenAi, your thoughtful AI assistant for ideas, learning, writing, and problem-solving.">
+  <title>SeenAi — Your AI, your perspective</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/script.js" defer></script>
 </head>
 <body>
-  <div class="ambient ambient-one" aria-hidden="true"></div>
-  <div class="ambient ambient-two" aria-hidden="true"></div>
-  <header class="site-header">
-    <a class="brand" href="#home" aria-label="SeenAi home"><span class="brand-mark"><span></span><span></span><span></span></span><span>Seen<span class="brand-ai">Ai</span></span></a>
-    <button class="menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span></button>
-    <nav id="primary-nav" class="nav-links" aria-label="Main navigation">
-      <a href="#features">Features</a>
-      <a href="#how-it-works">How it works</a>
-      <a href="#about">About</a>
-      <a class="nav-cta" href="#get-started">Explore SeenAi <span aria-hidden="true">↗</span></a>
-    </nav>
-  </header>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="/" aria-label="SeenAi home"><span class="brand-mark"><span></span><span></span><span></span></span><span>Seen<span class="brand-ai">Ai</span></span></a>
+      <button class="new-chat-button" id="newChatButton"><span class="plus-icon">＋</span> New conversation <kbd>⌘ K</kbd></button>
+      <div class="sidebar-label">YOUR SPACE</div>
+      <button class="sidebar-item active"><span class="sidebar-icon">◈</span> AI Assistant <span class="live-dot"></span></button>
+      <div class="sidebar-note"><div class="note-symbol">✳</div><div><strong>A little more perspective.</strong><p>Ask anything. Explore everything.</p></div></div>
+      <div class="sidebar-bottom"><div class="provider-status"><span class="status-dot"></span><span><strong>SeenAi is ready</strong><small>Powered by conversational AI</small></span></div><a href="https://console.groq.com/" target="_blank" rel="noreferrer" class="provider-link">About the AI provider ↗</a></div>
+    </aside>
 
-  <main id="home">
-    <section class="hero section-wrap">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> A clearer way to think with AI</div>
-        <h1>Your ideas deserve<br>to be <span class="gradient-text">seen differently.</span></h1>
-        <p class="hero-description">Meet a more thoughtful kind of AI experience. Turn scattered thoughts into fresh perspectives, useful plans, and momentum that feels like your own.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#get-started">Discover what's possible <span aria-hidden="true">↗</span></a>
-          <a class="button button-quiet" href="#how-it-works"><span class="play-icon" aria-hidden="true">▶</span> See how it works</a>
+    <main class="chat-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Toggle sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
+        <div class="topbar-title"><span class="mobile-brand">Seen<span>Ai</span></span><span class="desktop-chat-title">AI Assistant</span><span class="model-pill"><span></span> Online</span></div>
+        <button class="icon-button" id="clearChatButton" title="Clear conversation" aria-label="Clear conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+      </header>
+
+      <section class="conversation" id="conversation" aria-label="Chat conversation" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="welcome-orb"><div class="orb-highlight"></div><span>✳</span></div>
+          <div class="welcome-eyebrow"><span class="status-dot"></span> A CLEARER WAY TO THINK</div>
+          <h1>Hey there.<br><span>What’s on your mind?</span></h1>
+          <p>I'm SeenAi — here to help you explore ideas, solve problems, learn something new, or turn a rough thought into a real plan.</p>
+          <div class="suggestion-grid">
+            <button class="suggestion-card" data-prompt="Help me brainstorm a creative project idea"><span class="suggestion-icon purple">✳</span><span><strong>Brainstorm ideas</strong><small>Find a fresh perspective</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion-card" data-prompt="Teach me something interesting in a simple, step-by-step way"><span class="suggestion-icon teal">⌘</span><span><strong>Learn something</strong><small>Make a new concept click</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion-card" data-prompt="Help me make a practical plan for a goal I have"><span class="suggestion-icon blue">↗</span><span><strong>Make a plan</strong><small>Turn a goal into next steps</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion-card" data-prompt="Help me write something clear, engaging, and natural"><span class="suggestion-icon amber">✎</span><span><strong>Write something</strong><small>Start with a blank page</small></span><span class="suggestion-arrow">↗</span></button>
+          </div>
         </div>
-        <div class="hero-proof"><div class="avatar-stack" aria-hidden="true"><span>S</span><span>A</span><span>M</span><span>+</span></div><p><strong>Made for curious minds</strong><br><span>From first thought to next big thing.</span></p></div>
+        <div class="message-list" id="messageList"></div>
+      </section>
+
+      <div class="composer-wrap">
+        <form class="composer" id="chatForm">
+          <textarea id="messageInput" rows="1" maxlength="4000" placeholder="Message SeenAi…" aria-label="Your message" required></textarea>
+          <div class="composer-bottom"><span class="composer-hint"><span>↵</span> to send · Shift + ↵ for a new line</span><div class="composer-actions"><span id="characterCount" class="character-count">0 / 4000</span><button class="send-button" id="sendButton" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button></div></div>
+        </form>
+        <p class="disclaimer">SeenAi can make mistakes. Check important information. <span>Your ideas stay yours.</span></p>
       </div>
-
-      <div class="visual-stage" aria-label="Abstract SeenAi interface illustration">
-        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
-        <div class="orb orb-main"><div class="orb-core"></div><div class="orb-shine"></div></div>
-        <div class="floating-card insight-card"><div class="card-icon">✳</div><div><span class="micro-label">A NEW PERSPECTIVE</span><strong>Think beyond the obvious.</strong><p>Find the connection you almost missed.</p></div><span class="sparkle">✦</span></div>
-        <div class="floating-card prompt-card"><span class="prompt-symbol">✧</span><div><span class="micro-label">YOUR NEXT IDEA</span><strong>What if we started here?</strong><div class="prompt-lines"><i></i><i></i><i></i></div></div><span class="arrow-circle">↗</span></div>
-        <div class="floating-chip chip-top"><span class="chip-pulse"></span> Ideas, in motion</div>
-        <div class="floating-chip chip-bottom"><span>✦</span> Clarity unlocked</div>
-        <div class="stage-caption">A little more perspective changes everything.</div>
-      </div>
-      <div class="hero-scroll"><span></span> SCROLL TO EXPLORE</div>
-    </section>
-
-    <section id="features" class="features-section section-wrap">
-      <div class="section-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> LESS FRICTION. MORE POSSIBILITY.</div><h2>Make room for your<br><span class="muted-heading">next breakthrough.</span></h2></div><p>Good ideas rarely arrive fully formed. SeenAi helps you explore the possibilities between where you are and where you could go.</p></div>
-      <div class="feature-grid">
-        <article class="feature-card feature-large"><div class="feature-art art-orbit"><span class="art-star">✳</span><span class="art-ring ring-one"></span><span class="art-ring ring-two"></span><span class="art-ring ring-three"></span></div><div class="feature-number">01 / THINK</div><h3>Find a fresh angle.</h3><p>Move past the first answer. Explore new viewpoints, make unexpected connections, and give your curiosity room to roam.</p><a href="#get-started" class="text-link">Explore ideas <span>↗</span></a></article>
-        <article class="feature-card"><div class="feature-art art-path"><span class="path-node node-one"></span><span class="path-node node-two"></span><span class="path-node node-three"></span><span class="path-line"></span><span class="path-label">IDEA → ACTION</span></div><div class="feature-number">02 / CREATE</div><h3>Make the abstract tangible.</h3><p>Shape rough thoughts into outlines, drafts, plans, and things you can actually use.</p><a href="#get-started" class="text-link">Start creating <span>↗</span></a></article>
-        <article class="feature-card"><div class="feature-art art-focus"><div class="focus-square"><span>✓</span></div><span class="focus-ray ray-one"></span><span class="focus-ray ray-two"></span><span class="focus-ray ray-three"></span></div><div class="feature-number">03 / MOVE</div><h3>Turn clarity into momentum.</h3><p>Break the big picture into smaller next steps, so progress feels possible—not overwhelming.</p><a href="#get-started" class="text-link">Find your next step <span>↗</span></a></article>
-      </div>
-    </section>
-
-    <section id="how-it-works" class="process-section">
-      <div class="section-wrap process-inner"><div class="process-copy"><div class="eyebrow"><span class="eyebrow-line"></span> SIMPLE BY DESIGN</div><h2>Start with a thought.<br><span class="gradient-text">Go somewhere new.</span></h2><p>No perfect prompt required. Bring the messy draft, the big question, or the idea you can't quite explain yet.</p><a class="button button-primary" href="#get-started">Give it a try <span aria-hidden="true">↗</span></a></div><div class="steps"><article class="step"><span class="step-index">01</span><div><h3>Bring your curiosity</h3><p>Start with a question, a challenge, or a half-formed idea.</p></div><span class="step-symbol">⌁</span></article><article class="step"><span class="step-index">02</span><div><h3>Explore the possibilities</h3><p>Follow new angles, ask better questions, and shape what matters.</p></div><span class="step-symbol">✳</span></article><article class="step"><span class="step-index">03</span><div><h3>Make your next move</h3><p>Leave with a clearer perspective and a useful way forward.</p></div><span class="step-symbol">↗</span></article></div></div>
-    </section>
-
-    <section id="about" class="manifesto section-wrap"><div class="manifesto-mark">“</div><p>Technology should make more room for <span>human imagination</span>, not less.</p><div class="manifesto-bottom"><span>THE SEENAI POINT OF VIEW</span><span class="manifesto-rule"></span><span>BUILT FOR WHAT'S NEXT</span></div></section>
-
-    <section id="get-started" class="cta-section section-wrap"><div class="cta-panel"><div class="cta-glow"></div><div class="eyebrow"><span class="status-dot"></span> YOUR NEXT CHAPTER STARTS HERE</div><h2>What will you <span class="gradient-text">see differently?</span></h2><p>Every big thing starts with a small spark. Follow yours.</p><a class="button button-primary" href="mailto:hello@seenai.example?subject=Hello%20SeenAi">Say hello to SeenAi <span aria-hidden="true">↗</span></a><span class="cta-decoration decoration-one">✳</span><span class="cta-decoration decoration-two">✦</span></div></section>
-  </main>
-
-  <footer class="site-footer section-wrap"><a class="brand" href="#home"><span class="brand-mark"><span></span><span></span><span></span></span><span>Seen<span class="brand-ai">Ai</span></span></a><p>See the idea. Find the possibility.</p><div class="footer-right"><span>© <span id="year"></span> SeenAi</span><a href="#home">Back to top ↑</a></div></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

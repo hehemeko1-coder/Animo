@@ -297,4 +297,4 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .brand-logo-image{width:48px;height:34px;object-fit:contain;display:block;border:0;border-radius:4px;letter-spacing:normal;filter:none}
 .mobile-logo-image{width:38px;height:28px;object-fit:contain;display:inline-block;vertical-align:middle;letter-spacing:normal}
 .welcome-logo-image{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
-.welcome-orb.brand-emblem{width:112px;height:78px;border:0;border-radius:8px;background:#000;box-shadow:0 0 38px #a000ff20;overflow:hidden;letter-spacing:normal}
+.welcome-orb.brand-emblem{width:112px;height:78px;border:0;border-radius:8px;background:transparent;box-shadow:none;overflow:visible;letter-spacing:normal}

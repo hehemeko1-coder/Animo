@@ -179,3 +179,17 @@ kbd{margin-left:auto;font:9px var(--font-body);color:#77798c;border:1px solid #3
   .saved-item{gap:8px}
   .workflow-item{align-items:flex-start}
 }
+
+
+/* Response polish: clearer hierarchy and comfortable long-form reading. */
+.message-content{line-height:1.82;letter-spacing:.005em}
+.message-content h2,.message-content h3,.message-content h4{letter-spacing:-.015em}
+.message-content pre{white-space:pre;max-width:100%;overflow-x:auto;tab-size:2}
+.message-content pre code{display:block;background:transparent;border:0;padding:0;line-height:1.7;color:#e9e7f5}
+.message-content a:hover{color:#ded6ff}
+.message-content blockquote{margin:10px 0;padding:8px 13px;border-left:3px solid var(--violet);background:rgba(177,160,255,.055);color:#c9c7d7;border-radius:0 7px 7px 0}
+.message-content table{max-width:100%}
+.message-content th{letter-spacing:.01em}
+.message-actions{opacity:.8;transition:opacity .2s}
+.message:hover .message-actions{opacity:1}
+@media(prefers-reduced-motion:no-preference){.message{animation:fade-up .22s ease both}}

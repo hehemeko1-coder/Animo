@@ -216,32 +216,88 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     last.content = [{ type: "text", text: last.content }, ...images.map(url => ({ type: "image_url", image_url: { url } }))];
   }
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: images.length ? GROQ_VISION_MODEL : GROQ_MODEL,
-        messages: [{ role: "system", content: systemParts.join("\n\n") }, ...apiMessages],
-        temperature: 0.45, max_completion_tokens: 3000,
-        ...(!images.length && GROQ_MODEL.startsWith("openai/gpt-oss-") ? { reasoning_effort: process.env.GROQ_REASONING_EFFORT || "medium" } : {})
-      }),
-      signal: AbortSignal.timeout(45000)
-    });
+    let response;
+    let reply = "";
+    if (AI_PROVIDER === "openai") {
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + OPENAI_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: OPENAI_MODEL,
+          messages: [{ role: "system", content: systemParts.join("\n\n") }, ...apiMessages],
+          max_completion_tokens: 4000,
+          reasoning_effort: process.env.OPENAI_REASONING_EFFORT || "high"
+        }),
+        signal: AbortSignal.timeout(90000)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        reply = data?.choices?.[0]?.message?.content || "";
+      }
+    } else if (AI_PROVIDER === "anthropic") {
+      const anthropicMessages = apiMessages.map(message => {
+        if (typeof message.content === "string") return { role: message.role, content: message.content };
+        const blocks = message.content.map(block => {
+          if (block.type === "text") return { type: "text", text: block.text };
+          if (block.type === "image_url" && typeof block.image_url?.url === "string") {
+            const match = block.image_url.url.match(/^data:image\/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$/);
+            if (match) return { type: "image", source: { type: "base64", media_type: "image/" + match[1], data: match[2] } };
+          }
+          return { type: "text", text: "[Unsupported content omitted]" };
+        });
+        return { role: message.role, content: blocks };
+      });
+      response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        body: JSON.stringify({
+          model: ANTHROPIC_MODEL,
+          system: systemParts.join("\n\n"),
+          messages: anthropicMessages,
+          max_tokens: 4000,
+          thinking: { type: "adaptive" },
+          output_config: { effort: process.env.ANTHROPIC_EFFORT || "high" }
+        }),
+        signal: AbortSignal.timeout(90000)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        reply = Array.isArray(data?.content) ? data.content.filter(block => block.type === "text").map(block => block.text).join("\n") : "";
+      }
+    } else {
+      response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + GROQ_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: images.length ? GROQ_VISION_MODEL : GROQ_MODEL,
+          messages: [{ role: "system", content: systemParts.join("\n\n") }, ...apiMessages],
+          temperature: 0.35, max_completion_tokens: 4000,
+          ...(!images.length && GROQ_MODEL.startsWith("openai/gpt-oss-") ? { reasoning_effort: process.env.GROQ_REASONING_EFFORT || "high" } : {})
+        }),
+        signal: AbortSignal.timeout(60000)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        reply = data?.choices?.[0]?.message?.content || "";
+      }
+    }
     if (!response.ok) {
       const status = response.status;
       if (status === 429) return res.status(429).json({ error: "The AI provider is at its current usage limit. Please wait a little and try again." });
       if (status === 401 || status === 403) {
-        console.error("Groq authentication/configuration error:", status);
-        return res.status(502).json({ error: "The AI service credentials need attention. Please try again later." });
+        console.error("AI provider authentication/configuration error (" + AI_PROVIDER + "):", status);
+        return res.status(502).json({ error: "The AI service credentials or model access need attention. Check the selected provider and model in Render Environment." });
       }
       const providerBody = await response.text().catch(() => "");
-      console.error("Groq API returned status:", status, providerBody.slice(0, 500));
-      return res.status(502).json({ error: images.length ? "Image understanding failed. Check that your Groq account supports the configured vision model." : "The AI service couldn't complete that request. Please try again." });
+      console.error("AI provider returned status (" + AI_PROVIDER + "):", status, providerBody.slice(0, 500));
+      return res.status(502).json({ error: "The AI service couldn't complete that request. Check the selected model and provider settings, then try again." });
     }
-    const data = await response.json();
-    const reply = data?.choices?.[0]?.message?.content;
     if (typeof reply !== "string" || !reply.trim()) return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
-    return res.json({ reply: reply.trim() });
+    return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL });
   } catch (error) {
     if (error.name === "TimeoutError" || error.name === "AbortError") return res.status(504).json({ error: "That response took too long. Please try again." });
     console.error("Chat request failed:", error.message);

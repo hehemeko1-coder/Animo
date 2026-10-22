@@ -1,6 +1,6 @@
 # SeenAi AI Chatbot
 
-SeenAi is a responsive AI chat application powered by Groq. The browser communicates with an Express backend. Provider API keys are stored only in the server environment and must never be placed in frontend files or committed to GitHub.
+SeenAi is a responsive AI chat application powered by Groq. The browser communicates with an Express backend. The chat uses GPT-OSS 20B by default with medium reasoning effort; the model can be changed through server environment variables. Provider API keys are stored only in the server environment and must never be placed in frontend files or committed to GitHub.
 
 ## Requirements
 
@@ -51,7 +51,7 @@ Keep `GROQ_API_KEY` configured as it is. After the new commit deploys, open Rend
 | `GROQ_VISION_MODEL` | Optional | Defaults to `qwen/qwen3.8-27b`; must be enabled for your Groq account |
 | `AUTOMATION_WEBHOOK_URL` | Optional, for external automation | HTTPS URL of a trusted automation service you control, such as a workflow webhook |
 | `AUTOMATION_WEBHOOK_TOKEN` | Optional | Bearer token sent to that trusted webhook |
-| `GROQ_MODEL` | Optional | Defaults to `openai/gpt-oss-20b` |
+| `GROQ_MODEL` | Optional | Defaults to `openai/gpt-oss-20b`. `openai/gpt-oss-120b` is a stronger option but may incur higher API costs; check your Groq billing and limits before switching. |\n| `GROQ_REASONING_EFFORT` | Optional | Defaults to `medium` for GPT-OSS chat requests. Supported values include `low`, `medium`, and `high`; higher effort can take longer and use more tokens. |
 
 Save environment changes and allow Render to redeploy. Render supplies `PORT`; the server binds to `0.0.0.0`.
 

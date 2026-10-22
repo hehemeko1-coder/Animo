@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, normalizeFirecrawlResults } = require("../lib/agent-tools");
+const { safeCalculate, shouldForceCalculator, normalizeFirecrawlResults } = require("../lib/agent-tools");
 
 test("calculator respects arithmetic precedence and parentheses", () => {
   assert.deepEqual(safeCalculate("2 + 3 * 4"), { result: 14 });
@@ -44,4 +44,17 @@ test("Firecrawl normalizer handles grouped web/news results and enforces bounds"
 
 test("Firecrawl normalizer returns an empty list for missing data", () => {
   assert.deepEqual(normalizeFirecrawlResults({}), []);
+});
+
+test("calculator is forced for bare arithmetic and short math questions", () => {
+  assert.equal(shouldForceCalculator("2 + 2"), true);
+  assert.equal(shouldForceCalculator("what is (8 + 4) / 3?"), true);
+  assert.equal(shouldForceCalculator("18 * 7 + 30"), true);
+  assert.equal(shouldForceCalculator("Calculate 15 percent of 80"), true);
+});
+
+test("calculator detection avoids ordinary prose and ISO-style dates", () => {
+  assert.equal(shouldForceCalculator("I have 2 apples and got 3 more"), false);
+  assert.equal(shouldForceCalculator("What happened on 2026-10-22?"), false);
+  assert.equal(shouldForceCalculator("Explain why multiplication works"), false);
 });

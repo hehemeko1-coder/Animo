@@ -35,7 +35,7 @@ app.use(helmet({
   },
   crossOriginEmbedderPolicy: false
 }));
-app.use(express.json({ limit: "12mb", strict: true }));
+app.use(express.json({ limit: "18mb", strict: true }));
 
 const chatLimiter = rateLimit({ windowMs: 60_000, limit: 10, standardHeaders: "draft-7", legacyHeaders: false,
   message: { error: "You're sending messages a little too quickly. Please wait a minute and try again." } });

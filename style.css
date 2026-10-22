@@ -301,3 +301,108 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .mobile-logo-image{width:38px;height:28px;object-fit:contain;display:inline-block;vertical-align:middle;letter-spacing:normal}
 .welcome-logo-image{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
 .welcome-orb.brand-emblem{width:112px;height:78px;border:0;border-radius:8px;background:transparent;box-shadow:none;overflow:visible;letter-spacing:normal}
+
+
+/* Editorial art direction: warmer, more intentional, less template-like. */
+:root{
+  --bg:#0b0d0e;
+  --sidebar:#101313;
+  --panel:#151918;
+  --panel-hover:#1c2220;
+  --text:#f1f3ed;
+  --muted:#a4aaa4;
+  --line:rgba(230,240,232,.11);
+  --font-display:'DM Sans',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+.app-shell{
+  background:
+    radial-gradient(ellipse at 78% 8%,rgba(53,207,197,.055),transparent 34%),
+    linear-gradient(180deg,#0b0d0e 0%,#0c0f0e 100%);
+}
+.sidebar{
+  background:#0e1110;
+  border-right-color:rgba(230,240,232,.1);
+}
+.brand{gap:8px;font-size:21px;letter-spacing:-.8px}
+.brand-logo-image{width:122px;height:86px;object-fit:contain}
+.brand-mark{width:122px;height:86px}
+@media(max-width:620px){
+  .brand-logo-image{width:108px;height:76px}
+  .brand-mark{width:108px;height:76px}
+}
+.new-chat-button{
+  border-radius:7px;
+  background:rgba(53,207,197,.075);
+  border-color:rgba(53,207,197,.24);
+  font-size:12px;
+  min-height:44px;
+}
+.sidebar-label{font-size:10px;letter-spacing:1.2px;color:#929b94}
+.sidebar-item{font-size:12px;border-radius:6px}
+.sidebar-note{
+  background:#141a18;
+  border-radius:7px;
+  border-color:rgba(230,240,232,.12);
+}
+.sidebar-note strong{font-size:11px}
+.sidebar-note p{font-size:10px}
+.topbar{
+  background:rgba(11,13,12,.92);
+  backdrop-filter:blur(10px);
+  border-bottom-color:rgba(230,240,232,.1);
+}
+.welcome{width:min(720px,calc(100% - 48px));padding-top:42px}
+.welcome-orb.brand-emblem{
+  width:94px;height:72px;margin-bottom:22px;
+  border:1px solid rgba(53,207,197,.22);
+  border-radius:14px;background:rgba(53,207,197,.045);
+  box-shadow:0 10px 34px rgba(0,0,0,.18);
+  overflow:hidden;
+}
+.welcome h1{
+  font-weight:600;
+  letter-spacing:-1.6px;
+  line-height:1.13;
+}
+.welcome h1 span{color:#b8c2bc}
+.welcome>p{font-size:13px;line-height:1.8;color:#a8afa9}
+.welcome-eyebrow{font-size:10px;letter-spacing:1.4px;color:#71ded5}
+.suggestion-grid{gap:11px;margin-top:32px}
+.suggestion-card{
+  min-height:76px;
+  border-radius:7px;
+  background:rgba(230,240,232,.025);
+  border-color:rgba(230,240,232,.12);
+  padding:14px;
+}
+.suggestion-card:hover{
+  background:rgba(53,207,197,.055);
+  border-color:rgba(53,207,197,.35);
+}
+.suggestion-card strong{font-size:12px;font-weight:600}
+.suggestion-card small{font-size:10px;color:#a5ada6}
+.message-list{width:min(820px,calc(100% - 48px))}
+.message-content{font-size:14px;line-height:1.85;color:#e7ece7}
+.message-content h2,.message-content h3{font-family:var(--font-display);font-weight:650;color:#f4f5f0}
+.message-content pre{
+  border:1px solid rgba(230,240,232,.12);
+  border-radius:8px;
+  background:#0a0d0c;
+}
+.composer-wrap{width:min(820px,calc(100% - 48px))}
+.composer{
+  border-radius:9px;
+  border-color:rgba(230,240,232,.16);
+  background:#121715;
+}
+.composer:focus-within{
+  border-color:rgba(53,207,197,.48);
+  box-shadow:0 0 0 3px rgba(53,207,197,.055);
+}
+.tool-button,.subtle-button,.mini-button{border-radius:6px}
+@media(max-width:620px){
+  .welcome{padding-top:28px}
+  .welcome>p{font-size:13px}
+  .message-list,.composer-wrap{width:calc(100% - 24px)}
+}

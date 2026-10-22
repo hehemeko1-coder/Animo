@@ -119,13 +119,16 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname), {
-  index: "index.html",
-  dotfiles: "ignore",
-  setHeaders(res, filePath) {
-    if (filePath.endsWith(".html")) res.setHeader("Cache-Control", "no-cache");
-  }
-}));
+app.get("/", (_req, res) => {
+  res.setHeader("Cache-Control", "no-cache");
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+app.get("/style.css", (_req, res) => {
+  res.type("text/css").sendFile(path.join(__dirname, "style.css"));
+});
+app.get("/script.js", (_req, res) => {
+  res.type("application/javascript").sendFile(path.join(__dirname, "script.js"));
+});
 
 app.use((_req, res) => res.status(404).json({ error: "Not found." }));
 

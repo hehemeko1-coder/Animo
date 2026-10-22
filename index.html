@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090a0f">
-  <meta name="description" content="Meet SeenAi, your thoughtful AI assistant for ideas, learning, writing, and problem-solving.">
+  <meta name="description" content="SeenAi — your AI assistant for ideas, learning, writing, live research, and problem-solving.">
   <title>SeenAi — Your AI, your perspective</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,6 +19,8 @@
       <button class="new-chat-button" id="newChatButton"><span class="plus-icon">＋</span> New conversation <kbd>⌘ K</kbd></button>
       <div class="sidebar-label">YOUR SPACE</div>
       <button class="sidebar-item active"><span class="sidebar-icon">◈</span> AI Assistant <span class="live-dot"></span></button>
+      <button class="sidebar-item feature-nav" id="memoryButton"><span class="sidebar-icon">✧</span> Saved memory <span class="nav-count" id="memoryCount">0</span></button>
+      <button class="sidebar-item feature-nav" id="automationButton"><span class="sidebar-icon">⟳</span> Automations <span class="nav-count">↗</span></button>
       <div class="sidebar-note"><div class="note-symbol">✳</div><div><strong>A little more perspective.</strong><p>Ask anything. Explore everything.</p></div></div>
       <div class="sidebar-bottom"><div class="provider-status"><span class="status-dot"></span><span><strong>SeenAi is ready</strong><small>Powered by conversational AI</small></span></div><a href="https://console.groq.com/" target="_blank" rel="noreferrer" class="provider-link">About the AI provider ↗</a></div>
     </aside>
@@ -35,25 +37,59 @@
           <div class="welcome-orb"><div class="orb-highlight"></div><span>✳</span></div>
           <div class="welcome-eyebrow"><span class="status-dot"></span> A CLEARER WAY TO THINK</div>
           <h1>Hey there.<br><span>What’s on your mind?</span></h1>
-          <p>I'm SeenAi — here to help you explore ideas, solve problems, learn something new, or turn a rough thought into a real plan.</p>
+          <p>I'm SeenAi — here to help you explore ideas, solve problems, research the web, understand documents, and turn a rough thought into a real plan.</p>
           <div class="suggestion-grid">
             <button class="suggestion-card" data-prompt="Help me brainstorm a creative project idea"><span class="suggestion-icon purple">✳</span><span><strong>Brainstorm ideas</strong><small>Find a fresh perspective</small></span><span class="suggestion-arrow">↗</span></button>
             <button class="suggestion-card" data-prompt="Teach me something interesting in a simple, step-by-step way"><span class="suggestion-icon teal">⌘</span><span><strong>Learn something</strong><small>Make a new concept click</small></span><span class="suggestion-arrow">↗</span></button>
-            <button class="suggestion-card" data-prompt="Help me make a practical plan for a goal I have"><span class="suggestion-icon blue">↗</span><span><strong>Make a plan</strong><small>Turn a goal into next steps</small></span><span class="suggestion-arrow">↗</span></button>
-            <button class="suggestion-card" data-prompt="Help me write something clear, engaging, and natural"><span class="suggestion-icon amber">✎</span><span><strong>Write something</strong><small>Start with a blank page</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion-card" data-prompt="Find current information about the latest AI news and summarize reliable sources"><span class="suggestion-icon blue">⌕</span><span><strong>Research the web</strong><small>Get current information</small></span><span class="suggestion-arrow">↗</span></button>
+            <button class="suggestion-card" data-prompt="Help me make a practical plan for a goal I have"><span class="suggestion-icon amber">↗</span><span><strong>Make a plan</strong><small>Turn a goal into next steps</small></span><span class="suggestion-arrow">↗</span></button>
           </div>
         </div>
         <div class="message-list" id="messageList"></div>
       </section>
 
       <div class="composer-wrap">
+        <div class="attachment-list" id="attachmentList" aria-live="polite"></div>
         <form class="composer" id="chatForm">
           <textarea id="messageInput" rows="1" maxlength="4000" placeholder="Message SeenAi…" aria-label="Your message" required></textarea>
+          <div class="composer-tools">
+            <div class="tool-left">
+              <button type="button" class="tool-button" id="attachButton" title="Attach document or image"><span>＋</span> Attach</button>
+              <input id="fileInput" type="file" accept=".pdf,.docx,.txt,image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+              <label class="tool-toggle" title="Search current information online"><input type="checkbox" id="webSearchToggle"><span class="toggle-track"></span><span>Web search</span><span class="tool-status" id="webStatus"></span></label>
+              <button type="button" class="tool-button" id="memoryQuickButton" title="Manage saved memory">✧ Memory</button>
+            </div>
+            <span class="tool-note">Files stay in this request</span>
+          </div>
           <div class="composer-bottom"><span class="composer-hint"><span>↵</span> to send · Shift + ↵ for a new line</span><div class="composer-actions"><span id="characterCount" class="character-count">0 / 4000</span><button class="send-button" id="sendButton" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button></div></div>
         </form>
         <p class="disclaimer">SeenAi can make mistakes. Check important information. <span>Your ideas stay yours.</span></p>
       </div>
     </main>
+  </div>
+
+  <div class="modal-backdrop" id="memoryModal" hidden>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
+      <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZATION</span><h2 id="memoryTitle">Saved memory</h2></div><button class="modal-close" data-close-modal="memoryModal" aria-label="Close">×</button></div>
+      <p class="modal-description">Save preferences or facts SeenAi can use in future chats on this browser. Memory is stored locally in this browser, not in a cloud account.</p>
+      <form id="memoryForm" class="stack-form"><label for="memoryInput">Remember something</label><textarea id="memoryInput" rows="3" maxlength="500" placeholder="Example: I prefer step-by-step explanations." required></textarea><button class="primary-button" type="submit">Save memory</button></form>
+      <div class="saved-memory-list" id="savedMemoryList"></div>
+      <button class="subtle-button" id="clearMemoryButton" type="button">Delete all saved memories</button>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="automationModal" hidden>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="automationTitle">
+      <div class="modal-heading"><div><span class="modal-kicker">APPROVAL REQUIRED</span><h2 id="automationTitle">Automations</h2></div><button class="modal-close" data-close-modal="automationModal" aria-label="Close">×</button></div>
+      <p class="modal-description">Create reusable workflow instructions. Running one sends it to your configured automation webhook only after you approve it. Without a webhook, you can still use these as reusable AI workflows.</p>
+      <form id="automationForm" class="stack-form">
+        <label for="workflowName">Workflow name</label><input id="workflowName" maxlength="120" placeholder="e.g. Summarize my weekly tasks" required>
+        <label for="workflowDetails">What should it do?</label><textarea id="workflowDetails" rows="3" maxlength="4000" placeholder="Describe the steps or information to send to your connected automation." required></textarea>
+        <div class="modal-actions"><button class="primary-button" type="submit">Save workflow</button><button class="subtle-button" type="button" id="automationRunDraft">Use in SeenAi chat</button></div>
+      </form>
+      <div class="saved-memory-list" id="workflowList"></div>
+      <p class="fine-print">External actions require a trusted AUTOMATION_WEBHOOK_URL configured by the site owner. Never connect a webhook you don't trust.</p>
+    </section>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>

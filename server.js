@@ -389,6 +389,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       }
       if (response && response.ok && responseData && !reply) {
         reply = Array.isArray(responseData.content) ? responseData.content.filter(block => block.type === "text").map(block => block.text).join("\n") : "";
+        if (!reply.trim() && responseData.stop_reason === "tool_use") reply = "I reached the tool-use limit before I could finish. Please ask me to continue or narrow the task so I can complete it reliably.";
       }    } else {
       response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",

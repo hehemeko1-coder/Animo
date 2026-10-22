@@ -317,6 +317,6 @@
     features = data.features || {};
     if (!data.configured) showToast("Setup needed: add GROQ_API_KEY to Render Environment.");
     if (features.webSearch) webStatus.textContent = "Ready";
-    else { webSearchToggle.title = "Set TAVILY_API_KEY in Render to enable live search."; webStatus.textContent = "Setup"; }
+    else { webSearchToggle.title = "Set FIRECRAWL_API_KEY in Render to enable live search."; webStatus.textContent = "Setup"; }
   }).catch(() => {});
 })();

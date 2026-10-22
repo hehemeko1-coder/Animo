@@ -83,7 +83,18 @@ Add provider keys in Render → Environment. Never commit keys to the repository
 ### Model providers and reasoning
 The selected provider is configured server-side. By default, `AI_PROVIDER=auto` chooses OpenAI if `OPENAI_API_KEY` exists, otherwise Anthropic if `ANTHROPIC_API_KEY` exists, otherwise Groq. To force a provider, set `AI_PROVIDER` explicitly. The app reports its selected provider and model through `/api/health`.
 
-The system prompt emphasizes careful reasoning, software-engineering discipline, grounded research, explicit uncertainty, context tracking, security, and testable recommendations. A prompt can improve behavior but cannot reproduce another model's training or guarantee equal benchmark performance.
+The system prompt emphasizes careful reasoning, software-engineering discipline, grounded research, explicit uncertainty, context tracking, security, and testable recommendations. When Anthropic is selected, SeenAi can call a bounded live web-search tool (requires FIRECRAWL_API_KEY) and a restricted arithmetic calculator. Tool execution is server-side, search calls are capped per response, and retrieved content is treated as untrusted data. A prompt and tool loop can improve behavior but cannot reproduce another model's training or guarantee equal benchmark performance.
+
+### Automated quality evaluation
+The repository includes a lightweight model-based regression suite. Run it locally with an Anthropic API key:
+
+```bash
+# PowerShell
+$env:ANTHROPIC_API_KEY="your-anthropic-key"
+npm run eval
+```
+
+It checks arithmetic, coding edge cases, honest uncertainty, prompt-injection resistance, structured answers, and debugging guidance. It makes paid API requests and uses simple expected-signal checks; it is a regression smoke test, not a comprehensive benchmark. Run it manually, not as part of every Render deployment.
 
 ### Live web search
 Users can turn on Web search in the chat composer. The backend uses Firecrawl and passes up to five source snippets to the selected model for a grounded answer. Search requires `FIRECRAWL_API_KEY`; the key remains on the server. Search requests are rate-limited.

@@ -6,7 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
-const { safeCalculate, normalizeFirecrawlResults } = require("./lib/agent-tools");
+const { safeCalculate, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -373,10 +373,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
-      const forceCalculator = !images.length &&
-        /\b(calculate|compute|solve|multiply|arithmetic)\b/i.test(latestUserText) &&
-        /\d/.test(latestUserText) &&
-        (/[+*×÷-]|\//.test(latestUserText) || /\b(times|multiplied by|plus|minus|divided by)\b/i.test(latestUserText));
+      const forceCalculator = !images.length && shouldForceCalculator(latestUserText);
       const requestTools = forceCalculator
         ? groqTools.filter(tool => tool.function.name === "calculate")
         : groqTools;

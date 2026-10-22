@@ -71,9 +71,9 @@
     const closeList = () => { list = null; };
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       const line = lines[lineIndex];
-      if (line.includes("|") && lineIndex + 1 < lines.length && /^\\s*\\|?\\s*:?-{3,}:?\\s*(\\|\\s*:?-{3,}:?\\s*)+\\|?\\s*$/.test(lines[lineIndex + 1])) {
+      if (line.includes("|") && lineIndex + 1 < lines.length && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[lineIndex + 1])) {
         flushParagraph(); closeList();
-        const cells = (row) => row.trim().replace(/^\\|/, "").replace(/\\|$/, "").split("|").map(cell => cell.trim());
+        const cells = (row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
         const table = document.createElement("table"); table.className = "response-table";
         const thead = document.createElement("thead"), headRow = document.createElement("tr");
         cells(line).forEach(value => { const th = document.createElement("th"); renderInline(th, value); headRow.append(th); });

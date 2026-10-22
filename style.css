@@ -1,4 +1,4 @@
-:root{color-scheme:dark;--bg:#090a0f;--sidebar:#0d0e14;--panel:#12131b;--panel-hover:#191a25;--text:#f4f3fa;--muted:#9697a8;--line:rgba(255,255,255,.085);--violet:#b2a0ff;--cyan:#7be4da;--font-display:'Space Grotesk',sans-serif;--font-body:'DM Sans',sans-serif}
+:root{color-scheme:dark;--bg:#090a0f;--sidebar:#0d0e14;--panel:#12131b;--panel-hover:#191a25;--text:#f4f3fa;--muted:#9697a8;--line:rgba(255,255,255,.085);--violet:#bd19ff;--pink:#ff2dbd;--purple:#792cff;--silver:#bfc3ce;--cyan:#7be4da;--font-display:'Space Grotesk',sans-serif;--font-body:'DM Sans',sans-serif}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--text);font:14px/1.6 var(--font-body);overflow:hidden}
@@ -8,10 +8,8 @@ button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid va
 .app-shell{height:100dvh;display:flex;min-height:0;background:radial-gradient(ellipse at 68% 0,rgba(76,62,142,.09),transparent 36%),var(--bg)}
 .sidebar{width:254px;flex:0 0 254px;background:rgba(13,14,20,.96);border-right:1px solid var(--line);padding:24px 16px 18px;display:flex;flex-direction:column;position:relative;z-index:5}
 .brand{display:inline-flex;align-items:center;gap:10px;font:700 23px var(--font-display);letter-spacing:-1px;width:max-content;padding-left:5px;color:var(--text);text-decoration:none}
-.brand-ai,.mobile-brand span{color:var(--violet)}
-.brand-mark{height:27px;width:27px;display:flex;align-items:center;justify-content:center;gap:3px;border:1px solid #7771c7;border-radius:9px;transform:rotate(-7deg);background:linear-gradient(145deg,rgba(167,139,250,.25),rgba(114,226,220,.07))}
-.brand-mark span{display:block;width:3px;border-radius:4px;background:linear-gradient(#a78bfa,#72e2dc)}
-.brand-mark span:nth-child(1){height:9px}.brand-mark span:nth-child(2){height:16px}.brand-mark span:nth-child(3){height:12px}
+.brand-ai,.mobile-brand>span:last-child{color:var(--pink)}.mobile-brand{align-items:center;gap:7px}.mobile-mark{display:inline-flex;align-items:baseline;letter-spacing:-4px}.mobile-mark b{font:700 26px/.9 var(--font-display);background:linear-gradient(135deg,var(--pink),#df00ff 48%,var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}.mobile-mark i{font:600 13px/.9 var(--font-display);font-style:normal;color:var(--silver);letter-spacing:-1px}
+.brand-mark{height:32px;width:42px;display:flex;align-items:center;justify-content:center;gap:0;background:transparent;flex-shrink:0;letter-spacing:-5px;line-height:1}.logo-s{font:700 34px/.9 var(--font-display);background:linear-gradient(135deg,var(--pink),#df00ff 48%,var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 7px #d000ff55)}.logo-n{font:600 17px/.9 var(--font-display);color:var(--silver);letter-spacing:-1px;align-self:flex-end;margin:0 0 2px 1px}
 .new-chat-button{margin-top:38px;width:100%;height:43px;border:1px solid rgba(177,160,255,.26);border-radius:9px;background:linear-gradient(110deg,rgba(167,139,250,.14),rgba(114,226,220,.045));display:flex;align-items:center;gap:9px;padding:0 11px;text-align:left;font-size:11px;font-weight:600;cursor:pointer;transition:background .2s,border .2s}
 .new-chat-button:hover{background:rgba(167,139,250,.18);border-color:rgba(177,160,255,.42)}
 .plus-icon{font-size:19px;color:#c1b3ff;font-weight:400}
@@ -38,9 +36,7 @@ kbd{margin-left:auto;font:9px var(--font-body);color:#77798c;border:1px solid #3
 .mobile-menu,.mobile-brand{display:none}
 .conversation{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#30313e transparent;display:flex;flex-direction:column}
 .welcome{width:min(680px,calc(100% - 48px));margin:auto;padding:36px 0 34px;text-align:center;animation:fade-up .45s ease both}
-.welcome-orb{width:65px;height:65px;position:relative;display:grid;place-items:center;border-radius:22px;margin:0 auto 25px;background:radial-gradient(circle at 30% 20%,#b9acff,#7268ba 42%,#27283b 77%);box-shadow:inset -9px -9px 18px #090a10aa,inset 5px 4px 12px #fff5,0 0 45px #8978f222;color:#eeeaff;font-size:30px;overflow:hidden}
-.orb-highlight{position:absolute;width:90px;height:18px;left:-13px;top:22px;transform:rotate(-35deg);background:linear-gradient(90deg,transparent,#b2fff333,transparent);filter:blur(4px)}
-.welcome-orb span{position:relative;text-shadow:0 0 18px #fff7}
+.welcome-orb{width:76px;height:76px;position:relative;display:flex;align-items:center;justify-content:center;border-radius:22px;margin:0 auto 25px;background:linear-gradient(145deg,#15101d,#08090e);border:1px solid #292033;box-shadow:0 0 38px #a000ff20;overflow:hidden}.brand-emblem{gap:0;letter-spacing:-8px}.emblem-s{font:700 65px/.9 var(--font-display);background:linear-gradient(130deg,var(--pink),#df00ff 48%,var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 8px #d000ff66)}.emblem-n{font:600 32px/.9 var(--font-display);color:var(--silver);letter-spacing:-2px;align-self:flex-end;margin-bottom:17px;margin-left:1px}.orb-highlight{display:none}
 .welcome-eyebrow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:9px;letter-spacing:1.8px;font-weight:700;color:#a5a0d0}
 .welcome h1{font:600 clamp(34px,4vw,48px)/1.16 var(--font-display);letter-spacing:-2px;margin:18px 0 12px}
 .welcome h1 span{color:#a4a0b5}

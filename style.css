@@ -241,3 +241,58 @@ button:active{transform:translateY(1px)}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
 }
+
+/* Final design consistency pass */
+:root{
+  --panel-border:rgba(255,255,255,.11);
+  --muted:#a6a7b8;
+}
+::selection{background:rgba(178,160,255,.3);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.sidebar-item{min-height:40px}
+.feature-nav{border:1px solid transparent}
+.feature-nav:hover{border-color:rgba(255,255,255,.055)}
+.topbar{gap:14px}
+.topbar-title{min-width:0}
+.model-pill{white-space:nowrap}
+.welcome{flex-shrink:0}
+.suggestion-card>span:nth-child(2){min-width:0}
+.suggestion-card strong,.suggestion-card small{overflow-wrap:anywhere}
+.composer-wrap{min-width:0}
+.composer-tools{min-width:0}
+.tool-left{min-width:0}
+.message-content pre{max-width:100%;overscroll-behavior-x:contain}
+.message-content .response-table{max-width:100%}
+.modal-card{overscroll-behavior:contain}
+@media(min-width:621px) and (max-width:900px){
+  .sidebar{width:220px;flex-basis:220px;padding-inline:13px}
+  .topbar{padding-inline:22px}
+  .welcome{width:min(640px,calc(100% - 36px))}
+  .welcome h1{font-size:clamp(34px,4.5vw,43px)}
+  .message-list,.composer-wrap{width:min(760px,calc(100% - 36px))}
+}
+@media(max-width:620px){
+  .topbar{padding-inline:12px}
+  .topbar-title{flex:1;min-width:0}
+  .model-pill{max-width:145px;overflow:hidden;text-overflow:ellipsis}
+  .welcome{max-width:520px}
+  .suggestion-card{min-width:0}
+  .composer-tools{flex-wrap:wrap}
+  .tool-left{flex:1 1 100%}
+  .tool-note{max-width:none;text-align:left}
+  .message-content{overflow-wrap:anywhere}
+  .modal-backdrop{padding:10px}
+  .modal-card{max-height:calc(100dvh - 20px)}
+}
+@media(max-width:370px){
+  .model-pill{max-width:105px}
+  .welcome h1{font-size:30px}
+  .welcome-eyebrow{font-size:8px;letter-spacing:1px}
+  .suggestion-card{padding:10px}
+  .composer-hint{max-width:150px}
+}
+@media(hover:none){
+  .suggestion-card:hover{transform:none}
+  .send-button:hover{transform:none;box-shadow:none}
+}
+

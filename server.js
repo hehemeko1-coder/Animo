@@ -488,6 +488,7 @@ app.get("/", (_req, res) => { res.setHeader("Cache-Control", "no-cache"); res.se
 app.get("/style.css", (_req, res) => { res.type("text/css").sendFile(path.join(__dirname, "style.css")); });
 app.get("/script.js", (_req, res) => { res.type("application/javascript").sendFile(path.join(__dirname, "script.js")); });
 app.get("/favicon.svg", (_req, res) => { res.type("image/svg+xml").setHeader("Cache-Control", "public, max-age=3600"); res.sendFile(path.join(__dirname, "favicon.svg")); });
+app.get("/seenai-logo.png", (_req, res) => { res.type("image/png").setHeader("Cache-Control", "public, max-age=86400"); res.sendFile(path.join(__dirname, "seenai-logo.png")); });
 app.use((_req, res) => res.status(404).json({ error: "Not found." }));
 
 app.listen(PORT, "0.0.0.0", () => {

@@ -387,7 +387,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
             model: images.length ? GROQ_VISION_MODEL : GROQ_MODEL,
             messages: groqMessages,
             ...(requestTools.length ? { tools: requestTools, tool_choice: forceCalculator ? { type: "function", function: { name: "calculate" } } : "auto", parallel_tool_calls: false } : {}),
-            temperature: 0.35,
+            ...(!((images.length ? GROQ_VISION_MODEL : GROQ_MODEL).startsWith("openai/gpt-oss-")) ? { temperature: 0.35 } : {}),
             max_completion_tokens: 4000,
             ...(!images.length && GROQ_MODEL.startsWith("openai/gpt-oss-") ? { reasoning_effort: process.env.GROQ_REASONING_EFFORT || "high" } : {})
           }),

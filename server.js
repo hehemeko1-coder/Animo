@@ -17,7 +17,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-6-astra";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5-5";
-const AI_PROVIDER_SETTING = (process.env.AI_PROVIDER || "auto").toLowerCase();
+const AI_PROVIDER_SETTING = (process.env.AI_PROVIDER || "groq").toLowerCase();
 const AI_PROVIDER = AI_PROVIDER_SETTING === "auto" ? (OPENAI_API_KEY ? "openai" : ANTHROPIC_API_KEY ? "anthropic" : "groq") : AI_PROVIDER_SETTING;
 const AI_MODEL = AI_PROVIDER === "openai" ? OPENAI_MODEL : AI_PROVIDER === "anthropic" ? ANTHROPIC_MODEL : GROQ_MODEL;
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;

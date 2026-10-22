@@ -6,7 +6,7 @@ SeenAi is a responsive AI chat application powered by Groq. The browser communic
 
 - Node.js 20.16 or newer
 - A Groq API key: https://console.groq.com/keys
-- Optional: a Tavily API key for live web search: https://app.tavily.com/home
+- Optional: a Serper API key for live web search: https://serper.dev/
 - Optional: a trusted automation webhook URL for approved external workflows
 
 ## Run locally
@@ -22,14 +22,14 @@ SeenAi is a responsive AI chat application powered by Groq. The browser communic
    macOS/Linux:
    ```bash
    export GROQ_API_KEY="your-key-here"
-   export SERPAPI_API_KEY="your-serpapi-key-here" # optional
+   export SERPER_API_KEY="your-serper-key-here" # optional
    npm start
    ```
 
    PowerShell:
    ```powershell
    $env:GROQ_API_KEY="your-key-here"
-   $env:SERPAPI_API_KEY="your-serpapi-key-here" # optional
+   $env:SERPER_API_KEY="your-serper-key-here" # optional
    npm start
    ```
 
@@ -47,7 +47,7 @@ Keep `GROQ_API_KEY` configured as it is. After the new commit deploys, open Rend
 
 | Variable | Required? | Purpose |
 |---|---|---|
-| `SERPAPI_API_KEY` | Optional, for live search | SerpApi key. Create one at https://serpapi.com/manage-api-key. The free plan currently lists 250 searches per month; check the provider dashboard for current limits. |
+| `SERPER_API_KEY` | Optional, for live search | Serper key. Create one at https://serper.dev. The provider currently advertises 2,500 free queries without a credit card; check your dashboard for current limits. |
 | `GROQ_VISION_MODEL` | Optional | Defaults to `qwen/qwen3.8-27b`; must be enabled for your Groq account |
 | `AUTOMATION_WEBHOOK_URL` | Optional, for external automation | HTTPS URL of a trusted automation service you control, such as a workflow webhook |
 | `AUTOMATION_WEBHOOK_TOKEN` | Optional | Bearer token sent to that trusted webhook |
@@ -58,7 +58,7 @@ Save environment changes and allow Render to redeploy. Render supplies `PORT`; t
 ## Features
 
 ### Live web search
-The user can turn on Web search in the chat composer. The backend uses SerpApi Google Search results and passes up to five result snippets to Groq for a grounded answer. Search requires `SERPAPI_API_KEY`; the key remains on the server. Search requests are rate-limited.
+The user can turn on Web search in the chat composer. The backend uses Serper Google Search results and passes up to five result snippets to Groq for a grounded answer. Search requires `SERPER_API_KEY`; the key remains on the server. Search requests are rate-limited.
 
 ### Long-term memory
 Saved memories are stored in the browser's `localStorage` and added to future prompts from that same browser. This works across conversations on the same browser profile, but it is not synced between devices, is not tied to a user account, and can be lost if browser storage is cleared. Users can inspect and delete saved memories in the Saved memory panel. Do not store secrets or highly sensitive information.
@@ -74,7 +74,7 @@ Users can save reusable workflow instructions in their browser. Without a webhoo
 
 ## Security and limits
 
-- Groq and SerpApi API keys are read from server environment variables only.
+- Groq and Serper API keys are read from server environment variables only.
 - Helmet security headers and a Content Security Policy are enabled.
 - Request bodies, upload size, file types, image count, message length, and request frequency are limited.
 - Uploaded files are extracted in memory; this app does not persist uploads or chat history on its server.

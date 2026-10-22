@@ -27,23 +27,82 @@
     clearTimeout(toastTimeout); toastTimeout = setTimeout(() => toast.classList.remove("show"), 3600);
   }
   function scrollToBottom() { requestAnimationFrame(() => { conversation.scrollTop = conversation.scrollHeight; }); }
-  function safeLinkify(container, content) {
-    const pattern = /(https?:\/\/[^\s<>"']+)/g;
+  function renderInline(container, source) {
+    const pattern = /(\*\*[^*]+?\*\*|__[^_]+?__|\x60[^\x60]+?\x60|\*[^*\n]+?\*|_[^_\n]+?_|\[[^\]]+?\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>"']+)/g;
     let last = 0, match;
-    while ((match = pattern.exec(content)) !== null) {
-      container.append(document.createTextNode(content.slice(last, match.index)));
-      const raw = match[0], trailing = raw.match(/[),.!?;:]+$/)?.[0] || "", url = trailing ? raw.slice(0, -trailing.length) : raw;
-      try {
-        const parsed = new URL(url);
-        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-          const anchor = document.createElement("a"); anchor.href = parsed.href; anchor.target = "_blank"; anchor.rel = "noopener noreferrer"; anchor.textContent = url;
-          container.append(anchor);
-        } else container.append(document.createTextNode(url));
-      } catch { container.append(document.createTextNode(url)); }
-      if (trailing) container.append(document.createTextNode(trailing));
-      last = match.index + raw.length;
+    while ((match = pattern.exec(source)) !== null) {
+      container.append(document.createTextNode(source.slice(last, match.index)));
+      const token = match[0];
+      if ((token.startsWith("**") && token.endsWith("**")) || (token.startsWith("__") && token.endsWith("__"))) {
+        const strong = document.createElement("strong"); strong.textContent = token.slice(2, -2); container.append(strong);
+      } else if ((token.startsWith("*") && token.endsWith("*")) || (token.startsWith("_") && token.endsWith("_"))) {
+        const em = document.createElement("em"); em.textContent = token.slice(1, -1); container.append(em);
+      } else if (token.charCodeAt(0) === 96 && token.charCodeAt(token.length - 1) === 96) {
+        const code = document.createElement("code"); code.textContent = token.slice(1, -1); container.append(code);
+      } else if (token.startsWith("[")) {
+        const link = token.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+        if (link) { const a = document.createElement("a"); a.href = link[2]; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = link[1]; container.append(a); }
+        else container.append(document.createTextNode(token));
+      } else {
+        const trailing = token.match(/[),.!?;:]+$/)?.[0] || "";
+        const url = trailing ? token.slice(0, -trailing.length) : token;
+        try {
+          const parsed = new URL(url);
+          if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            const a = document.createElement("a"); a.href = parsed.href; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = url; container.append(a);
+          } else container.append(document.createTextNode(token));
+        } catch { container.append(document.createTextNode(token)); }
+        if (trailing) container.append(document.createTextNode(trailing));
+      }
+      last = match.index + token.length;
     }
-    container.append(document.createTextNode(content.slice(last)));
+    container.append(document.createTextNode(source.slice(last)));
+  }
+  function renderMarkdown(container, content) {
+    container.replaceChildren();
+    const lines = String(content || "").replace(/\r\n?/g, "\n").split("\n");
+    let paragraph = [], list = null, codeLines = null;
+    const flushParagraph = () => {
+      if (!paragraph.length) return;
+      const p = document.createElement("p");
+      paragraph.forEach((line, index) => { if (index) p.append(document.createElement("br")); renderInline(p, line); });
+      container.append(p); paragraph = [];
+    };
+    const closeList = () => { list = null; };
+    for (const line of lines) {
+      if (line.trim().startsWith("```")) {
+        flushParagraph(); closeList();
+        if (codeLines) {
+          const pre = document.createElement("pre"), code = document.createElement("code");
+          code.textContent = codeLines.join("\n"); pre.append(code); container.append(pre); codeLines = null;
+        } else codeLines = [];
+        continue;
+      }
+      if (codeLines) { codeLines.push(line); continue; }
+      const heading = line.match(/^(#{1,3})\s+(.+)$/);
+      const bullet = line.match(/^\s*[-*+]\s+(.+)$/);
+      const numbered = line.match(/^\s*\d+[.)]\s+(.+)$/);
+      if (heading) {
+        flushParagraph(); closeList();
+        const h = document.createElement("h" + Math.min(heading[1].length + 1, 4));
+        renderInline(h, heading[2]); container.append(h); continue;
+      }
+      if (bullet || numbered) {
+        flushParagraph(); const type = bullet ? "ul" : "ol";
+        if (!list || list.tagName.toLowerCase() !== type) { closeList(); list = document.createElement(type); container.append(list); }
+        const li = document.createElement("li"); renderInline(li, (bullet || numbered)[1]); list.append(li); continue;
+      }
+      if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(line)) {
+        flushParagraph(); closeList(); container.append(document.createElement("hr")); continue;
+      }
+      if (!line.trim()) { flushParagraph(); closeList(); continue; }
+      closeList(); paragraph.push(line);
+    }
+    if (codeLines) {
+      const pre = document.createElement("pre"), code = document.createElement("code");
+      code.textContent = codeLines.join("\n"); pre.append(code); container.append(pre);
+    }
+    flushParagraph();
   }
   function makeMessage(role, content, options = {}) {
     const article = document.createElement("article"); article.className = "message " + role;
@@ -54,7 +113,7 @@
     const time = document.createElement("time"); time.textContent = now(); meta.append(name, time);
     const text = document.createElement("div"); text.className = "message-content";
     if (options.typing) text.innerHTML = '<div class="typing-indicator" aria-label="SeenAi is thinking"><span></span><span></span><span></span></div>';
-    else safeLinkify(text, content);
+    else renderMarkdown(text, content);
     body.append(meta, text);
     if (options.sources?.length) {
       const sourceBox = document.createElement("div"); sourceBox.className = "message-sources";

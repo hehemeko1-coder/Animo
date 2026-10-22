@@ -12,6 +12,13 @@ const PORT = Number(process.env.PORT) || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-6-astra";
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5-5";
+const AI_PROVIDER_SETTING = (process.env.AI_PROVIDER || "auto").toLowerCase();
+const AI_PROVIDER = AI_PROVIDER_SETTING === "auto" ? (OPENAI_API_KEY ? "openai" : ANTHROPIC_API_KEY ? "anthropic" : "groq") : AI_PROVIDER_SETTING;
+const AI_MODEL = AI_PROVIDER === "openai" ? OPENAI_MODEL : AI_PROVIDER === "anthropic" ? ANTHROPIC_MODEL : GROQ_MODEL;
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
 const AUTOMATION_WEBHOOK_URL = process.env.AUTOMATION_WEBHOOK_URL;
 const AUTOMATION_WEBHOOK_TOKEN = process.env.AUTOMATION_WEBHOOK_TOKEN;
@@ -57,7 +64,8 @@ const upload = multer({
 
 app.get("/api/health", (_req, res) => {
   res.json({
-    ok: true, provider: "Groq", model: GROQ_MODEL, configured: Boolean(GROQ_API_KEY),
+    ok: true, provider: AI_PROVIDER, model: AI_MODEL,
+    configured: AI_PROVIDER === "openai" ? Boolean(OPENAI_API_KEY) : AI_PROVIDER === "anthropic" ? Boolean(ANTHROPIC_API_KEY) : Boolean(GROQ_API_KEY),
     features: {
       webSearch: Boolean(FIRECRAWL_API_KEY),
       memory: "browser-local",
@@ -160,7 +168,9 @@ app.post("/api/automation", automationLimiter, async (req, res) => {
 });
 
 app.post("/api/chat", chatLimiter, async (req, res) => {
-  if (!GROQ_API_KEY) return res.status(503).json({ error: "SeenAi's AI service isn't configured yet. Add GROQ_API_KEY to Render Environment." });
+  if (!["openai", "anthropic", "groq"].includes(AI_PROVIDER)) return res.status(503).json({ error: "AI_PROVIDER must be auto, openai, anthropic, or groq." });
+  const providerConfigured = AI_PROVIDER === "openai" ? Boolean(OPENAI_API_KEY) : AI_PROVIDER === "anthropic" ? Boolean(ANTHROPIC_API_KEY) : Boolean(GROQ_API_KEY);
+  if (!providerConfigured) return res.status(503).json({ error: "The selected AI provider is not configured. Add its API key in Render Environment." });
   const incoming = req.body && req.body.messages;
   if (!Array.isArray(incoming) || incoming.length === 0 || incoming.length > 12) {
     return res.status(400).json({ error: "Send between 1 and 12 recent chat messages." });

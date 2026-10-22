@@ -376,7 +376,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       let forceCalculator = !images.length && shouldForceCalculator(latestUserText);
       if (forceCalculator) {
         const expression = latestUserText.trim()
-          .replace(/^(?:(?:calculate|compute|solve|evaluate|what is|what's|how much is)\\s+)/i, "")
+          .replace(/^(?:(?:calculate|compute|solve|evaluate|what is|what\'s|how much is)\s+)/i, "")
           .replace(/[?=]$/, "")
           .trim();
         const calculation = safeCalculate(expression);

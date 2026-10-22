@@ -131,10 +131,13 @@ app.post("/api/automation", automationLimiter, async (req, res) => {
   const workflow = typeof req.body?.workflow === "string" ? req.body.workflow.trim() : "";
   const details = typeof req.body?.details === "string" ? req.body.details.trim() : "";
   if (!workflow || workflow.length > 120 || details.length > 4000) return res.status(400).json({ error: "Provide a workflow name and details under 4,000 characters." });
+  let webhookUrl;
+  try { webhookUrl = new URL(AUTOMATION_WEBHOOK_URL); } catch { return res.status(503).json({ error: "The configured automation URL is invalid." }); }
+  if (webhookUrl.protocol !== "https:") return res.status(503).json({ error: "Automation webhooks must use HTTPS." });
   try {
     const headers = { "Content-Type": "application/json" };
     if (AUTOMATION_WEBHOOK_TOKEN) headers.Authorization = `Bearer ${AUTOMATION_WEBHOOK_TOKEN}`;
-    const response = await fetch(AUTOMATION_WEBHOOK_URL, {
+    const response = await fetch(webhookUrl, {
       method: "POST", headers,
       body: JSON.stringify({ source: "SeenAi", workflow, details, approved: true, timestamp: new Date().toISOString() }),
       signal: AbortSignal.timeout(15000)

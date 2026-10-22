@@ -6,6 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
+const { safeCalculate, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;

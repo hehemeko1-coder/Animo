@@ -84,11 +84,16 @@ app.post("/api/search", searchLimiter, async (req, res) => {
       return res.status(502).json({ error: "Web search couldn't complete. Check the Firecrawl API key and usage limit." });
     }
     const data = await response.json();
-    const results = Array.isArray(data.data) ? data.data : [];
+    // Firecrawl Search groups results by source type (for example data.web / data.news).
+    const payload = data && data.data;
+    const results = Array.isArray(payload)
+      ? payload
+      : [...(Array.isArray(payload?.web) ? payload.web : []), ...(Array.isArray(payload?.news) ? payload.news : [])];
     const sources = results.slice(0, 5).map(item => ({
-      title: String(item.title || "Source").slice(0, 200),
-      url: typeof item.url === "string" && /^https?:\/\//i.test(item.url) ? item.url : "",
-      content: String(item.description || item.markdown || item.content || "").slice(0, 1800)
+      title: String(item.title || item.metadata?.title || "Source").slice(0, 200),
+      url: typeof item.url === "string" && /^https?:\/\//i.test(item.url) ? item.url
+        : (typeof item.metadata?.sourceURL === "string" && /^https?:\/\//i.test(item.metadata.sourceURL) ? item.metadata.sourceURL : ""),
+      content: String(item.description || item.markdown || item.content || item.metadata?.description || "").slice(0, 1800)
     })).filter(item => item.url);
     if (!sources.length) return res.status(502).json({ error: "No useful sources were returned. Try a more specific query." });
     return res.json({ sources });

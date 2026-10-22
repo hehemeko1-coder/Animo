@@ -284,13 +284,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           });
           if (!searchResponse.ok) return { error: "Web search provider returned status " + searchResponse.status + "." };
           const searchData = await searchResponse.json();
-          const payload = searchData && searchData.data;
-          const items = Array.isArray(payload) ? payload : [...(Array.isArray(payload?.web) ? payload.web : []), ...(Array.isArray(payload?.news) ? payload.news : [])];
-          const sources = items.slice(0, 5).map(item => ({
-            title: String(item.title || item.metadata?.title || "Source").slice(0, 200),
-            url: typeof item.url === "string" && /^https?:\/\//i.test(item.url) ? item.url : (typeof item.metadata?.sourceURL === "string" && /^https?:\/\//i.test(item.metadata.sourceURL) ? item.metadata.sourceURL : ""),
-            snippet: String(item.description || item.markdown || item.content || item.metadata?.description || "").slice(0, 1400)
-          })).filter(item => item.url);
+          const sources = normalizeFirecrawlResults(searchData);
           return sources.length ? { query, sources } : { query, sources: [], note: "No usable web results were returned." };
         }
         return { error: "Tool not available." };

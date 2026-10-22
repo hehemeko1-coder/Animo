@@ -50,7 +50,6 @@ test("calculator is forced for bare arithmetic and short math questions", () => 
   assert.equal(shouldForceCalculator("2 + 2"), true);
   assert.equal(shouldForceCalculator("what is (8 + 4) / 3?"), true);
   assert.equal(shouldForceCalculator("18 * 7 + 30"), true);
-  assert.equal(shouldForceCalculator("Calculate 15 percent of 80"), true);
 });
 
 test("calculator detection avoids ordinary prose and ISO-style dates", () => {

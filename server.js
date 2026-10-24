@@ -706,7 +706,9 @@ app.get("/", (_req, res) => { res.setHeader("Cache-Control", "no-cache"); res.se
 app.get("/style.css", (_req, res) => { res.type("text/css").sendFile(path.join(__dirname, "style.css")); });
 app.get("/script.js", (_req, res) => { res.type("application/javascript").sendFile(path.join(__dirname, "script.js")); });
 app.get("/favicon.svg", (_req, res) => { res.type("image/svg+xml").setHeader("Cache-Control", "public, max-age=3600"); res.sendFile(path.join(__dirname, "favicon.svg")); });
-app.get("/seenai-logo.png", (_req, res) => { res.type("image/png").setHeader("Cache-Control", "public, max-age=86400"); res.sendFile(path.join(__dirname, "seenai-logo.png")); });
+app.get("/animo.png", (_req, res) => { res.type("image/png").setHeader("Cache-Control", "public, max-age=86400"); res.sendFile(path.join(__dirname, "animo.png")); });
+// Keep the old logo URL working for cached pages and bookmarks.
+app.get("/seenai-logo.png", (_req, res) => { res.redirect(302, "/animo.png?v=1"); });
 app.use((_req, res) => res.status(404).json({ error: "Not found." }));
 
 app.listen(PORT, "0.0.0.0", () => {

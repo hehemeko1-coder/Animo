@@ -24,6 +24,14 @@ test("powers follow standard precedence and associate right-to-left", () => {
   result("2^-3", 0.125);
 });
 
+test("unary signs, decimals, and alternate operator symbols", () => {
+  result("-(3 + 2) * 4", -20);
+  result("--5", 5);
+  result(".5 + 1.25", 1.75);
+  result("2 × 3 + 8 ÷ 4", 8);
+  result("2^(-2)", 0.25);
+});
+
 test("constants and scientific functions", () => {
   result("pi", Math.PI);
   result("e", Math.E);
@@ -43,6 +51,10 @@ test("rejects invalid or unsafe math", () => {
   assert.ok(safeCalculate("process.exit()").error);
   assert.ok(safeCalculate("2 +").error);
   assert.ok(safeCalculate("1e999").error || safeCalculate("1e999").result === undefined);
+  assert.ok(safeCalculate("2^1001").error);
+  assert.ok(safeCalculate("0^-1").error);
+  assert.ok(safeCalculate("sqrt()").error);
+  assert.ok(safeCalculate("1..2 + 3").error);
 });
 
 test("calculator intent detection", () => {

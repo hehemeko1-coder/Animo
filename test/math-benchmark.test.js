@@ -95,3 +95,18 @@ test("solver benchmark rejects unsupported or inconsistent inputs safely", () =>
   assert.ok(solveFractionExpression("1/0").error);
   assert.ok(safeCalculate("1/0").error);
 });
+
+test("inequality solver verifies boundary and direction against original expressions", () => {
+  for (const [input, expected] of [
+    ["3x + 6 > 0", "x > -2"],
+    ["-3x + 6 > 0", "x < 2"],
+    ["2x - 6 <= 0", "x ≤ 3"],
+    ["-2x + 8 <= 0", "x ≥ 4"],
+    ["5 - x < 2", "x > 3"]
+  ]) {
+    const actual = solveLinearInequality(input);
+    assert.equal(actual.error, undefined, input + ": " + actual.error);
+    assert.equal(actual.result, expected, input);
+    assert.ok(Number.isFinite(actual.boundary), input + " should expose a finite verified boundary");
+  }
+});

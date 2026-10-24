@@ -355,6 +355,25 @@ body{padding:10px}
 .primary-button:hover{background:#FF6E6C}
 .toast{background:#FF6E6C;border:2px solid #000;border-radius:10px;box-shadow:4px 4px 0 #000;color:#000}
 .attachment-chip{background:#fff;border:1.5px solid #000;border-radius:9px}
+
+/* Reference-inspired candy-bright product UI */
+.topbar{background:#FF6E6C}
+.topbar-title{font-size:13px;letter-spacing:.2px}
+.model-pill{background:#CCFF33}
+.welcome{position:relative}
+.welcome-eyebrow{display:inline-flex;background:#00AEEF;border:1.5px solid #000;padding:7px 10px;border-radius:999px;box-shadow:2px 2px 0 #000}
+.welcome h1{max-width:680px;text-wrap:balance}
+.welcome h1 span{display:inline;color:#FF6E6C;-webkit-text-stroke:.5px #000;text-shadow:2px 2px 0 #000}
+.suggestion-card:nth-child(3n){background:#CCFF33}
+.suggestion-card:nth-child(3n) strong{color:#000}
+.suggestion-card:nth-child(3n):hover{background:#fff}
+.message.user .message-content{display:inline-block;background:#FF6E6C;border:1.5px solid #000;border-radius:15px 15px 3px 15px;padding:10px 13px;box-shadow:2px 2px 0 #000}
+.message:not(.user) .message-content{display:inline-block;max-width:100%;background:#fff;border:1.5px solid #000;border-radius:3px 15px 15px 15px;padding:10px 13px;box-shadow:2px 2px 0 #000}
+.message-content pre{max-width:100%}
+.composer{background:#CCFF33}
+.composer:focus-within{background:#e1ff75}
+.send-button{background:#FF6E6C}
+.send-button:hover{background:#00AEEF}
 @media(max-width:760px){
  body{padding:5px}
  .app-shell{height:calc(100dvh - 10px);border-radius:20px}

@@ -72,8 +72,8 @@
   <div class="modal-backdrop" id="memoryModal" hidden>
     <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
       <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZATION</span><h2 id="memoryTitle">Saved memory</h2></div><button class="modal-close" data-close-modal="memoryModal" aria-label="Close">×</button></div>
-      <p class="modal-description">SeenAi can automatically save explicit, useful preferences and project facts when chat learning is enabled. With PostgreSQL configured, memories sync to the backend and can be reviewed or deleted here. Otherwise, they stay in this browser.</p>
-      <form id="memoryForm" class="stack-form"><label for="memoryInput">Remember something</label><textarea id="memoryInput" rows="3" maxlength="500" placeholder="Example: I prefer step-by-step explanations." required></textarea><button class="primary-button" type="submit">Save memory</button></form>
+      <p class="modal-description">Say “Remember that my favorite color is blue” in chat and SeenAi will save that memory automatically. Explicit remember requests work even when chat training is off. You can also add memories here, and review or delete them anytime.</p>
+      <form id="memoryForm" class="stack-form"><label for="memoryInput">Remember something</label><textarea id="memoryInput" rows="3" maxlength="500" placeholder="e.g. My favorite color is blue" required></textarea><button class="primary-button" type="submit">Save memory</button></form>
       <div class="saved-memory-list" id="savedMemoryList"></div>
       <button class="subtle-button" id="clearMemoryButton" type="button">Delete all saved memories</button>
     </section>

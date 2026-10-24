@@ -376,7 +376,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
-      if (!images.length && /=/.test(latestUserText) && /\\bx\\b/i.test(latestUserText)) {
+      if (!images.length && /=/.test(latestUserText) && /x/i.test(latestUserText)) {
         const equation = latestUserText.trim()
           .replace(/^(?:(?:please\\s+)?solve(?:\\s+for\\s+x)?\\s*:?\\s*)/i, "")
           .replace(/[?]$/, "")

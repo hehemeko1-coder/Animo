@@ -2,15 +2,16 @@
 
 :root{
   color-scheme:light;
-  --bg:#f4f0e6;
-  --sidebar:#e8e1d4;
-  --surface:#fffdf7;
-  --surface-hover:#e6e0d5;
-  --ink:#191d35;
-  --muted:#5f6170;
-  --quiet:#777789;
-  --line:#c8c2b6;
-  --acid:#3047ff;
+  --bg:#FFF000;
+  --sidebar:#FFF000;
+  --surface:#fff9a8;
+  --surface-hover:#00AEEF;
+  --ink:#000000;
+  --muted:#242424;
+  --quiet:#444444;
+  --line:#000000;
+  --acid:#00AEEF;
+  --accent-pink:#ED008C;
   --font-body:'Space Grotesk',Arial,sans-serif;
   --font-mono:'DM Mono',monospace;
 }
@@ -37,7 +38,7 @@ a{color:inherit}
   padding:0 12px;text-align:left;background:var(--acid);color:#14172cfff;
   border:1px solid var(--acid);border-radius:2px;font-size:12px;font-weight:700;cursor:pointer
 }
-.new-chat-button:hover{background:#5367ff}
+.new-chat-button:hover{background:#ED008C}
 .plus-icon{font-size:20px;line-height:1;font-weight:400}
 .new-chat-button kbd{margin-left:auto;font:10px var(--font-mono);color:#b8bdfb;border:1px solid #aeb4ed;padding:2px 4px;border-radius:0}
 .sidebar-label{margin:39px 0 12px 3px;color:var(--quiet);font:10px/1.2 var(--font-mono);letter-spacing:1.5px}
@@ -165,7 +166,7 @@ a{color:inherit}
 .composer-actions{display:flex;align-items:center;gap:12px}
 .character-count{color:var(--quiet);font:9px var(--font-mono)}
 .send-button{width:34px;height:32px;display:grid;place-items:center;border:1px solid var(--acid);border-radius:0;background:var(--acid);color:#14172cfff;cursor:pointer}
-.send-button:hover{background:#5267ff}
+.send-button:hover{background:#ED008C}
 .send-button svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:square;stroke-linejoin:miter}
 .disclaimer{margin:10px 0 0;text-align:center;color:var(--quiet);font-size:10px}
 .disclaimer span{color:#b9baad}
@@ -182,7 +183,7 @@ a{color:inherit}
 .stack-form input,.stack-form textarea{width:100%;padding:10px;border:1px solid #b8b3a8;border-radius:0;background:#fffdf7;color:var(--ink);outline:none}
 .stack-form input:focus,.stack-form textarea:focus{border-color:var(--acid)}
 .primary-button{min-height:39px;padding:9px 12px;border:1px solid var(--acid);border-radius:0;background:var(--acid);color:#14172cfff;font-weight:700;cursor:pointer}
-.primary-button:hover{background:#5267ff}
+.primary-button:hover{background:#ED008C}
 .subtle-button{padding:8px 0;border:0;border-radius:0;background:transparent;color:var(--muted);text-align:left;font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .subtle-button:hover{color:var(--acid)}
 .modal-actions{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:8px}

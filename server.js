@@ -316,8 +316,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   if (learningStore.enabled && clientId) {
     try {
       const savedMemories = await learningStore.listMemories(clientId);
-      const persistentContext = savedMemories.map(item => "- " + item.memory).join("\\n").slice(0, 4000);
-      if (persistentContext) memory = [memory, "Persistent saved memories:\\n" + persistentContext].filter(Boolean).join("\\n\\n").slice(0, 6000);
+      const persistentContext = savedMemories.map(item => "- " + item.memory).join("\n").slice(0, 4000);
+      if (persistentContext) memory = [memory, "Persistent saved memories:\n" + persistentContext].filter(Boolean).join("\n\n").slice(0, 6000);
     } catch (error) { console.error("Persistent memory retrieval failed:", error.message); }
   }
   const systemParts = [

@@ -187,13 +187,12 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
 .app-shell.sidebar-compact .brand span,
 .app-shell.sidebar-compact .new-chat-button span,
 .app-shell.sidebar-compact .new-chat-button kbd,
-.app-shell.sidebar-compact .sidebar-section-heading>span,
 .app-shell.sidebar-compact .history-item span,
 .app-shell.sidebar-compact .sidebar-item>span:not(.nav-count),
 .app-shell.sidebar-compact .provider-status>span:not(.status-dot){display:none}
 .app-shell.sidebar-compact .new-chat-button{justify-content:center;padding:0;min-height:44px}
 .app-shell.sidebar-compact .new-chat-button svg{width:20px;height:20px}
-.app-shell.sidebar-compact .sidebar-section-heading{justify-content:center;margin:25px 0 9px}
+.app-shell.sidebar-compact .sidebar-section-heading{display:none}
 .app-shell.sidebar-compact .quiet-icon-button{display:none}
 .app-shell.sidebar-compact .history-item{justify-content:center;padding:10px 0}
 .app-shell.sidebar-compact .history-item svg{width:18px;height:18px}
@@ -218,7 +217,8 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
   .app-shell.sidebar-compact .brand span,.app-shell.sidebar-compact .new-chat-button span,.app-shell.sidebar-compact .new-chat-button kbd,.app-shell.sidebar-compact .sidebar-section-heading>span,.app-shell.sidebar-compact .history-item span,.app-shell.sidebar-compact .sidebar-item>span:not(.nav-count),.app-shell.sidebar-compact .provider-status>span:not(.status-dot){display:initial}
   .app-shell.sidebar-compact .new-chat-button{justify-content:flex-start;padding:0 12px}
   .app-shell.sidebar-compact .new-chat-button kbd{display:block}
-  .app-shell.sidebar-compact .sidebar-section-heading{justify-content:space-between;margin:29px 6px 9px 10px}
+  .app-shell.sidebar-compact .sidebar-section-heading{display:flex;justify-content:space-between;margin:29px 6px 9px 10px}
+  .app-shell.sidebar-compact .sidebar-section-heading>span{display:inline}
   .app-shell.sidebar-compact .quiet-icon-button{display:grid}
   .app-shell.sidebar-compact .history-item{justify-content:flex-start;padding:8px 10px}
   .app-shell.sidebar-compact .sidebar-item{justify-content:flex-start;padding:9px 10px}

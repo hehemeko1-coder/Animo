@@ -634,7 +634,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     if (typeof reply !== "string" || !reply.trim()) return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
     let exampleId = null;
     const clientId = learningStore.validClientId(req.body?.clientId);
-    if (learningStore.enabled && clientId && messages.length >= 1 && messages[messages.length - 1].role === "user" && !images.length) {
+    if (learningStore.enabled && req.body?.learningOptIn === true && clientId && messages.length >= 1 && messages[messages.length - 1].role === "user" && !images.length) {
       try { exampleId = await learningStore.saveExample(clientId, messages[messages.length - 1].content, reply.trim()); }
       catch (learningError) { console.error("Learning example save failed:", learningError.message); }
     }

@@ -39,8 +39,6 @@
     });
     return learningConsentSync;
   }
-  // Restore consent for existing users who had already opted in before server-side
-  // consent tracking was added. Revoked examples are never re-consented by this call.
   let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [], memoryStorageFallback = false;
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   const HISTORY_KEY = "animo.conversations.v1";

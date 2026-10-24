@@ -1075,3 +1075,108 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .message-list,.composer-wrap{width:calc(100% - 28px)}
   .composer-wrap{padding:7px 0 10px}
 }
+
+
+/* Final structural pass: navigation and content, not a stack of UI cards. */
+.sidebar{
+  width:218px;
+  flex-basis:218px;
+  padding:24px 15px 16px;
+  gap:0;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  font-size:19px;
+  letter-spacing:-.65px;
+}
+.brand-logo-image{
+  width:30px!important;
+  height:30px!important;
+  object-fit:contain;
+}
+.brand-mark{width:30px!important;height:30px!important}
+.new-chat-button{
+  justify-content:flex-start;
+  margin-top:26px;
+  height:38px;
+  min-height:38px;
+  padding:0 9px;
+  background:transparent;
+  border:1px solid rgba(235,241,232,.14);
+  font-weight:500;
+}
+.new-chat-button .plus-icon{font-size:17px}
+.new-chat-button kbd{display:none}
+.sidebar-label{margin:28px 0 8px 8px}
+.sidebar-item{
+  display:flex;
+  min-height:36px;
+  gap:9px;
+  padding:8px;
+  font-size:12px;
+}
+.sidebar-item.active{
+  background:rgba(235,241,232,.07);
+  box-shadow:inset 2px 0 #78d8ce;
+}
+.sidebar-icon{width:16px;text-align:center;font-size:14px}
+.nav-count{margin-left:auto;color:#828d83;font-size:10px}
+.sidebar-bottom{margin-top:auto}
+.provider-status{gap:8px}
+.provider-link{opacity:.8}
+.topbar{border-bottom:0}
+.topbar-title{color:#e4e9e2}
+.model-pill{background:transparent;border:0;padding:4px 0}
+.welcome{
+  width:min(620px,calc(100% - 48px));
+  padding:24px 0 30px;
+}
+.welcome-eyebrow{font-weight:600}
+.welcome h1{
+  font-size:clamp(36px,4vw,48px);
+  letter-spacing:-1.8px;
+  font-weight:500;
+}
+.welcome>p{max-width:490px}
+.suggestion-grid{
+  max-width:490px;
+  margin-top:28px;
+}
+.suggestion-card{
+  min-height:43px;
+  padding:8px 0;
+  gap:10px;
+  border-bottom:1px solid rgba(235,241,232,.07);
+}
+.suggestion-card:first-child{border-top:0}
+.suggestion-card:hover{
+  padding-left:5px;
+  padding-right:5px;
+  background:transparent;
+  border-color:rgba(123,228,218,.3);
+}
+.suggestion-icon{display:none!important}
+.suggestion-card>span:nth-child(2){display:flex;align-items:baseline;gap:10px;min-width:0}
+.suggestion-card strong{font-size:12px;font-weight:500}
+.suggestion-card small{font-size:10px;margin-top:0;white-space:nowrap}
+.suggestion-arrow{margin-left:auto}
+.composer-wrap{padding-bottom:10px}
+.composer{
+  border-top:1px solid rgba(235,241,232,.14);
+  padding-top:10px;
+}
+.composer-tools{padding-top:6px}
+.tool-button{padding-inline:5px}
+.disclaimer{margin-top:8px}
+@media(max-width:620px){
+  .sidebar{width:270px;flex-basis:270px;padding:22px 17px 17px}
+  .brand-logo-image,.brand-mark{width:30px!important;height:30px!important}
+  .welcome{width:calc(100% - 34px);padding:20px 0}
+  .welcome h1{font-size:clamp(32px,8vw,40px)}
+  .suggestion-card>span:nth-child(2){display:block}
+  .suggestion-card small{display:block;margin-top:2px}
+  .message-list,.composer-wrap{width:calc(100% - 28px)}
+}

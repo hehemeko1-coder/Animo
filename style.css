@@ -1180,3 +1180,68 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .suggestion-card small{display:block;margin-top:2px}
   .message-list,.composer-wrap{width:calc(100% - 28px)}
 }
+
+
+/* SeenAi interface correction: quiet navigation, clear hierarchy, no decorative clutter. */
+.sidebar{
+  width:224px;
+  flex:0 0 224px;
+  padding:27px 16px 18px;
+  background:#101210;
+  border-right:1px solid #252a25;
+}
+.brand{
+  padding:0 4px;
+  gap:9px;
+  font-size:21px;
+  margin-bottom:0;
+}
+.new-chat-button{
+  margin-top:34px;
+  height:42px;
+  padding:0 11px;
+  background:#202720;
+  border:1px solid #303a31;
+  border-radius:6px;
+  color:#f0f3ed;
+}
+.new-chat-button:hover{background:#29342b;border-color:#465448}
+.sidebar-label{
+  margin:36px 0 12px 9px;
+  color:#7e887e;
+  font-size:10px;
+  letter-spacing:1.3px;
+}
+.sidebar-item{
+  min-height:42px;
+  padding:10px 10px;
+  margin:2px 0;
+  gap:11px;
+  border-radius:5px;
+  background:transparent;
+  color:#b8c0b8;
+  font-size:12px;
+}
+.sidebar-item.active{
+  background:#202720;
+  color:#f2f4ef;
+  box-shadow:inset 2px 0 #83d7c9;
+}
+.sidebar-item:hover{background:#1a201b}
+.sidebar-icon{color:#9aa99a;font-size:15px}
+.sidebar-item.active .sidebar-icon{color:#83d7c9}
+.live-dot{width:5px;height:5px;box-shadow:none}
+.nav-count{color:#879187;font-size:10px}
+.sidebar-bottom{margin-top:auto;padding-top:18px;border-top:1px solid #252a25}
+.provider-status{padding:0 2px 12px;border:0;gap:9px}
+.provider-status .status-dot{width:6px;height:6px;box-shadow:none}
+.provider-status strong{font-size:11px;color:#dce3db}
+.provider-status small{font-size:10px;color:#7f897f}
+.provider-link{padding:0 2px;font-size:10px;color:#879187}
+.topbar{border-bottom:1px solid #202520}
+.welcome-eyebrow{letter-spacing:1.2px}
+.suggestion-grid{max-width:510px}
+.suggestion-card{min-height:46px}
+@media(max-width:620px){
+ .sidebar{width:270px;flex-basis:270px}
+}

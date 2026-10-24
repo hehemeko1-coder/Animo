@@ -175,3 +175,13 @@ test("fraction and ratio solvers safely reject oversized values", () => {
   assert.ok(solveFractionExpression("999999999/2 * 999999999/2").error);
   assert.equal(solveRatioProblem("0:8").result, "0:1");
 });
+
+
+test("fraction addition already in simplest form does not claim to divide by one", () => {
+  const solved = solveFractionExpression("3/4 + 2/5");
+  assert.equal(solved.error, undefined, solved.error);
+  assert.equal(solved.result, "23/20");
+  assert.match(solved.steps[0], /common denominator/);
+  assert.match(solved.steps[1], /already in simplest form/);
+  assert.doesNotMatch(solved.steps.join(" "), /dividing .* by 1/);
+});

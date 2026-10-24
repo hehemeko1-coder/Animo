@@ -123,7 +123,7 @@
   }
   function makeMessage(role, content, options = {}) {
     const article = document.createElement("article"); article.className = "message " + role;
-    const avatar = document.createElement("div"); avatar.className = "message-avatar"; avatar.setAttribute("aria-hidden", "true"); avatar.textContent = role === "assistant" ? "✳" : "Y";
+    const avatar = document.createElement("div"); avatar.className = "message-avatar"; avatar.setAttribute("aria-hidden", "true");
     const body = document.createElement("div"); body.className = "message-body";
     const meta = document.createElement("div"); meta.className = "message-meta";
     const name = document.createElement("strong"); name.textContent = role === "assistant" ? "SeenAi" : "You";

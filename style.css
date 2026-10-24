@@ -460,3 +460,13 @@ button,a,input,textarea{font-weight:700}
  .message-list{width:calc(100% - 28px);}
  .message-body{max-width:94%;}
 }
+
+/* Requested polish: purple Research button, no welcome eyebrow */
+.welcome-eyebrow{display:none!important}
+.suggestion-card[data-prompt*="Find current information"]{background:#8250FF!important;color:#FFFFFF!important}
+.suggestion-card[data-prompt*="Find current information"] strong,
+.suggestion-card[data-prompt*="Find current information"] small,
+.suggestion-card[data-prompt*="Find current information"] .suggestion-arrow,
+.suggestion-card[data-prompt*="Find current information"] .suggestion-icon{color:#FFFFFF!important}
+.suggestion-card[data-prompt*="Find current information"]{border-color:#000000;box-shadow:3px 3px 0 #000000}
+.suggestion-card[data-prompt*="Find current information"]:hover{background:#6F3BE8!important;color:#FFFFFF!important}

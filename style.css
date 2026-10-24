@@ -711,3 +711,191 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .message-list,.composer-wrap{width:calc(100% - 28px)}
   .composer{border-radius:7px}
 }
+
+
+/* Human-led layout pass: remove decorative containers and let spacing do the work. */
+:root{
+  --bg:#0c0e0d;
+  --sidebar:#101311;
+  --panel:#151916;
+  --panel-hover:#1a201c;
+  --text:#f0f2ec;
+  --muted:#a2a79f;
+  --line:rgba(236,242,232,.10);
+}
+.app-shell{
+  background:#0c0e0d;
+}
+.sidebar{
+  width:238px;
+  flex-basis:238px;
+  padding:25px 18px 18px;
+  background:#101311;
+  border-right:1px solid rgba(236,242,232,.09);
+}
+.brand{
+  gap:7px;
+  padding:0;
+  font-size:21px;
+}
+.brand-logo-image,.brand-mark{width:112px;height:78px}
+.new-chat-button{
+  margin-top:24px;
+  height:42px;
+  border:1px solid rgba(123,228,218,.25);
+  border-radius:6px;
+  background:transparent;
+  padding:0 10px;
+  font-size:12px;
+}
+.new-chat-button:hover{background:rgba(123,228,218,.07)}
+.sidebar-label{
+  margin:30px 0 9px 8px;
+  font-size:10px;
+  letter-spacing:1px;
+  color:#929991;
+}
+.sidebar-item{
+  min-height:39px;
+  padding:9px 9px;
+  border-radius:5px;
+  background:transparent;
+  font-size:12px;
+}
+.sidebar-item.active{background:rgba(255,255,255,.055)}
+.feature-nav{margin-top:2px}
+.sidebar-note{display:none}
+.provider-status{padding:13px 2px;border-bottom:0}
+.provider-status strong{font-size:11px}
+.provider-status small{font-size:10px}
+.provider-link{padding:3px 2px 0;font-size:10px}
+.topbar{
+  height:60px;
+  flex-basis:60px;
+  padding:0 30px;
+  background:#0c0e0d;
+  border-bottom:1px solid rgba(236,242,232,.08);
+}
+.topbar-title{font-size:12px}
+.icon-button{border:0;border-radius:5px}
+.icon-button:hover{background:rgba(255,255,255,.07)}
+.welcome{
+  width:min(700px,calc(100% - 52px));
+  padding:28px 0 32px;
+}
+.welcome-orb.brand-emblem{
+  width:76px;height:60px;
+  margin-bottom:23px;
+  border:0;border-radius:0;
+  background:transparent;box-shadow:none;
+}
+.welcome h1{
+  margin:17px 0 13px;
+  font-size:clamp(36px,4.2vw,49px);
+  font-weight:600;
+  letter-spacing:-1.9px;
+}
+.welcome h1 span{color:#b3bdb5}
+.welcome>p{
+  max-width:510px;
+  font-size:13px;
+  line-height:1.8;
+  color:#a6ada6;
+}
+.welcome-eyebrow{font-size:10px;letter-spacing:1.25px}
+.suggestion-grid{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  max-width:510px;
+  margin:27px auto 0;
+}
+.suggestion-card{
+  min-height:52px;
+  padding:10px 3px;
+  gap:12px;
+  border:0;
+  border-bottom:1px solid rgba(236,242,232,.09);
+  border-radius:0;
+  background:transparent;
+  transform:none;
+}
+.suggestion-card:first-child{border-top:1px solid rgba(236,242,232,.09)}
+.suggestion-card:hover{
+  background:rgba(255,255,255,.025);
+  border-color:rgba(236,242,232,.15);
+  transform:none;
+}
+.suggestion-icon{
+  width:25px;height:25px;
+  border-radius:5px;
+  background:transparent!important;
+  font-size:15px;
+}
+.suggestion-icon.purple,.suggestion-icon.teal,.suggestion-icon.blue,.suggestion-icon.amber{color:#79d8ce}
+.suggestion-card strong{font-size:12px;font-weight:600;color:#e7ece5}
+.suggestion-card small{font-size:10px;color:#929b92;margin-top:2px}
+.suggestion-arrow{font-size:13px}
+.message-list{width:min(780px,calc(100% - 56px));gap:27px;padding:28px 0}
+.message{grid-template-columns:25px minmax(0,1fr);gap:14px}
+.message-avatar{
+  width:25px;height:25px;
+  border:0;border-radius:5px;
+  background:transparent;
+  color:#78d9ce;
+}
+.message.user .message-avatar{
+  border:0;background:transparent;color:#d2d9d0;
+}
+.message-meta{margin-bottom:6px}
+.message-meta strong{font-size:12px}
+.message-content{font-size:14px;line-height:1.85;color:#e9ede7}
+.message-content pre{
+  background:#101411;
+  border:1px solid rgba(236,242,232,.1);
+  border-radius:5px;
+}
+.message-content code{background:#1a201b;border-color:rgba(236,242,232,.1)}
+.message-content .response-table th,.message-content .response-table td{border-color:rgba(236,242,232,.12)}
+.message-content .response-table th{background:#171c18}
+.message-content .response-table tbody tr:nth-child(even){background:rgba(255,255,255,.025)}
+.composer-wrap{width:min(780px,calc(100% - 56px));padding:12px 0 15px}
+.composer{
+  padding:11px 12px 9px;
+  border:1px solid rgba(236,242,232,.16);
+  border-radius:7px;
+  background:#111512;
+  box-shadow:none;
+}
+.composer:focus-within{
+  border-color:rgba(123,228,218,.45);
+  box-shadow:0 0 0 2px rgba(123,228,218,.04);
+}
+.composer-tools{
+  border-bottom:1px solid rgba(236,242,232,.08);
+}
+.tool-button{
+  border-color:transparent;
+  border-radius:4px;
+  background:transparent;
+}
+.tool-button:hover{background:rgba(255,255,255,.05)}
+.tool-left{gap:4px}
+.send-button{border-radius:5px;box-shadow:none}
+.disclaimer{font-size:10px}
+@media(max-width:620px){
+  .sidebar{width:270px;padding:22px 17px 17px}
+  .brand-logo-image,.brand-mark{width:108px;height:76px}
+  .topbar{padding:0 13px}
+  .welcome{width:calc(100% - 34px);padding:22px 0}
+  .welcome-orb.brand-emblem{width:66px;height:52px;margin-bottom:17px}
+  .welcome h1{font-size:clamp(32px,8vw,40px);letter-spacing:-1.4px}
+  .welcome>p{font-size:12px}
+  .suggestion-grid{margin-top:21px}
+  .suggestion-card{min-height:49px;padding:9px 2px}
+  .suggestion-card strong{font-size:11px}
+  .suggestion-card small{font-size:9px}
+  .message-list,.composer-wrap{width:calc(100% - 28px)}
+  .message-list{gap:23px;padding:21px 0}
+  .composer-wrap{padding:7px 0 10px}
+}

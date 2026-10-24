@@ -5,12 +5,12 @@
   const clearChatButton = $("#clearChatButton"), characterCount = $("#characterCount"), conversation = $("#conversation");
   const toast = $("#toast"), sidebar = $("#sidebar"), mobileMenu = $("#mobileMenu");
   const fileInput = $("#fileInput"), attachButton = $("#attachButton"), attachmentList = $("#attachmentList");
-  const webSearchToggle = $("#webSearchToggle"), webStatus = $("#webStatus");
+  const webSearchToggle = $("#webSearchToggle"), webStatus = $("#webStatus"), learningToggle = $("#learningToggle");
   const memoryModal = $("#memoryModal"), automationModal = $("#automationModal");
   const memoryForm = $("#memoryForm"), memoryInput = $("#memoryInput"), savedMemoryList = $("#savedMemoryList");
   const memoryCount = $("#memoryCount"), workflowForm = $("#automationForm"), workflowName = $("#workflowName");
   const workflowDetails = $("#workflowDetails"), workflowList = $("#workflowList");
-  const STORAGE = { memory: "seenai.memory.v1", workflows: "seenai.workflows.v1", clientId: "seenai.client-id.v1" };
+  const STORAGE = { memory: "seenai.memory.v1", workflows: "seenai.workflows.v1", clientId: "seenai.client-id.v1", learning: "seenai.learning-enabled.v1" };
   function getClientId() {
     try {
       let id = localStorage.getItem(STORAGE.clientId);
@@ -22,6 +22,7 @@
     } catch { return "sai_" + Math.random().toString(36).slice(2) + Date.now().toString(36); }
   }
   const clientId = getClientId();
+  try { learningToggle.checked = localStorage.getItem(STORAGE.learning) === "true"; } catch {}
   let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {};
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
@@ -300,7 +301,7 @@
       } else { webSources = []; }
       const response = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: messages.slice(-11), images: attachedImages, memory: memoryContext(), webSources: sources, clientId })
+        body: JSON.stringify({ messages: messages.slice(-11), images: attachedImages, memory: memoryContext(), webSources: sources, clientId, learningOptIn: learningToggle.checked })
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "Something went wrong. Please try again.");
@@ -335,6 +336,7 @@
     } catch (error) { showToast(error.message || "Automation failed."); }
   }
 
+  learningToggle.addEventListener("change", () => { try { localStorage.setItem(STORAGE.learning, String(learningToggle.checked)); } catch {} showToast(learningToggle.checked ? "Chat learning enabled for this browser. Use Improve or Helpful to curate training examples." : "Chat learning disabled. New conversations will not be saved for training."); });
   form.addEventListener("submit", event => { event.preventDefault(); sendMessage(input.value); });
   input.addEventListener("input", () => { resizeInput(); updateCount(); });
   input.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });

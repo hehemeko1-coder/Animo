@@ -75,6 +75,10 @@ Add provider keys in Render → Environment. Never commit keys to the repository
 | `FIRECRAWL_API_KEY` | Optional | Enables live web search. Check Firecrawl's dashboard for current usage limits. |
 | `AUTOMATION_WEBHOOK_URL` | Optional | HTTPS URL for a trusted automation endpoint you control. |
 | `AUTOMATION_WEBHOOK_TOKEN` | Optional | Bearer token sent to the configured automation endpoint. |
+| `DATABASE_URL` | Optional for local-only memory; required for persistent learning | PostgreSQL connection string from Neon or Render Postgres. Keep it secret. |
+| `DATABASE_SSL` | Optional | Set to `disable` only for a trusted local database; otherwise TLS is enabled. |
+| `SEENAI_ADMIN_TOKEN` | Required to submit fine-tuning jobs | Long random secret used as a Bearer token for `/api/learning/train`. Never expose it in frontend code. |
+| `OPENAI_FINE_TUNE_BASE_MODEL` | Optional | Fine-tuning-compatible OpenAI base model; defaults to `gpt-4o-mini-2024-07-18`. Check current API eligibility and pricing first. |
 
 **Important:** OpenAI and Anthropic API usage may incur charges. API access is separate from a ChatGPT or Claude consumer subscription. Verify model access, prices, quotas, and billing in the provider dashboard before enabling a premium model. A configured model ID does not guarantee that the account has access to it.
 
@@ -130,3 +134,20 @@ Users can save reusable workflow instructions in their browser. Without a webhoo
 - Web result text and uploaded document content are treated as untrusted reference data.
 - Do not send passwords, secrets, or sensitive personal information to a hosted AI service.
 - Provider access, model availability, pricing, and rate limits can change; check the provider dashboard if a request fails.
+
+
+## Persistent learning and fine-tuning
+
+Set `DATABASE_URL` to a PostgreSQL database connection string in Render Environment. On startup, SeenAi creates its learning tables automatically. Without this variable, the existing browser-local memory still works, while persistent learning endpoints return a setup message.
+
+When the database is configured, chat examples are stored under a browser-generated client ID. The chat UI offers **Helpful** and **Improve** feedback controls. Positive ratings and explicit corrections are eligible for training; unreviewed conversations are not automatically treated as correct. The client ID separates browser profiles but is not account authentication, so add a proper sign-in system before treating stored memory as private account data.
+
+OpenAI fine-tuning is a separate, paid operation. To submit a job, configure `OPENAI_API_KEY` and a strong `SEENAI_ADMIN_TOKEN` in Render Environment, then send an authenticated POST to `/api/learning/train` with header `Authorization: Bearer YOUR_ADMIN_TOKEN`. The endpoint requires at least 10 eligible, unrated-as-bad training examples, uploads a JSONL training file, and submits an OpenAI fine-tuning job. This endpoint does not run automatically; an administrator explicitly starts each paid training job. Check model eligibility, pricing, and job status in the OpenAI dashboard. A fine-tuned model is not automatically selected for chat; deploying it requires setting `OPENAI_MODEL` to the completed fine-tuned model ID and using the OpenAI provider.
+
+Learning endpoints include:
+- `GET /api/learning/memories?clientId=...`
+- `POST /api/learning/memories` with `{ "clientId": "...", "memory": "..." }`
+- `DELETE /api/learning/memories/:id` with a JSON body containing `clientId`
+- `DELETE /api/learning/memories` with `{ "clientId": "..." }`
+- `POST /api/learning/feedback` for ratings and corrections
+- `POST /api/learning/train` for admin-only fine-tuning submission

@@ -7,6 +7,8 @@ test("extracts explicit durable preferences and project facts", () => {
   assert.equal(extractMemoryCandidate("I prefer step-by-step explanations in future chats."), "Step-by-step explanations in future chats");
   assert.equal(extractMemoryCandidate("I'm working on SeenAi, an AI assistant project."), "SeenAi, an AI assistant project");
   assert.equal(extractMemoryCandidate("Remember that I use Node.js and PostgreSQL for my app."), "I use Node.js and PostgreSQL for my app");
+  assert.equal(extractMemoryCandidate("Remember that my favorite color is blue."), "My favorite color is blue");
+  assert.equal(extractMemoryCandidate("Remember that my favorite color is blue."), "My favorite color is blue");
 });
 
 test("ignores ordinary requests, short text, and sensitive information", () => {

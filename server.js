@@ -6,7 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
-const { safeCalculate, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
+const { safeCalculate, solveLinearEquation, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -376,6 +376,18 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
+      if (!images.length && /=/.test(latestUserText) && /\\bx\\b/i.test(latestUserText)) {
+        const equation = latestUserText.trim()
+          .replace(/^(?:(?:please\\s+)?solve(?:\\s+for\\s+x)?\\s*:?\\s*)/i, "")
+          .replace(/[?]$/, "")
+          .trim();
+        const solution = solveLinearEquation(equation);
+        if (solution.error === undefined) {
+          const steps = Array.isArray(solution.steps) ? "\\n" + solution.steps.map((step, index) => (index + 1) + ". " + step).join("\\n") : "";
+          const explanation = solution.explanation ? "\\n" + solution.explanation : "";
+          return res.json({ reply: "Solution: x = " + solution.result + steps + explanation, provider: AI_PROVIDER, model: AI_MODEL });
+        }
+      }
       let forceCalculator = !images.length && shouldForceCalculator(latestUserText);
       if (forceCalculator) {
         const expression = latestUserText.trim()

@@ -2,15 +2,15 @@
 
 :root{
   color-scheme:light;
-  --bg:#FFF000;
-  --sidebar:#00AEEF;
-  --surface:#FFF000;
-  --surface-hover:#00AEEF;
+  --bg:#8250FF;
+  --sidebar:#CCFF33;
+  --surface:#CCFF33;
+  --surface-hover:#FF6E6C;
   --ink:#000000;
-  --muted:#000000;
-  --quiet:#000000;
+  --muted:#242424;
+  --quiet:#454545;
   --line:#000000;
-  --acid:#00AEEF;
+  --acid:#CCFF33;
   --accent-pink:#FF6E6C;
   --font-body:'Space Grotesk',Arial,sans-serif;
   --font-mono:'DM Mono',monospace;
@@ -23,7 +23,7 @@ button{color:inherit}
 button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
 button:disabled{opacity:.45;cursor:not-allowed}
 a{color:inherit}
-.app-shell{height:100dvh;min-height:0;display:flex;background:var(--bg)}
+.app-shell{height:100dvh;min-height:0;display:flex;background:var(--bg);padding:12px;gap:12px}
 .sidebar{
   width:252px;flex:0 0 252px;display:flex;flex-direction:column;
   padding:26px 18px 18px;background:var(--sidebar);
@@ -35,7 +35,7 @@ a{color:inherit}
 .brand-mark{width:31px!important;height:31px!important;flex-shrink:0}
 .new-chat-button{
   display:flex;align-items:center;gap:10px;width:100%;min-height:45px;margin-top:39px;
-  padding:0 12px;text-align:left;background:var(--acid);color:#000000;
+  padding:0 12px;text-align:left;background:#CCFF33;color:#000000;
   border:1px solid var(--acid);border-radius:2px;font-size:12px;font-weight:700;cursor:pointer
 }
 .new-chat-button:hover{background:#FF6E6C}
@@ -95,7 +95,7 @@ a{color:inherit}
   border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;
   text-align:left;cursor:pointer;transition:background .15s,color .15s
 }
-.suggestion-card:hover{padding-left:12px;padding-right:12px;background:var(--acid);color:#000000}
+.suggestion-card:hover{padding-left:12px;padding-right:12px;background:#FF6E6C;color:#000000}
 .suggestion-icon{display:none!important}
 .suggestion-card>span:nth-child(2){display:flex;align-items:baseline;gap:13px;min-width:0}
 .suggestion-card strong{font:600 12px var(--font-body);color:inherit}
@@ -106,7 +106,7 @@ a{color:inherit}
 .message-list{width:min(790px,calc(100% - 88px));margin:0 auto;padding:34px 0 28px;display:flex;flex-direction:column;gap:28px}
 .message-list:empty{display:none}
 .message{display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;animation:fade-up .22s ease both}
-.message-avatar{width:27px;height:27px;display:grid;place-items:center;background:var(--acid);color:#000000;border:0;border-radius:0;font-size:12px;font-weight:700}
+.message-avatar{width:27px;height:27px;display:grid;place-items:center;background:#CCFF33;color:#000000;border:0;border-radius:0;font-size:12px;font-weight:700}
 .message.user .message-avatar{background:#00AEEF;color:var(--ink)}
 .message-body{min-width:0;padding-top:1px}
 .message-meta{display:flex;align-items:center;gap:9px;margin-bottom:8px}
@@ -142,8 +142,8 @@ a{color:inherit}
 .attachment-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 .attachment-chip{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#00AEEF;border:1px solid var(--line);font-size:10px}
 .attachment-chip button{border:0;background:transparent;color:var(--muted);cursor:pointer}
-.composer{padding:13px 14px 10px;background:#CCFF33;border:1px solid #000000;border-radius:0;box-shadow:4px 4px 0 #000000}
-.composer:focus-within{border-color:var(--acid);box-shadow:4px 4px 0 var(--acid)}
+.composer{padding:13px 14px 10px;background:#CCFF33;border:2px solid #000000;border-radius:16px;box-shadow:4px 4px 0 #000000}
+.composer:focus-within{border-color:#FF6E6C;box-shadow:4px 4px 0 #FF6E6C}
 .composer textarea{display:block;width:100%;min-height:39px;max-height:180px;resize:none;padding:4px 0 12px;border:0;outline:0;background:transparent;color:var(--ink);font:14px/1.6 var(--font-body)}
 .composer textarea::placeholder{color:#000000}
 .composer-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:9px;border-top:1px solid #000000}
@@ -165,14 +165,14 @@ a{color:inherit}
 .composer-hint span{color:var(--acid)}
 .composer-actions{display:flex;align-items:center;gap:12px}
 .character-count{color:var(--quiet);font:9px var(--font-mono)}
-.send-button{width:34px;height:32px;display:grid;place-items:center;border:1px solid var(--acid);border-radius:0;background:var(--acid);color:#000000;cursor:pointer}
+.send-button{width:34px;height:32px;display:grid;place-items:center;border:1px solid var(--acid);border-radius:0;background:#CCFF33;color:#000000;cursor:pointer}
 .send-button:hover{background:#FF6E6C}
 .send-button svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:square;stroke-linejoin:miter}
 .disclaimer{margin:10px 0 0;text-align:center;color:var(--quiet);font-size:10px}
 .disclaimer span{color:#000000}
 .modal-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:rgba(25,29,53,.55)}
 .modal-backdrop[hidden]{display:none!important}
-.modal-card{width:min(520px,100%);max-height:min(85dvh,760px);overflow:auto;padding:25px;background:#FFF000;border:1px solid #000000;border-top:4px solid #FF6E6C;box-shadow:8px 8px 0 #000000}
+.modal-card{width:min(520px,100%);max-height:min(85dvh,760px);overflow:auto;padding:25px;background:#CCFF33;border:2px solid #000000;border-top:6px solid #FF6E6C;border-radius:18px;box-shadow:8px 8px 0 #000000}
 .modal-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .modal-kicker{font:10px var(--font-mono);letter-spacing:1.5px;color:var(--acid)}
 .modal-heading h2{margin:7px 0 0;font-size:27px;letter-spacing:-1px}
@@ -182,7 +182,7 @@ a{color:inherit}
 .stack-form label{margin-top:8px;color:var(--muted);font:10px var(--font-mono)}
 .stack-form input,.stack-form textarea{width:100%;padding:10px;border:1px solid #000000;border-radius:0;background:#CCFF33;color:var(--ink);outline:none}
 .stack-form input:focus,.stack-form textarea:focus{border-color:var(--acid)}
-.primary-button{min-height:39px;padding:9px 12px;border:1px solid var(--acid);border-radius:0;background:var(--acid);color:#000000;font-weight:700;cursor:pointer}
+.primary-button{min-height:39px;padding:9px 12px;border:1px solid var(--acid);border-radius:0;background:#CCFF33;color:#000000;font-weight:700;cursor:pointer}
 .primary-button:hover{background:#FF6E6C}
 .subtle-button{padding:8px 0;border:0;border-radius:0;background:transparent;color:var(--muted);text-align:left;font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .subtle-button:hover{color:var(--acid)}
@@ -196,7 +196,7 @@ a{color:inherit}
 .workflow-actions{display:flex;gap:12px;flex-shrink:0}
 .mini-button{color:var(--acid)}
 .empty-state,.fine-print{color:var(--muted);font-size:11px;line-height:1.6}
-.toast{position:fixed;right:22px;bottom:20px;z-index:40;max-width:min(420px,calc(100vw - 32px));padding:12px 15px;background:var(--acid);color:#000000;border:1px solid #000000;box-shadow:4px 4px 0 #000000;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s}
+.toast{position:fixed;right:22px;bottom:20px;z-index:40;max-width:min(420px,calc(100vw - 32px));padding:12px 15px;background:#CCFF33;color:#000000;border:1px solid #000000;box-shadow:4px 4px 0 #000000;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s}
 .toast.show{opacity:1;transform:translateY(0)}
 @keyframes fade-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes blink{from{opacity:.25}to{opacity:1}}
@@ -254,7 +254,7 @@ a{color:inherit}
   --muted:#242424;
   --quiet:#444444;
   --line:#000000;
-  --acid:#00AEEF;
+  --acid:#CCFF33;
   --accent-pink:#FF6E6C;
 }
 html,body{background:#8050FF}

@@ -221,6 +221,29 @@ app.post("/api/learning/feedback", learningLimiter, async (req, res) => {
     return updated ? res.json({ ok: true }) : res.status(404).json({ error: "Learning example not found." });
   } catch (error) { console.error("Learning feedback failed:", error.message); return res.status(500).json({ error: "Couldn't save feedback." }); }
 });
+app.post("/api/learning/consent", learningLimiter, async (req, res) => {
+  if (!requireLearningDb(res)) return;
+  const clientId = getClientId(req);
+  const enabled = req.body?.enabled;
+  if (!clientId || typeof enabled !== "boolean") {
+    return res.status(400).json({ error: "Provide a valid clientId and enabled=true or enabled=false." });
+  }
+  try {
+    const result = await learningStore.setTrainingConsent(clientId, enabled);
+    return res.json({
+      ok: true,
+      enabled: result.enabled,
+      revoked: result.revoked,
+      message: enabled
+        ? "Training consent applies to new examples. Previously withdrawn examples remain excluded."
+        : "Training consent withdrawn for saved examples. Data already submitted to a provider or included in a completed fine-tuned model cannot be removed by this setting."
+    });
+  } catch (error) {
+    console.error("Training consent update failed:", error.message);
+    return res.status(500).json({ error: "Couldn't update training consent. Please try again." });
+  }
+});
+
 app.post("/api/learning/train", learningLimiter, async (req, res) => {
   const adminToken = process.env.SEENAI_ADMIN_TOKEN;
   if (!adminToken || req.get("authorization") !== "Bearer " + adminToken) return res.status(401).json({ error: "Admin authorization required." });

@@ -38,7 +38,7 @@
     const all = readConversations();
     const firstUser = messages.find(item => item.role === "user");
     const title = String(firstUser?.content || "New conversation").replace(/\\s+/g, " ").trim().slice(0, 54) || "New conversation";
-    const entry = { id: activeConversationId, title, updatedAt: new Date().toISOString(), messages: messages.slice(-40).map(item => ({ role: item.role, content: String(item.content || "").slice(0, 26000) })) };
+    const entry = { id: activeConversationId, title, updatedAt: new Date().toISOString(), messages: messages.slice(-40).map(item => { let content = String(item.content || ""); content = content.split("\\n\\nAttached document text")[0]; return { role: item.role, content: content.slice(0, 4000) }; }) };
     const next = [entry, ...all.filter(item => item.id !== activeConversationId)].slice(0, 20);
     try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { showToast("Recent conversations could not be saved because browser storage is full."); }
     renderConversationHistory();

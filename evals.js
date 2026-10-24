@@ -2,15 +2,8 @@
 
 // Lightweight model-response regression checks. These call the configured provider,
 // so they may consume API quota. They are separate from the deterministic solver tests.
-const PROVIDER = (process.env.EVAL_PROVIDER || process.env.AI_PROVIDER || "groq").toLowerCase();
-const MODEL = process.env.EVAL_MODEL || process.env.GROQ_MODEL || process.env.OPENAI_MODEL || process.env.ANTHROPIC_MODEL ||
-  (PROVIDER === "groq" ? "openai/gpt-oss-120b" : PROVIDER === "anthropic" ? "claude-opus-5-5" : "gpt-4o-mini");
-const API_KEY = PROVIDER === "anthropic"
-  ? (process.env.EVAL_API_KEY || process.env.ANTHROPIC_API_KEY)
-  : (process.env.EVAL_API_KEY || (PROVIDER === "openai" ? process.env.OPENAI_API_KEY : process.env.GROQ_API_KEY));
-const BASE_URL = (process.env.EVAL_BASE_URL || (PROVIDER === "openai"
-  ? "https://api.openai.com/v1"
-  : "https://api.groq.com/openai/v1")).replace(/\/+$/, "");
+const { resolveEvalConfig } = require("./lib/eval-config");
+const { PROVIDER, MODEL, API_KEY, BASE_URL } = resolveEvalConfig(process.env);
 
 const cases = [
   {
@@ -31,7 +24,7 @@ const cases = [
   {
     name: "Inequality direction",
     prompt: "Solve -3x + 6 > 0. Give the solution using an inequality symbol and briefly explain why the direction is correct.",
-    checks: [/x\s*<\s*2|x\s*<\s*2/i, /divide|negative|flip|reverse/i]
+    checks: [/x\s*<\s*2/i, /divide|negative|flip|reverse/i]
   },
   {
     name: "Word problem and units",

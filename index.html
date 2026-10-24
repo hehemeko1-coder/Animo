@@ -72,7 +72,8 @@
   <div class="modal-backdrop" id="memoryModal" hidden>
     <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
       <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZATION</span><h2 id="memoryTitle">Saved memory</h2></div><button class="modal-close" data-close-modal="memoryModal" aria-label="Close">×</button></div>
-      <p class="modal-description">Say “Remember that my favorite color is blue” in chat and SeenAi will save that memory automatically. Explicit remember requests work even when chat training is off. You can also add memories here, and review or delete them anytime.</p>
+      <p class="modal-description">Tell SeenAi “Remember that my favorite color is blue” in chat to save a memory automatically, even when chat training is off. You can also add facts here, then review or delete them whenever you like. Cloud memories sync through the database; browser-saved memories stay on this device.</p>
+      <div class="memory-tip"><span class="memory-tip-icon">✧</span><span><strong>Make it useful</strong><small>Save stable preferences, goals, and project details. Avoid passwords or other sensitive information.</small></span></div>
       <form id="memoryForm" class="stack-form"><label for="memoryInput">Remember something</label><textarea id="memoryInput" rows="3" maxlength="500" placeholder="e.g. My favorite color is blue" required></textarea><button class="primary-button" type="submit">Save memory</button></form>
       <div class="saved-memory-list" id="savedMemoryList"></div>
       <button class="subtle-button" id="clearMemoryButton" type="button">Delete all saved memories</button>

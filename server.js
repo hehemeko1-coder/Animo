@@ -264,7 +264,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         },
         {
           name: "calculate",
-          description: "Evaluate a basic arithmetic expression using numbers, parentheses, +, -, *, /, and %. Use for arithmetic checks. Do not include variables or code.",
+          description: "Evaluate a safe math expression. Supports numbers, parentheses, +, -, *, /, %, ^ for powers, constants pi and e, and sqrt, abs, sin, cos, tan, asin, acos, atan, ln, log/log10, exp, floor, ceil, and round. Trigonometric functions use radians. Do not include variables or code.",
           input_schema: {
             type: "object",
             properties: { expression: { type: "string", description: "Arithmetic expression, maximum 120 characters." } },
@@ -348,11 +348,11 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
           type: "function",
           function: {
             name: "calculate",
-            description: "Calculate a basic arithmetic expression accurately. Use for arithmetic, percentages, and checking calculations. Accepts only numbers, parentheses, +, -, *, /, and %.",
+            description: "Calculate a safe math expression accurately. Supports numbers, parentheses, +, -, *, /, %, ^ for powers, constants pi and e, and sqrt, abs, sin, cos, tan, asin, acos, atan, ln, log/log10, exp, floor, ceil, and round. Trigonometric functions use radians. Use for arithmetic, scientific functions, percentages, and checking calculations.",
             parameters: {
               type: "object",
               properties: {
-                expression: { type: "string", description: "A basic arithmetic expression, up to 120 characters." }
+                expression: { type: "string", description: "A safe math expression up to 120 characters; supports powers, pi/e, and the listed scientific functions." }
               },
               required: ["expression"],
               additionalProperties: false

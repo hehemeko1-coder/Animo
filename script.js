@@ -23,7 +23,7 @@
   }
   const clientId = getClientId();
   try { learningToggle.checked = localStorage.getItem(STORAGE.learning) === "true"; } catch {}
-  let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [];
+  let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [], memoryStorageFallback = false;
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
   function readStore(key, fallback = []) {
@@ -210,7 +210,15 @@
       } else {
         const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: memoryText }) });
         const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || "SeenAi couldn't save that memory.");
+        if (!response.ok) {
+          memoryStorageFallback = true;
+          const localMemories = getMemories();
+          if (!localMemories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) localMemories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
+          if (!writeStore(STORAGE.memory, localMemories.slice(0, 40))) return false;
+          renderMemories();
+          showToast("Cloud memory is unavailable. Saved this memory in your browser instead.");
+          return true;
+        }
         persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
       }
     } else {
@@ -232,10 +240,10 @@
       if (!response.ok) throw new Error(data.error || "Couldn't load cloud memories.");
       persistentMemories = Array.isArray(data.memories) ? data.memories : [];
       renderMemories();
-    } catch (error) { showToast(error.message || "Couldn't load saved memories."); }
+    } catch (error) { memoryStorageFallback = true; renderMemories(); showToast("Cloud memory is unavailable right now. Saved memories will use this browser until the connection is fixed."); }
   }
   function renderMemories() {
-    const memories = features.persistentLearning
+    const memories = features.persistentLearning && !memoryStorageFallback
       ? persistentMemories.map(item => ({ text: item.memory, id: item.id }))
       : getMemories();
     memoryCount.textContent = String(memories.length); savedMemoryList.replaceChildren();
@@ -277,7 +285,7 @@
   }
   function openModal(modal) { modal.hidden = false; const first = modal.querySelector("input,textarea,button"); if (first) first.focus(); }
   function closeModal(modal) { modal.hidden = true; }
-  function memoryContext() { return (features.persistentLearning ? persistentMemories.map(x => ({ text: x.memory })) : getMemories()).map(x => "- " + x.text).join("\n").slice(0, 6000); }
+  function memoryContext() { return (features.persistentLearning && !memoryStorageFallback ? persistentMemories.map(x => ({ text: x.memory })) : getMemories()).map(x => "- " + x.text).join("\n").slice(0, 6000); }
 
   function renderAttachments() {
     attachmentList.replaceChildren();
@@ -416,7 +424,13 @@
         if (!response.ok) throw new Error(data.error || "Memory couldn't be saved.");
         persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
         memoryInput.value = ""; renderMemories(); showToast("Memory saved to your persistent account on this browser.");
-      } catch (error) { showToast(error.message || "Memory couldn't be saved."); }
+      } catch (error) {
+        memoryStorageFallback = true;
+        const localMemories = getMemories();
+        if (localMemories.length >= 40) { showToast("You can save up to 40 memories."); return; }
+        localMemories.unshift({ text, createdAt: new Date().toISOString() });
+        if (writeStore(STORAGE.memory, localMemories)) { memoryInput.value = ""; renderMemories(); showToast("Cloud memory is unavailable. Saved this memory in your browser instead."); }
+      }
       return;
     }
     const memories = getMemories(); if (memories.length >= 40) { showToast("You can save up to 40 memories."); return; }
@@ -425,7 +439,7 @@
   });
   $("#clearMemoryButton").addEventListener("click", async () => {
     if (!window.confirm("Delete every saved memory? This cannot be undone.")) return;
-    if (features.persistentLearning) {
+    if (features.persistentLearning && !memoryStorageFallback) {
       try {
         const response = await fetch("/api/learning/memories", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId }) });
         const data = await response.json().catch(() => ({}));

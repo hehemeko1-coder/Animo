@@ -6,7 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -376,6 +376,17 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
+      if (!images.length && /(?:\n|;)/.test(latestUserText) && /x/i.test(latestUserText) && /y/i.test(latestUserText) && /=/.test(latestUserText)) {
+        const systemText = latestUserText.trim()
+          .replace(/^(?:(?:please\s+)?solve(?:\s+for\s+x\s*(?:and|,)\s*y)?\s*:?\s*)/i, "")
+          .replace(/[?]$/, "")
+          .trim();
+        const solvedSystem = solveLinearSystem(systemText);
+        if (solvedSystem.error === undefined) {
+          const steps = solvedSystem.steps.map((step, index) => (index + 1) + ". " + step).join("\n");
+          return res.json({ reply: "Solution: x = " + solvedSystem.result.x + ", y = " + solvedSystem.result.y + "\n" + steps, provider: AI_PROVIDER, model: AI_MODEL });
+        }
+      }
       if (!images.length && /=/.test(latestUserText) && /x/i.test(latestUserText)) {
         const equation = latestUserText.trim()
           .replace(/^(?:(?:please\s+)?solve(?:\s+for\s+x)?\s*:?\s*)/i, "")

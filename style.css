@@ -388,3 +388,53 @@ body{padding:10px}
 @media(prefers-reduced-motion:reduce){
  .suggestion-card,.send-button,.new-chat-button{transition:none}
 }
+
+
+/* Forest-green contrast and typography pass */
+:root{
+  --bg:#174A35;
+  --sidebar:#CCFF33;
+  --surface:#CCFF33;
+  --surface-hover:#FF6E6C;
+  --ink:#000000;
+  --muted:#202020;
+  --quiet:#333333;
+  --line:#000000;
+  --acid:#CCFF33;
+  --accent-pink:#FF6E6C;
+}
+html,body{background:#174A35}
+body{color:#FFFFFF;font-weight:700}
+.app-shell{background:#174A35}
+.chat-area,.conversation{background:#174A35}
+.sidebar{background:#CCFF33;color:#000000}
+.brand,.brand-ai,.sidebar-item,.sidebar-label,.provider-status strong,.provider-status small,.provider-link,
+.topbar-title,.desktop-chat-title,.welcome-eyebrow,.welcome>p,.disclaimer,.composer-hint,.tool-note,
+.tool-button,.tool-toggle,.tool-status,.character-count,.message-content,.message-meta strong,
+.modal-description,.modal-kicker,.fine-print,.saved-memory-list,.stack-form label{font-weight:700}
+.topbar{background:#FF6E6C;color:#000000}
+.welcome h1{color:#FFFFFF;font-weight:800;text-shadow:2px 2px 0 #000000}
+.welcome h1 span{color:#CCFF33;-webkit-text-stroke:1px #000000;text-shadow:2px 2px 0 #000000}
+.welcome-eyebrow{color:#000000}
+.welcome>p{color:#FFFFFF}
+.suggestion-card{font-weight:800;color:#000000}
+.suggestion-card strong{font-weight:800;color:#000000}
+.suggestion-card small{font-weight:700;color:#000000}
+.message-list{color:#FFFFFF}
+.message-content{font-weight:700;color:#000000}
+.message-meta strong{font-weight:800}
+.composer{background:#CCFF33!important;color:#000000;border:2px solid #000000}
+.composer textarea{font-weight:700;color:#000000}
+.composer textarea::placeholder{color:#252525;font-weight:700;opacity:1}
+.tool-button,.tool-toggle{font-weight:800;color:#000000}
+.send-button{background:#FF6E6C;color:#000000;font-weight:800}
+.modal-card{color:#000000;font-weight:700}
+.modal-card h2,.modal-card p,.modal-card label,.modal-card button{font-weight:700}
+.stack-form input,.stack-form textarea{font-weight:700;color:#000000}
+button,a,input,textarea{font-weight:700}
+.message-content pre,.message-content code{font-weight:700}
+@media(max-width:760px){
+ .chat-area,.conversation{background:#174A35}
+ .topbar{background:#FF6E6C}
+ .welcome h1{font-weight:800}
+}

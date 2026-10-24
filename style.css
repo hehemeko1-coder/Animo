@@ -899,3 +899,179 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .message-list{gap:23px;padding:21px 0}
   .composer-wrap{padding:7px 0 10px}
 }
+
+
+/* Minimal product UI: hierarchy and whitespace instead of decorative cards. */
+.sidebar{
+  width:224px;
+  flex-basis:224px;
+  padding:28px 17px 18px;
+  background:#0d100f;
+  border-right:1px solid rgba(235,241,232,.08);
+}
+.brand{margin-bottom:0}
+.new-chat-button{
+  margin-top:28px;
+  height:40px;
+  min-height:40px;
+  border:0;
+  border-radius:5px;
+  background:#17201c;
+  color:#e5ece5;
+}
+.new-chat-button:hover{background:#1d2923;border-color:transparent}
+.sidebar-label{
+  margin:32px 0 10px 9px;
+  font-size:9px;
+  letter-spacing:1.25px;
+  color:#858f87;
+}
+.sidebar-item{
+  min-height:38px;
+  padding:8px 9px;
+  border:0;
+  border-radius:4px;
+  background:transparent;
+  color:#b8c0b8;
+}
+.sidebar-item.active{
+  background:rgba(226,239,224,.065);
+  color:#f0f3ed;
+}
+.sidebar-item:hover{background:rgba(226,239,224,.045)}
+.sidebar-icon{color:#75d8ce}
+.feature-nav{margin-top:2px}
+.sidebar-note{display:none!important}
+.provider-status{
+  padding:12px 2px;
+  border-top:1px solid rgba(235,241,232,.08);
+  border-bottom:0;
+}
+.provider-status strong{font-size:10px}
+.provider-status small{font-size:9px}
+.provider-link{padding:2px 2px 0;font-size:9px}
+.chat-area{background:#0c0e0d}
+.topbar{
+  height:58px;
+  flex-basis:58px;
+  padding:0 28px;
+  background:#0c0e0d;
+  border-bottom:1px solid rgba(235,241,232,.075);
+}
+.topbar-title{font-size:12px;font-weight:600}
+.icon-button{width:32px;height:32px;border:0;background:transparent}
+.icon-button:hover{background:rgba(235,241,232,.06)}
+.welcome{
+  width:min(650px,calc(100% - 48px));
+  padding:30px 0 34px;
+}
+.welcome-orb.brand-emblem{display:none}
+.welcome-eyebrow{
+  justify-content:flex-start;
+  color:#7bd8cf;
+  font-size:9px;
+  letter-spacing:1.4px;
+}
+.welcome h1{
+  margin:17px 0 14px;
+  text-align:left;
+  font-size:clamp(38px,4.4vw,54px);
+  letter-spacing:-2px;
+  line-height:1.08;
+}
+.welcome h1 span{color:#aeb8af}
+.welcome>p{
+  max-width:510px;
+  margin:0;
+  text-align:left;
+  color:#a3aca4;
+  font-size:13px;
+  line-height:1.8;
+}
+.suggestion-grid{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  max-width:520px;
+  margin:30px 0 0;
+  text-align:left;
+}
+.suggestion-card{
+  min-height:48px;
+  padding:9px 2px;
+  gap:11px;
+  border:0;
+  border-bottom:1px solid rgba(235,241,232,.08);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+}
+.suggestion-card:first-child{border-top:1px solid rgba(235,241,232,.08)}
+.suggestion-card:hover{
+  background:rgba(235,241,232,.025);
+  border-color:rgba(235,241,232,.14);
+  transform:none;
+}
+.suggestion-icon{
+  width:23px;height:23px;
+  border-radius:0;
+  background:transparent!important;
+  color:#78d8ce!important;
+  font-size:15px;
+}
+.suggestion-card strong{font-size:11px;font-weight:600}
+.suggestion-card small{font-size:10px;color:#929c93}
+.suggestion-arrow{color:#8b968d}
+.message-list{
+  width:min(760px,calc(100% - 56px));
+  gap:25px;
+  padding:27px 0 24px;
+}
+.message{grid-template-columns:24px minmax(0,1fr);gap:13px}
+.message-avatar{
+  width:24px;height:24px;
+  border:0;border-radius:0;
+  background:transparent;
+  color:#75d8ce;
+}
+.message.user .message-avatar{border:0;background:transparent;color:#b8c2b9}
+.message-content{font-size:14px;line-height:1.85;color:#e8ede7}
+.message-content pre{
+  background:#101411;
+  border:1px solid rgba(235,241,232,.1);
+  border-radius:4px;
+  box-shadow:none;
+}
+.message-content code{background:#171d19;border-color:rgba(235,241,232,.1)}
+.composer-wrap{
+  width:min(760px,calc(100% - 56px));
+  padding:10px 0 14px;
+}
+.composer{
+  border:0;
+  border-top:1px solid rgba(235,241,232,.18);
+  border-radius:0;
+  background:transparent;
+  padding:12px 0 7px;
+  box-shadow:none;
+}
+.composer:focus-within{
+  border-color:rgba(123,228,218,.42);
+  box-shadow:none;
+}
+.composer textarea{font-size:13px;padding:2px 0 9px}
+.composer-tools{border-top:1px solid rgba(235,241,232,.07);border-bottom:0;padding-top:8px}
+.tool-button{border:0;border-radius:4px;background:transparent}
+.tool-button:hover{background:rgba(235,241,232,.05)}
+.send-button{border-radius:5px;box-shadow:none}
+@media(max-width:620px){
+  .sidebar{width:270px;flex-basis:270px;padding:22px 17px 17px}
+  .topbar{height:54px;flex-basis:54px;padding:0 13px}
+  .welcome{width:calc(100% - 34px);padding:24px 0}
+  .welcome h1{font-size:clamp(33px,8vw,41px);letter-spacing:-1.4px}
+  .welcome>p{font-size:12px}
+  .suggestion-grid{margin-top:23px}
+  .message-list,.composer-wrap{width:calc(100% - 28px)}
+  .composer-wrap{padding:7px 0 10px}
+}

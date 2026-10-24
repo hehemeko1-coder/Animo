@@ -470,8 +470,3 @@ button,a,input,textarea{font-weight:700}
 .suggestion-card[data-prompt*="Find current information"] .suggestion-icon{color:#FFFFFF!important}
 .suggestion-card[data-prompt*="Find current information"]{border-color:#000000;box-shadow:3px 3px 0 #000000}
 .suggestion-card[data-prompt*="Find current information"]:hover{background:#6F3BE8!important;color:#FFFFFF!important}
-
-
-/* Site-wide Impact typography */
-:root{--font-body:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif;--font-mono:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif}
-body,button,input,textarea,kbd{font-family:Impact,Haettenschweiler,'Arial Narrow Bold',sans-serif!important}

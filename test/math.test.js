@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, shouldForceCalculator } = require("../lib/agent-tools.js");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, shouldForceCalculator } = require("../lib/agent-tools.js");
 
 function result(expression, expected, tolerance = 1e-10) {
   const actual = safeCalculate(expression);
@@ -96,6 +96,18 @@ test("solves and verifies two-variable linear systems", () => {
   assert.ok(solveLinearSystem("x + y = 2; 2x + 2y = 4").error);
   assert.ok(solveLinearSystem("x + y = 2; x + y = 5").error);
   assert.ok(solveLinearSystem("x^2 + y = 2; x - y = 0").error);
+});
+
+
+test("solves linear inequalities and reports interval notation", () => {
+  const less = solveLinearInequality("2x + 3 < 11");
+  assert.equal(less.error, undefined, less.error);
+  assert.equal(less.result, "x < 4");
+  assert.equal(less.interval, "(-∞, 4)");
+  assert.equal(solveLinearInequality("-2x + 4 >= 0").result, "x ≤ 2");
+  assert.equal(solveLinearInequality("x + 1 <= x + 3").interval, "(-∞, ∞)");
+  assert.equal(solveLinearInequality("x + 3 < x + 1").interval, "∅");
+  assert.ok(solveLinearInequality("x^2 < 9").error);
 });
 
 test("calculator intent detection", () => {

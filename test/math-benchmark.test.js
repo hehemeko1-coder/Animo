@@ -54,3 +54,44 @@ test("math benchmark has coverage across all current deterministic solver catego
   ]);
   assert.ok(benchmark.length >= 15, "Keep the benchmark broad enough to catch regressions");
 });
+
+
+test("inequality benchmark covers strict and inclusive boundaries", () => {
+  const inclusive = solveLinearInequality("2x - 6 <= 0");
+  assert.equal(inclusive.error, undefined, inclusive.error);
+  assert.equal(inclusive.result, "x ≤ 3");
+  assert.equal(inclusive.interval, "(-∞, 3]");
+
+  const reversed = solveLinearInequality("-2x + 8 <= 0");
+  assert.equal(reversed.error, undefined, reversed.error);
+  assert.equal(reversed.result, "x ≥ 4");
+  assert.equal(reversed.interval, "[4, ∞)");
+});
+
+test("inequality benchmark handles constant truth and contradiction", () => {
+  const alwaysTrue = solveLinearInequality("x + 2 > x - 1");
+  assert.equal(alwaysTrue.error, undefined, alwaysTrue.error);
+  assert.equal(alwaysTrue.result, "all real numbers");
+
+  const impossible = solveLinearInequality("x + 1 < x - 2");
+  assert.equal(impossible.error, undefined, impossible.error);
+  assert.equal(impossible.result, "no solution");
+});
+
+test("equation benchmark covers decimals and roots that require verification", () => {
+  const linear = solveLinearEquation("0.5x + 1.5 = 4");
+  assert.equal(linear.error, undefined, linear.error);
+  assert.ok(Math.abs(linear.result - 5) < 1e-10);
+
+  const quadratic = solveQuadraticEquation("2x^2 - 8 = 0");
+  assert.equal(quadratic.error, undefined, quadratic.error);
+  assert.deepEqual(quadratic.roots.slice().sort((a, b) => a - b), [-2, 2]);
+});
+
+test("solver benchmark rejects unsupported or inconsistent inputs safely", () => {
+  assert.ok(solveLinearEquation("x^2 = 9").error);
+  assert.ok(solveQuadraticEquation("x^3 = 8").error);
+  assert.ok(solveLinearSystem("x + y = 2; x + y = 5").error);
+  assert.ok(solveFractionExpression("1/0").error);
+  assert.ok(safeCalculate("1/0").error);
+});

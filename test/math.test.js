@@ -76,6 +76,9 @@ test("solves quadratic equations and verifies real roots", () => {
   assert.equal(solved.error, undefined, solved.error);
   assert.deepEqual(solved.roots.slice().sort((a, b) => a - b), [2, 3]);
   assert.equal(solveQuadraticEquation("x^2 - 4x + 4 = 0").roots.length, 1);
+  assert.deepEqual(solveQuadraticEquation("x^2 = 9").roots.slice().sort((a, b) => a - b), [-3, 3]);
+  assert.deepEqual(solveQuadraticEquation("x^2 + 2x + 1 = 0").roots, [-1]);
+  assert.deepEqual(solveQuadraticEquation("0.5x^2 - 2 = 0").roots.slice().sort((a, b) => a - b), [-2, 2]);
   assert.deepEqual(solveQuadraticEquation("2x^2 - 8 = 0").roots.slice().sort((a, b) => a - b), [-2, 2]);
   assert.ok(solveQuadraticEquation("x^2 + 1 = 0").error);
   assert.ok(solveQuadraticEquation("x^3 = 8").error);

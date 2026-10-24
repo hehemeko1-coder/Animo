@@ -261,11 +261,10 @@ html,body{background:#8050FF}
 body{padding:10px}
 .app-shell{
   height:calc(100dvh - 20px);min-height:0;overflow:hidden;
-  border:2px solid #000;border-radius:26px;background:#CCFF33;
-  box-shadow:0 7px 0 #000
+  border:0;border-radius:0;background:transparent;box-shadow:none
 }
 .sidebar{
-  background:#CCFF33;border-right:2px solid #000;
+  background:#CCFF33;border:2px solid #000;border-radius:20px;
   padding:24px 16px 16px
 }
 .brand{font-size:25px;letter-spacing:-1.4px}
@@ -283,7 +282,7 @@ body{padding:10px}
 .sidebar-item.active .sidebar-icon{color:#000}
 .live-dot,.status-dot{border-radius:50%;background:#FF6E6C;border:1px solid #000}
 .sidebar-bottom{border-top:2px solid #000}
-.chat-area{background:#CCFF33;min-width:0}
+.chat-area{background:#CCFF33;min-width:0;border:2px solid #000;border-radius:20px;overflow:hidden}
 .topbar{
   background:#CCFF33;border-bottom:2px solid #000;
   padding:0 28px
@@ -304,10 +303,10 @@ body{padding:10px}
 .suggestion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:640px;border:0;margin-top:30px}
 .suggestion-card{
   position:relative;min-height:94px;padding:15px;
-  border:2px solid #000;border-radius:15px;background:#FF6E6C;
+  border:2px solid #000;border-radius:15px;background:#CCFF33;
   box-shadow:3px 3px 0 #000;gap:10px
 }
-.suggestion-card:nth-child(2n){background:#00AEEF}
+.suggestion-card:nth-child(2){background:#FF6E6C}.suggestion-card:nth-child(3){background:#CCFF33}.suggestion-card:nth-child(4){background:#00AEEF}
 .suggestion-card:hover{padding:15px;background:#fff;color:#000;transform:translate(-1px,-1px);box-shadow:5px 5px 0 #000}
 .suggestion-card>span:nth-child(2){display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .suggestion-card strong{font-size:13px;font-weight:700}
@@ -357,7 +356,7 @@ body{padding:10px}
 .attachment-chip{background:#fff;border:1.5px solid #000;border-radius:9px}
 
 /* Reference-inspired candy-bright product UI */
-.topbar{background:#FF6E6C}
+.topbar{background:#FF6E6C;border-radius:16px 16px 0 0}
 .topbar-title{font-size:13px;letter-spacing:.2px}
 .model-pill{background:#CCFF33}
 .welcome{position:relative}
@@ -371,7 +370,7 @@ body{padding:10px}
 .message:not(.user) .message-content{display:inline-block;max-width:100%;background:#fff;border:1.5px solid #000;border-radius:3px 15px 15px 15px;padding:10px 13px;box-shadow:2px 2px 0 #000}
 .message-content pre{max-width:100%}
 .composer{background:#CCFF33}
-.composer:focus-within{background:#e1ff75}
+.composer:focus-within{background:#CCFF33}
 .send-button{background:#FF6E6C}
 .send-button:hover{background:#00AEEF}
 @media(max-width:760px){

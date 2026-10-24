@@ -6,6 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
+const learningStore = require("./lib/learning-store");
 const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
@@ -69,7 +70,9 @@ app.get("/api/health", (_req, res) => {
     configured: AI_PROVIDER === "openai" ? Boolean(OPENAI_API_KEY) : AI_PROVIDER === "anthropic" ? Boolean(ANTHROPIC_API_KEY) : Boolean(GROQ_API_KEY),
     features: {
       webSearch: Boolean(FIRECRAWL_API_KEY),
-      memory: "browser-local",
+      memory: learningStore.enabled ? "postgresql" : "browser-local",
+      persistentLearning: learningStore.enabled,
+      fineTuning: Boolean(OPENAI_API_KEY && process.env.SEENAI_ADMIN_TOKEN),
       documents: true,
       imageUnderstanding: Boolean(OPENAI_API_KEY || ANTHROPIC_API_KEY || GROQ_API_KEY),
       automation: Boolean(AUTOMATION_WEBHOOK_URL)
@@ -165,6 +168,87 @@ app.post("/api/automation", automationLimiter, async (req, res) => {
   } catch (error) {
     console.error("Automation request failed:", error.message);
     return res.status(502).json({ error: "Couldn't reach the connected automation endpoint." });
+  }
+});
+
+
+const learningLimiter = rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: "draft-7", legacyHeaders: false });
+function getClientId(req) { return learningStore.validClientId(req.body?.clientId); }
+function requireLearningDb(res) {
+  if (!learningStore.enabled) { res.status(503).json({ error: "Persistent learning is not configured. Add DATABASE_URL in Render Environment." }); return false; }
+  return true;
+}
+app.get("/api/learning/memories", learningLimiter, async (req, res) => {
+  if (!learningStore.enabled) return res.status(503).json({ error: "Persistent learning needs DATABASE_URL in Render Environment." });
+  const clientId = learningStore.validClientId(req.query.clientId);
+  if (!clientId) return res.status(400).json({ error: "A valid clientId is required." });
+  try { return res.json({ memories: await learningStore.listMemories(clientId) }); }
+  catch (error) { console.error("Memory list failed:", error.message); return res.status(500).json({ error: "Couldn't load saved memories." }); }
+});
+app.post("/api/learning/memories", learningLimiter, async (req, res) => {
+  if (!requireLearningDb(res)) return;
+  const clientId = getClientId(req);
+  const memory = typeof req.body?.memory === "string" ? req.body.memory.trim() : "";
+  if (!clientId || !memory || memory.length > 500) return res.status(400).json({ error: "Provide a valid clientId and memory under 500 characters." });
+  try { return res.status(201).json({ memory: await learningStore.addMemory(clientId, memory) }); }
+  catch (error) { console.error("Memory save failed:", error.message); return res.status(500).json({ error: "Couldn't save this memory." }); }
+});
+app.delete("/api/learning/memories/:id", learningLimiter, async (req, res) => {
+  if (!requireLearningDb(res)) return;
+  const clientId = learningStore.validClientId(req.body?.clientId || req.query.clientId);
+  const id = Number(req.params.id);
+  if (!clientId || !Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: "Invalid clientId or memory ID." });
+  try { return res.json({ deleted: await learningStore.deleteMemory(clientId, id) }); }
+  catch (error) { console.error("Memory deletion failed:", error.message); return res.status(500).json({ error: "Couldn't delete this memory." }); }
+});
+app.delete("/api/learning/memories", learningLimiter, async (req, res) => {
+  if (!requireLearningDb(res)) return;
+  const clientId = learningStore.validClientId(req.body?.clientId);
+  if (!clientId) return res.status(400).json({ error: "A valid clientId is required." });
+  try { return res.json({ deleted: await learningStore.clearMemories(clientId) }); }
+  catch (error) { console.error("Memory clearing failed:", error.message); return res.status(500).json({ error: "Couldn't clear saved memories." }); }
+});
+app.post("/api/learning/feedback", learningLimiter, async (req, res) => {
+  if (!requireLearningDb(res)) return;
+  const clientId = getClientId(req), id = Number(req.body?.exampleId), rating = Number(req.body?.rating);
+  const correction = typeof req.body?.correction === "string" ? req.body.correction.trim().slice(0, 12000) : "";
+  if (!clientId || !Number.isSafeInteger(id) || id < 1 || ![-1, 1].includes(rating) || (rating === -1 && !correction)) {
+    return res.status(400).json({ error: "Provide clientId, exampleId, a +1/-1 rating, and a correction when rating an answer negatively." });
+  }
+  try {
+    const updated = await learningStore.rateExample(clientId, id, rating, correction);
+    return updated ? res.json({ ok: true }) : res.status(404).json({ error: "Learning example not found." });
+  } catch (error) { console.error("Learning feedback failed:", error.message); return res.status(500).json({ error: "Couldn't save feedback." }); }
+});
+app.post("/api/learning/train", learningLimiter, async (req, res) => {
+  const adminToken = process.env.SEENAI_ADMIN_TOKEN;
+  if (!adminToken || req.get("authorization") !== "Bearer " + adminToken) return res.status(401).json({ error: "Admin authorization required." });
+  if (!learningStore.enabled) return res.status(503).json({ error: "Persistent learning needs DATABASE_URL in Render Environment." });
+  if (!OPENAI_API_KEY) return res.status(503).json({ error: "OpenAI fine-tuning requires OPENAI_API_KEY." });
+  const baseModel = process.env.OPENAI_FINE_TUNE_BASE_MODEL || "gpt-4o-mini-2024-07-18";
+  try {
+    const examples = await learningStore.trainingExamples();
+    if (examples.length < 10) return res.status(400).json({ error: "At least 10 positively rated or corrected examples are required before fine-tuning. Found " + examples.length + "." });
+    const jsonl = examples.map(example => JSON.stringify({ messages: example.messages })).join("\n") + "\n";
+    const form = new FormData();
+    form.append("purpose", "fine-tune");
+    form.append("file", new Blob([jsonl], { type: "application/jsonl" }), "seenai-training.jsonl");
+    const fileResponse = await fetch("https://api.openai.com/v1/files", { method: "POST", headers: { Authorization: "Bearer " + OPENAI_API_KEY }, body: form, signal: AbortSignal.timeout(60000) });
+    const fileData = await fileResponse.json().catch(() => ({}));
+    if (!fileResponse.ok) return res.status(502).json({ error: "OpenAI rejected the training file: " + String(fileData.error?.message || fileResponse.statusText).slice(0, 300) });
+    const jobResponse = await fetch("https://api.openai.com/v1/fine_tuning/jobs", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + OPENAI_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: baseModel, training_file: fileData.id, suffix: "seenai-learning" }),
+      signal: AbortSignal.timeout(60000)
+    });
+    const jobData = await jobResponse.json().catch(() => ({}));
+    if (!jobResponse.ok) return res.status(502).json({ error: "OpenAI rejected the fine-tuning job: " + String(jobData.error?.message || jobResponse.statusText).slice(0, 300) });
+    await learningStore.markExported(examples.map(example => example.id));
+    return res.status(202).json({ ok: true, jobId: jobData.id, status: jobData.status, baseModel, examples: examples.length, message: "Fine-tuning job submitted to OpenAI. Monitor its status in the OpenAI platform dashboard." });
+  } catch (error) {
+    console.error("Fine-tuning submission failed:", error.message);
+    return res.status(500).json({ error: "Couldn't submit the fine-tuning job. Check database connectivity, OpenAI model eligibility, and API billing." });
   }
 });
 
@@ -548,7 +632,13 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       return res.status(502).json({ error: "The AI service couldn't complete that request. Check the selected model and provider settings, then try again." });
     }
     if (typeof reply !== "string" || !reply.trim()) return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
-    return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL });
+    let exampleId = null;
+    const clientId = learningStore.validClientId(req.body?.clientId);
+    if (learningStore.enabled && clientId && messages.length >= 1 && messages[messages.length - 1].role === "user" && !images.length) {
+      try { exampleId = await learningStore.saveExample(clientId, messages[messages.length - 1].content, reply.trim()); }
+      catch (learningError) { console.error("Learning example save failed:", learningError.message); }
+    }
+    return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL, exampleId });
   } catch (error) {
     if (error.name === "TimeoutError" || error.name === "AbortError") return res.status(504).json({ error: "That response took too long. Please try again." });
     console.error("Chat request failed:", error.message);

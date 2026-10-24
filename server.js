@@ -6,7 +6,7 @@ const multer = require("multer");
 const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -376,6 +376,20 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
         }] : [])
       ];
       const latestUserText = messages[messages.length - 1].content;
+      if (!images.length) {
+        const fraction = solveFractionExpression(latestUserText);
+        if (fraction && fraction.error === undefined) {
+          const steps = fraction.steps.map((step, index) => (index + 1) + ". " + step).join("\\n");
+          return res.json({ reply: "Answer: " + fraction.result + "\\n" + steps, provider: AI_PROVIDER, model: AI_MODEL });
+        }
+        if (fraction && fraction.error) return res.json({ reply: fraction.error, provider: AI_PROVIDER, model: AI_MODEL });
+        const ratio = solveRatioProblem(latestUserText);
+        if (ratio && ratio.error === undefined) {
+          const steps = ratio.steps.map((step, index) => (index + 1) + ". " + step).join("\\n");
+          return res.json({ reply: "Answer: " + ratio.result + "\\n" + steps, provider: AI_PROVIDER, model: AI_MODEL });
+        }
+        if (ratio && ratio.error) return res.json({ reply: ratio.error, provider: AI_PROVIDER, model: AI_MODEL });
+      }
       if (!images.length) {
         const percentage = solvePercentageProblem(latestUserText);
         if (percentage && percentage.error === undefined) {

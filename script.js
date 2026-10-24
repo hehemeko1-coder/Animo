@@ -4,6 +4,8 @@
   const messageList = $("#messageList"), welcome = $("#welcome"), newChatButton = $("#newChatButton");
   const clearChatButton = $("#clearChatButton"), characterCount = $("#characterCount"), conversation = $("#conversation");
   const toast = $("#toast"), sidebar = $("#sidebar"), mobileMenu = $("#mobileMenu");
+  const appShell = $("#appShell"), sidebarToggle = $("#sidebarToggle"), sidebarClose = $("#sidebarClose"), sidebarScrim = $("#sidebarScrim");
+  const plusMenuButton = $("#plusMenuButton"), plusMenu = $("#plusMenu"), conversationHistory = $("#conversationHistory"), clearHistoryButton = $("#clearHistoryButton");
   const fileInput = $("#fileInput"), attachButton = $("#attachButton"), attachmentList = $("#attachmentList");
   const webSearchToggle = $("#webSearchToggle"), webStatus = $("#webStatus"), learningToggle = $("#learningToggle");
   const memoryModal = $("#memoryModal"), automationModal = $("#automationModal");
@@ -25,6 +27,58 @@
   try { learningToggle.checked = localStorage.getItem(STORAGE.learning) === "true"; } catch {}
   let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [], memoryStorageFallback = false;
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const HISTORY_KEY = "animo.conversations.v1";
+  let activeConversationId = null;
+  function readConversations() {
+    try { const value = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); return Array.isArray(value) ? value.filter(item => item && typeof item.id === "string" && Array.isArray(item.messages)) : []; }
+    catch { return []; }
+  }
+  function persistConversation() {
+    if (!messages.length || !activeConversationId) return;
+    const all = readConversations();
+    const firstUser = messages.find(item => item.role === "user");
+    const title = String(firstUser?.content || "New conversation").replace(/\\s+/g, " ").trim().slice(0, 54) || "New conversation";
+    const entry = { id: activeConversationId, title, updatedAt: new Date().toISOString(), messages: messages.slice(-40).map(item => ({ role: item.role, content: String(item.content || "").slice(0, 26000) })) };
+    const next = [entry, ...all.filter(item => item.id !== activeConversationId)].slice(0, 20);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { showToast("Recent conversations could not be saved because browser storage is full."); }
+    renderConversationHistory();
+  }
+  function renderConversationHistory() {
+    if (!conversationHistory) return;
+    const items = readConversations(); conversationHistory.replaceChildren();
+    if (!items.length) {
+      const empty = document.createElement("p"); empty.className = "history-empty"; empty.textContent = "Your recent chats will appear here."; conversationHistory.append(empty); return;
+    }
+    items.forEach(item => {
+      const button = document.createElement("button"); button.type = "button"; button.className = "history-item" + (item.id === activeConversationId ? " active" : ""); button.title = item.title;
+      const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg"); icon.setAttribute("viewBox", "0 0 24 24"); icon.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", "M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.5-3A7.5 7.5 0 1 1 20 11.5Z"); icon.append(path);
+      const label = document.createElement("span"); label.textContent = item.title || "New conversation"; button.append(icon, label);
+      button.addEventListener("click", () => openConversation(item.id)); conversationHistory.append(button);
+    });
+  }
+  function openConversation(id) {
+    if (busy) { showToast("Wait for the current reply to finish first."); return; }
+    const item = readConversations().find(entry => entry.id === id); if (!item) return;
+    activeConversationId = item.id; messages = item.messages.map(message => ({ role: message.role, content: message.content }));
+    messageList.replaceChildren(); welcome.hidden = messages.length > 0;
+    messages.forEach(message => makeMessage(message.role, message.content));
+    input.value = ""; images = []; documents = []; renderAttachments(); resizeInput(); updateCount(); renderConversationHistory();
+    if (window.innerWidth <= 760) closeMobileSidebar();
+    scrollToBottom();
+  }
+  function clearConversationHistory() {
+    if (!window.confirm("Clear all recent conversations saved in this browser? This cannot be undone.")) return;
+    try { localStorage.removeItem(HISTORY_KEY); } catch {}
+    activeConversationId = null; renderConversationHistory(); showToast("Recent conversations cleared.");
+  }
+  function closeMobileSidebar() {
+    sidebar.classList.remove("open"); mobileMenu.setAttribute("aria-expanded", "false"); sidebarScrim?.classList.remove("open");
+  }
+  function closePlusMenu() {
+    if (!plusMenu || !plusMenuButton) return;
+    plusMenu.hidden = true; plusMenuButton.setAttribute("aria-expanded", "false");
+  }
 
   function readStore(key, fallback = []) {
     try { const value = JSON.parse(localStorage.getItem(key) || "null"); return Array.isArray(value) ? value : fallback; }
@@ -138,10 +192,10 @@
     const avatar = document.createElement("div"); avatar.className = "message-avatar"; avatar.setAttribute("aria-hidden", "true");
     const body = document.createElement("div"); body.className = "message-body";
     const meta = document.createElement("div"); meta.className = "message-meta";
-    const name = document.createElement("strong"); name.textContent = role === "assistant" ? "SeenAi" : "You";
+    const name = document.createElement("strong"); name.textContent = role === "assistant" ? "Ânimo" : "You";
     const time = document.createElement("time"); time.textContent = now(); meta.append(name, time);
     const text = document.createElement("div"); text.className = "message-content";
-    if (options.typing) text.innerHTML = '<div class="typing-indicator" aria-label="SeenAi is thinking"><span></span><span></span><span></span></div>';
+    if (options.typing) text.innerHTML = '<div class="typing-indicator" aria-label="Ânimo is thinking"><span></span><span></span><span></span></div>';
     else renderMarkdown(text, content);
     body.append(meta, text);
     if (role === "assistant" && !options.typing && content) {
@@ -164,7 +218,7 @@
         });
         const improve = document.createElement("button"); improve.type = "button"; improve.className = "message-action"; improve.textContent = "Improve";
         improve.addEventListener("click", async () => {
-          const correction = window.prompt("What should SeenAi have answered instead? This correction may be used for model training.");
+          const correction = window.prompt("What should Ânimo have answered instead? This correction may be used for model training.");
           if (!correction || !correction.trim()) return;
           try {
             const response = await fetch("/api/learning/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, exampleId: options.exampleId, rating: -1, correction: correction.trim() }) });
@@ -375,9 +429,10 @@
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "Something went wrong. Please try again.");
-      if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("SeenAi returned an empty reply. Please try again.");
+      if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("Ânimo returned an empty reply. Please try again.");
       typing.remove(); messages.push({ role: "assistant", content: data.reply });
       makeMessage("assistant", data.reply, { sources, exampleId: data.exampleId });
+      persistConversation();
       if (explicitMemoryText(userContent) || data.memorySaved?.memory) {
         try {
           const saved = await saveExplicitMemoryFromChat(userContent, data.memorySaved);
@@ -385,16 +440,16 @@
         } catch (memoryError) { showToast(memoryError.message || "The memory couldn't be saved."); }
       }
     } catch (error) {
-      typing.remove(); const errorText = error.message || "Couldn't connect to SeenAi. Check your connection and try again.";
-      makeMessage("assistant", errorText); showToast(errorText);
+      typing.remove(); const errorText = error.message || "Couldn't connect to Ânimo. Check your connection and try again.";
+      makeMessage("assistant", errorText); persistConversation(); showToast(errorText);
     } finally {
       webStatus.textContent = ""; setBusy(false); scrollToBottom();
     }
   }
   function resetChat() {
-    if (busy) { showToast("Wait for SeenAi to finish the current reply first."); return; }
-    messages = []; messageList.replaceChildren(); welcome.hidden = false; input.value = ""; images = []; documents = []; renderAttachments();
-    resizeInput(); updateCount(); input.focus(); sidebar.classList.remove("open"); mobileMenu.setAttribute("aria-expanded", "false");
+    if (busy) { showToast("Wait for Ânimo to finish the current reply first."); return; }
+    messages = []; activeConversationId = null; messageList.replaceChildren(); welcome.hidden = false; input.value = ""; images = []; documents = []; renderAttachments(); renderConversationHistory(); closePlusMenu();
+    resizeInput(); updateCount(); input.focus(); closeMobileSidebar();
   }
   async function runWorkflow(workflow) {
     const approved = window.confirm('Run "' + workflow.name + '"? This may send the workflow details to the external automation endpoint configured by the site owner.');
@@ -402,7 +457,7 @@
     if (!features.automation) {
       closeModal(automationModal);
       input.value = "Please run this saved workflow as an AI task. Do not claim external actions were completed. Workflow: " + workflow.name + "\nInstructions: " + workflow.details;
-      resizeInput(); updateCount(); showToast("No external connector is configured. Running this as a SeenAi chat task instead."); form.requestSubmit(); return;
+      resizeInput(); updateCount(); showToast("No external connector is configured. Running this as a Ânimo chat task instead."); form.requestSubmit(); return;
     }
     try {
       const response = await fetch("/api/automation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved: true, workflow: workflow.name, details: workflow.details }) });
@@ -418,7 +473,21 @@
   input.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });
   document.querySelectorAll("[data-prompt]").forEach(button => button.addEventListener("click", () => sendMessage(button.dataset.prompt || "")));
   newChatButton.addEventListener("click", resetChat); clearChatButton.addEventListener("click", resetChat);
-  mobileMenu.addEventListener("click", () => { const open = sidebar.classList.toggle("open"); mobileMenu.setAttribute("aria-expanded", String(open)); });
+  mobileMenu.addEventListener("click", () => { const open = sidebar.classList.toggle("open"); mobileMenu.setAttribute("aria-expanded", String(open)); sidebarScrim.classList.toggle("open", open); });
+  sidebarClose.addEventListener("click", closeMobileSidebar); sidebarScrim.addEventListener("click", closeMobileSidebar);
+  sidebarToggle.addEventListener("click", () => {
+    if (window.innerWidth <= 760) { const open = sidebar.classList.toggle("open"); mobileMenu.setAttribute("aria-expanded", String(open)); sidebarScrim.classList.toggle("open", open); return; }
+    const collapsed = appShell.classList.toggle("sidebar-collapsed");
+    sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+    sidebarToggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    sidebarToggle.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+  });
+  plusMenuButton.addEventListener("click", event => {
+    event.stopPropagation(); const open = plusMenu.hidden; plusMenu.hidden = !open; plusMenuButton.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", event => { if (!plusMenu.contains(event.target) && !plusMenuButton.contains(event.target)) closePlusMenu(); });
+  document.addEventListener("keydown", event => { if (event.key === "Escape") closePlusMenu(); });
+  clearHistoryButton.addEventListener("click", clearConversationHistory);
   attachButton.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", () => handleFiles(Array.from(fileInput.files || [])));
   $("#memoryButton").addEventListener("click", () => { renderMemories(); openModal(memoryModal); });
@@ -474,9 +543,9 @@
   });
   document.addEventListener("keydown", event => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); resetChat(); }
-    if (event.key === "Escape") { if (sidebar.classList.contains("open")) { sidebar.classList.remove("open"); mobileMenu.setAttribute("aria-expanded", "false"); } [memoryModal, automationModal].forEach(modal => { if (!modal.hidden) closeModal(modal); }); }
+    if (event.key === "Escape") { if (sidebar.classList.contains("open")) closeMobileSidebar(); [memoryModal, automationModal].forEach(modal => { if (!modal.hidden) closeModal(modal); }); }
   });
-  updateCount(); renderMemories(); renderWorkflows();
+  activeConversationId = null; renderConversationHistory(); updateCount(); renderMemories(); renderWorkflows();
   fetch("/api/health").then(response => response.json()).then(data => {
     features = data.features || {};
     if (features.persistentLearning) loadPersistentMemories();

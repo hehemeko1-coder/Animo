@@ -572,3 +572,142 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .message-list,.composer-wrap{width:calc(100% - 28px)}
   .message{grid-template-columns:24px minmax(0,1fr);gap:9px}
 }
+
+
+/* Human-led layout pass: remove decorative containers and let spacing do the work. */
+.app-shell{
+  background:var(--bg);
+}
+.sidebar{
+  width:238px;
+  flex-basis:238px;
+  padding:26px 20px 18px;
+  background:#0b0e0d;
+  border-right:1px solid rgba(230,240,232,.09);
+}
+.brand{padding:0;gap:8px}
+.new-chat-button{
+  margin-top:30px;
+  border:1px solid rgba(123,228,218,.26);
+  border-radius:6px;
+  background:transparent;
+  box-shadow:none;
+}
+.new-chat-button:hover{background:rgba(123,228,218,.07)}
+.sidebar-label{margin:34px 0 10px 0}
+.sidebar-item{
+  padding:9px 0;
+  border-radius:0;
+  background:transparent;
+  border:0;
+  color:#b8c0ba;
+}
+.sidebar-item.active{background:transparent;color:#f2f4ef}
+.sidebar-item:hover{background:transparent;color:#7be4da}
+.sidebar-note{display:none}
+.provider-status{padding:12px 0;border-bottom:0}
+.provider-link{padding:5px 0 0}
+.topbar{
+  height:58px;
+  flex-basis:58px;
+  padding:0 30px;
+  background:transparent;
+  border-bottom:1px solid rgba(230,240,232,.075);
+  backdrop-filter:none;
+}
+.icon-button,.mobile-menu{
+  border:0;
+  border-radius:5px;
+  background:transparent;
+}
+.icon-button:hover,.mobile-menu:hover{background:rgba(255,255,255,.055)}
+.welcome{
+  width:min(700px,calc(100% - 48px));
+  padding:30px 0;
+}
+.welcome-orb.brand-emblem{
+  width:76px;height:64px;
+  margin-bottom:25px;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.welcome h1{font-size:clamp(35px,4.2vw,48px);letter-spacing:-1.8px}
+.welcome>p{max-width:480px}
+.suggestion-grid{
+  display:flex;
+  flex-direction:column;
+  max-width:470px;
+  gap:0;
+  margin-top:28px;
+}
+.suggestion-card{
+  min-height:54px;
+  padding:10px 4px;
+  border:0;
+  border-bottom:1px solid rgba(230,240,232,.09);
+  border-radius:0;
+  background:transparent;
+  gap:12px;
+}
+.suggestion-card:first-child{border-top:1px solid rgba(230,240,232,.09)}
+.suggestion-card:hover{
+  transform:none;
+  background:rgba(255,255,255,.025);
+  border-color:rgba(230,240,232,.14);
+}
+.suggestion-icon{
+  width:25px;height:25px;
+  border-radius:0;
+  background:transparent!important;
+  font-size:15px;
+}
+.suggestion-card strong{font-size:11px;font-weight:600}
+.suggestion-card small{font-size:10px}
+.suggestion-arrow{font-size:13px}
+.message-list{width:min(760px,calc(100% - 48px));gap:25px;padding-top:28px}
+.message{grid-template-columns:24px minmax(0,1fr);gap:13px}
+.message-avatar{
+  width:22px;height:22px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#79dcd3;
+  font-size:15px;
+}
+.message.user .message-avatar{
+  border:0;background:transparent;color:#aeb8b1;
+}
+.message-meta strong{font-size:11px}
+.message-content{font-size:14px;line-height:1.82}
+.message-content pre{border-radius:5px;box-shadow:none}
+.composer-wrap{
+  width:min(760px,calc(100% - 48px));
+  padding:12px 0 15px;
+}
+.composer{
+  border:1px solid rgba(230,240,232,.16);
+  border-radius:8px;
+  background:#101412;
+  padding:11px 12px 8px;
+  box-shadow:none;
+}
+.composer:focus-within{
+  border-color:rgba(123,228,218,.4);
+  box-shadow:none;
+}
+.send-button{border-radius:6px;box-shadow:none}
+.model-pill{
+  border:0;
+  border-radius:3px;
+  background:rgba(123,228,218,.07);
+}
+@media(max-width:620px){
+  .sidebar{width:280px;flex-basis:280px;padding:20px 18px}
+  .topbar{height:54px;flex-basis:54px;padding-inline:14px}
+  .welcome{padding:22px 0}
+  .suggestion-grid{max-width:100%;margin-top:24px}
+  .message-list,.composer-wrap{width:calc(100% - 28px)}
+  .composer{border-radius:7px}
+}

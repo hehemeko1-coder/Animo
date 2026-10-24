@@ -40,7 +40,7 @@ a{color:inherit}
 }
 .new-chat-button:hover{background:#FF6E6C}
 .plus-icon{font-size:20px;line-height:1;font-weight:400}
-.new-chat-button kbd{margin-left:auto;font:10px var(--font-mono);color:#b8bdfb;border:1px solid #aeb4ed;padding:2px 4px;border-radius:0}
+.new-chat-button kbd{margin-left:auto;font:10px var(--font-mono);color:#000000;border:1px solid #000000;padding:2px 4px;border-radius:0}
 .sidebar-label{margin:39px 0 12px 3px;color:var(--quiet);font:10px/1.2 var(--font-mono);letter-spacing:1.5px}
 .sidebar-item{
   display:flex;align-items:center;gap:11px;width:100%;min-height:42px;margin:2px 0;padding:10px 9px;
@@ -88,7 +88,7 @@ a{color:inherit}
   letter-spacing:-5px;text-wrap:balance
 }
 .welcome h1 span{color:var(--acid)}
-.welcome>p{max-width:500px;margin:0;color:#5c5d70;font-size:14px;line-height:1.8}
+.welcome>p{max-width:500px;margin:0;color:#000000;font-size:14px;line-height:1.8}
 .suggestion-grid{display:flex;flex-direction:column;max-width:580px;margin:38px 0 0;text-align:left;border-top:1px solid var(--line)}
 .suggestion-card{
   display:flex;align-items:center;gap:13px;width:100%;min-height:53px;padding:10px 4px;
@@ -148,10 +148,10 @@ a{color:inherit}
 .composer textarea::placeholder{color:#000000}
 .composer-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:9px;border-top:1px solid #000000}
 .tool-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.tool-button{display:inline-flex;align-items:center;gap:5px;padding:6px 7px;border:1px solid transparent;border-radius:0;background:transparent;color:#5b5d70;font-size:10px;cursor:pointer}
+.tool-button{display:inline-flex;align-items:center;gap:5px;padding:6px 7px;border:1px solid transparent;border-radius:0;background:transparent;color:#000000;font-size:10px;cursor:pointer}
 .tool-button:hover{background:#FF6E6C;color:var(--acid)}
 .tool-button span{font-size:15px}
-.tool-toggle{display:inline-flex;align-items:center;gap:7px;padding:5px 7px;color:#5b5d70;font-size:10px;cursor:pointer}
+.tool-toggle{display:inline-flex;align-items:center;gap:7px;padding:5px 7px;color:#000000;font-size:10px;cursor:pointer}
 .tool-toggle input{position:absolute;opacity:0;width:1px;height:1px}
 .toggle-track{position:relative;width:24px;height:13px;border:1px solid #000000;background:#FF6E6C}
 .toggle-track:after{content:"";position:absolute;left:2px;top:2px;width:7px;height:7px;background:#000000;transition:transform .15s}
@@ -169,7 +169,7 @@ a{color:inherit}
 .send-button:hover{background:#FF6E6C}
 .send-button svg{width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:square;stroke-linejoin:miter}
 .disclaimer{margin:10px 0 0;text-align:center;color:var(--quiet);font-size:10px}
-.disclaimer span{color:#b9baad}
+.disclaimer span{color:#000000}
 .modal-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:rgba(25,29,53,.55)}
 .modal-backdrop[hidden]{display:none!important}
 .modal-card{width:min(520px,100%);max-height:min(85dvh,760px);overflow:auto;padding:25px;background:#FFF000;border:1px solid #000000;border-top:4px solid #FF6E6C;box-shadow:8px 8px 0 #000000}
@@ -180,7 +180,7 @@ a{color:inherit}
 .modal-description{margin:17px 0;color:var(--muted);font-size:12px;line-height:1.7}
 .stack-form{display:flex;flex-direction:column;gap:9px}
 .stack-form label{margin-top:8px;color:var(--muted);font:10px var(--font-mono)}
-.stack-form input,.stack-form textarea{width:100%;padding:10px;border:1px solid #b8b3a8;border-radius:0;background:#CCFF33;color:var(--ink);outline:none}
+.stack-form input,.stack-form textarea{width:100%;padding:10px;border:1px solid #000000;border-radius:0;background:#CCFF33;color:var(--ink);outline:none}
 .stack-form input:focus,.stack-form textarea:focus{border-color:var(--acid)}
 .primary-button{min-height:39px;padding:9px 12px;border:1px solid var(--acid);border-radius:0;background:var(--acid);color:#000000;font-weight:700;cursor:pointer}
 .primary-button:hover{background:#FF6E6C}

@@ -204,22 +204,23 @@
   async function saveExplicitMemoryFromChat(message, serverMemory) {
     const memoryText = serverMemory?.memory || explicitMemoryText(message);
     if (!memoryText) return false;
-    if (features.persistentLearning) {
-      if (serverMemory?.memory) {
-        persistentMemories = [serverMemory, ...persistentMemories.filter(item => item.memory !== serverMemory.memory)].slice(0, 40);
-      } else {
+    if (serverMemory?.memory) {
+      memoryStorageFallback = false;
+      persistentMemories = [serverMemory, ...persistentMemories.filter(item => item.memory !== serverMemory.memory)].slice(0, 40);
+    } else if (features.persistentLearning && !memoryStorageFallback) {
+      try {
         const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: memoryText }) });
         const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          memoryStorageFallback = true;
-          const localMemories = getMemories();
-          if (!localMemories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) localMemories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
-          if (!writeStore(STORAGE.memory, localMemories.slice(0, 40))) return false;
-          renderMemories();
-          showToast("Cloud memory is unavailable. Saved this memory in your browser instead.");
-          return true;
-        }
+        if (!response.ok) throw new Error(data.error || "Memory couldn't be saved.");
         persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
+      } catch {
+        memoryStorageFallback = true;
+        const memories = getMemories();
+        if (!memories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) memories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
+        if (!writeStore(STORAGE.memory, memories.slice(0, 40))) return false;
+        renderMemories();
+        showToast("Cloud memory is unavailable. Saved this memory in your browser instead.");
+        return true;
       }
     } else {
       const memories = getMemories();
@@ -417,7 +418,7 @@
   document.querySelectorAll(".modal-backdrop").forEach(modal => modal.addEventListener("click", event => { if (event.target === modal) closeModal(modal); }));
   memoryForm.addEventListener("submit", async event => {
     event.preventDefault(); const text = memoryInput.value.trim(); if (!text) return;
-    if (features.persistentLearning) {
+    if (features.persistentLearning && !memoryStorageFallback) {
       try {
         const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: text }) });
         const data = await response.json().catch(() => ({}));

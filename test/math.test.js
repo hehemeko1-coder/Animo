@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, shouldForceCalculator } = require("../lib/agent-tools.js");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, shouldForceCalculator } = require("../lib/agent-tools.js");
 
 function result(expression, expected, tolerance = 1e-10) {
   const actual = safeCalculate(expression);
@@ -82,6 +82,20 @@ test("solves quadratic equations and verifies real roots", () => {
   assert.deepEqual(solveQuadraticEquation("2x^2 - 8 = 0").roots.slice().sort((a, b) => a - b), [-2, 2]);
   assert.ok(solveQuadraticEquation("x^2 + 1 = 0").error);
   assert.ok(solveQuadraticEquation("x^3 = 8").error);
+});
+
+
+test("solves and verifies two-variable linear systems", () => {
+  const solved = solveLinearSystem("x + y = 10; x - y = 2");
+  assert.equal(solved.error, undefined, solved.error);
+  assert.equal(solved.result.x, 6);
+  assert.equal(solved.result.y, 4);
+  const simple = solveLinearSystem(["x = 3", "y = 7"]);
+  assert.equal(simple.error, undefined, simple.error);
+  assert.deepEqual(simple.result, { x: 3, y: 7 });
+  assert.ok(solveLinearSystem("x + y = 2; 2x + 2y = 4").error);
+  assert.ok(solveLinearSystem("x + y = 2; x + y = 5").error);
+  assert.ok(solveLinearSystem("x^2 + y = 2; x - y = 0").error);
 });
 
 test("calculator intent detection", () => {

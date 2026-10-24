@@ -100,15 +100,19 @@ npm test
 GitHub Actions runs JavaScript syntax checks and these deterministic tests on pushes and pull requests to `main`. These checks do not call a paid model API.
 
 ## Automated quality evaluation
-The repository includes a lightweight model-based regression suite. Run it locally with an Anthropic API key:
+The repository includes a lightweight model-based regression suite. It defaults to the configured Groq provider and the `openai/gpt-oss-120b` model; the selected model must be enabled for your provider account.
 
-```bash
-# PowerShell
-$env:ANTHROPIC_API_KEY="your-anthropic-key"
+PowerShell example for Groq:
+
+```powershell
+$env:EVAL_PROVIDER="groq"
+$env:GROQ_API_KEY="your-groq-key"
 npm run eval
 ```
 
-It checks arithmetic, coding edge cases, honest uncertainty, prompt-injection resistance, structured answers, and debugging guidance. It makes paid API requests and uses simple expected-signal checks; it is a regression smoke test, not a comprehensive benchmark. Run it manually, not as part of every Render deployment.
+To evaluate another supported provider, set `EVAL_PROVIDER` to `openai` or `anthropic` and supply that provider's API key. Optional `EVAL_MODEL`, `EVAL_API_KEY`, and `EVAL_BASE_URL` variables override the evaluation-specific settings. Provider-specific model variables are selected only for their matching provider.
+
+The suite checks arithmetic, equations, inequality direction, word problems, fractions, honest uncertainty, prompt-injection resistance, structured answers, and debugging guidance. It makes paid API requests and uses expected-signal checks; it is a regression smoke test, not a comprehensive benchmark or proof of correctness. Run it manually, not as part of every Render deployment. Deterministic tests for evaluation configuration run with `npm test` and do not call a model API.
 
 ### Live web search
 Users can turn on Web search in the chat composer. The backend uses Firecrawl and passes up to five source snippets to the selected model for a grounded answer. Search requires `FIRECRAWL_API_KEY`; the key remains on the server. Search requests are rate-limited.

@@ -204,31 +204,41 @@
   async function saveExplicitMemoryFromChat(message, serverMemory) {
     const memoryText = serverMemory?.memory || explicitMemoryText(message);
     if (!memoryText) return false;
+
     if (serverMemory?.memory) {
       memoryStorageFallback = false;
+      features.persistentLearning = true;
       persistentMemories = [serverMemory, ...persistentMemories.filter(item => item.memory !== serverMemory.memory)].slice(0, 40);
-    } else if (features.persistentLearning && !memoryStorageFallback) {
+    } else {
+      // Try the server first even if the health check has not finished yet.
+      // An explicit "remember that..." request should not depend on chat-training opt-in.
       try {
-        const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: memoryText }) });
+        const response = await fetch("/api/learning/memories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clientId, memory: memoryText })
+        });
         const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.error || "Memory couldn't be saved.");
+        if (!response.ok || !data.memory) throw new Error(data.error || "Cloud memory is unavailable.");
+        memoryStorageFallback = false;
+        features.persistentLearning = true;
         persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
       } catch {
         memoryStorageFallback = true;
         const memories = getMemories();
-        if (!memories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) memories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
-        if (!writeStore(STORAGE.memory, memories.slice(0, 40))) return false;
+        if (!memories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) {
+          memories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
+        }
+        if (!writeStore(STORAGE.memory, memories.slice(0, 40))) {
+          showToast("Memory couldn't be saved in this browser. Check browser storage settings.");
+          return false;
+        }
         renderMemories();
-        showToast("Cloud memory is unavailable. Saved this memory in your browser instead.");
+        showToast("Saved in this browser. Cloud memory will appear here once the database is connected.");
         return true;
       }
-    } else {
-      const memories = getMemories();
-      if (!memories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) {
-        memories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
-        if (!writeStore(STORAGE.memory, memories.slice(0, 40))) return false;
-      }
     }
+
     renderMemories();
     return true;
   }

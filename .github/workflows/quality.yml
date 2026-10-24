@@ -24,5 +24,7 @@ jobs:
           node --check script.js
           node --check evals.js
           node --check lib/agent-tools.js
+          node --check lib/learning-store.js
+          node --check lib/memory-extractor.js
       - name: Run deterministic tests
         run: npm test

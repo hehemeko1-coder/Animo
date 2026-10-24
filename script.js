@@ -23,7 +23,7 @@
   }
   const clientId = getClientId();
   try { learningToggle.checked = localStorage.getItem(STORAGE.learning) === "true"; } catch {}
-  let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {};
+  let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [];
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
   function readStore(key, fallback = []) {
@@ -197,13 +197,37 @@
 
   function getMemories() { return readStore(STORAGE.memory).filter(x => x && typeof x.text === "string" && x.text.trim()); }
   function getWorkflows() { return readStore(STORAGE.workflows).filter(x => x && typeof x.name === "string" && typeof x.details === "string"); }
+  async function loadPersistentMemories() {
+    if (!features.persistentLearning) return;
+    try {
+      const response = await fetch("/api/learning/memories?clientId=" + encodeURIComponent(clientId));
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Couldn't load cloud memories.");
+      persistentMemories = Array.isArray(data.memories) ? data.memories : [];
+      renderMemories();
+    } catch (error) { showToast(error.message || "Couldn't load saved memories."); }
+  }
   function renderMemories() {
-    const memories = getMemories(); memoryCount.textContent = String(memories.length); savedMemoryList.replaceChildren();
+    const memories = features.persistentLearning
+      ? persistentMemories.map(item => ({ text: item.memory, id: item.id }))
+      : getMemories();
+    memoryCount.textContent = String(memories.length); savedMemoryList.replaceChildren();
     if (!memories.length) { const empty = document.createElement("p"); empty.className = "empty-state"; empty.textContent = "No saved memories yet. Add a preference or fact above."; savedMemoryList.append(empty); }
     memories.forEach((item, index) => {
       const row = document.createElement("div"); row.className = "saved-item";
       const text = document.createElement("p"); text.textContent = item.text; const remove = document.createElement("button");
-      remove.className = "remove-item"; remove.type = "button"; remove.textContent = "Delete"; remove.addEventListener("click", () => {
+      remove.className = "remove-item"; remove.type = "button"; remove.textContent = "Delete"; remove.addEventListener("click", async () => {
+        if (features.persistentLearning && item.id) {
+          try {
+            const response = await fetch("/api/learning/memories/" + encodeURIComponent(item.id), {
+              method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || "Couldn't delete this memory.");
+            persistentMemories = persistentMemories.filter(saved => String(saved.id) !== String(item.id)); renderMemories();
+          } catch (error) { showToast(error.message || "Couldn't delete this memory."); }
+          return;
+        }
         const next = getMemories(); next.splice(index, 1); if (writeStore(STORAGE.memory, next)) renderMemories();
       });
       row.append(text, remove); savedMemoryList.append(row);
@@ -226,7 +250,7 @@
   }
   function openModal(modal) { modal.hidden = false; const first = modal.querySelector("input,textarea,button"); if (first) first.focus(); }
   function closeModal(modal) { modal.hidden = true; }
-  function memoryContext() { return getMemories().map(x => "- " + x.text).join("\n").slice(0, 6000); }
+  function memoryContext() { return (features.persistentLearning ? persistentMemories.map(x => ({ text: x.memory })) : getMemories()).map(x => "- " + x.text).join("\n").slice(0, 6000); }
 
   function renderAttachments() {
     attachmentList.replaceChildren();
@@ -350,14 +374,33 @@
   $("#automationButton").addEventListener("click", () => { renderWorkflows(); openModal(automationModal); });
   document.querySelectorAll("[data-close-modal]").forEach(button => button.addEventListener("click", () => closeModal($("#" + button.dataset.closeModal))));
   document.querySelectorAll(".modal-backdrop").forEach(modal => modal.addEventListener("click", event => { if (event.target === modal) closeModal(modal); }));
-  memoryForm.addEventListener("submit", event => {
+  memoryForm.addEventListener("submit", async event => {
     event.preventDefault(); const text = memoryInput.value.trim(); if (!text) return;
+    if (features.persistentLearning) {
+      try {
+        const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: text }) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Memory couldn't be saved.");
+        persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
+        memoryInput.value = ""; renderMemories(); showToast("Memory saved to your persistent account on this browser.");
+      } catch (error) { showToast(error.message || "Memory couldn't be saved."); }
+      return;
+    }
     const memories = getMemories(); if (memories.length >= 40) { showToast("You can save up to 40 memories."); return; }
     memories.unshift({ text, createdAt: new Date().toISOString() });
     if (writeStore(STORAGE.memory, memories)) { memoryInput.value = ""; renderMemories(); showToast("Memory saved on this browser."); }
   });
-  $("#clearMemoryButton").addEventListener("click", () => {
-    if (!window.confirm("Delete every saved memory from this browser?")) return;
+  $("#clearMemoryButton").addEventListener("click", async () => {
+    if (!window.confirm("Delete every saved memory? This cannot be undone.")) return;
+    if (features.persistentLearning) {
+      try {
+        const response = await fetch("/api/learning/memories", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId }) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Couldn't clear saved memories.");
+        persistentMemories = []; renderMemories(); showToast("Persistent saved memories deleted.");
+      } catch (error) { showToast(error.message || "Couldn't clear saved memories."); }
+      return;
+    }
     localStorage.removeItem(STORAGE.memory); renderMemories(); showToast("Saved memories deleted.");
   });
   workflowForm.addEventListener("submit", event => {
@@ -378,6 +421,7 @@
   updateCount(); renderMemories(); renderWorkflows();
   fetch("/api/health").then(response => response.json()).then(data => {
     features = data.features || {};
+    if (features.persistentLearning) loadPersistentMemories();
     if (!data.configured) showToast("Setup needed: add GROQ_API_KEY to Render Environment.");
     if (features.webSearch) webStatus.textContent = "Ready";
     else { webSearchToggle.title = "Set FIRECRAWL_API_KEY in Render to enable live search."; webStatus.textContent = "Setup"; }

@@ -19,8 +19,8 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
 .app-shell{height:100dvh;min-height:0;display:flex;padding:0;background:var(--bg);isolation:isolate}
 .sidebar{width:var(--sidebar-width);flex:0 0 var(--sidebar-width);display:flex;flex-direction:column;padding:24px 14px 16px;background:#1e1e1e;border-right:1px solid #353535;position:relative;z-index:5;transition:width .22s ease,flex-basis .22s ease,transform .22s ease}
 .sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 8px 24px}
-.brand{display:flex;align-items:center;gap:11px;min-width:0;text-decoration:none;font:800 21px/1 var(--font-display);letter-spacing:-.8px}
-.brand-mark{display:block;width:34px;height:34px;object-fit:contain;flex:0 0 34px}
+.brand{display:flex;align-items:center;gap:5.5px;min-width:0;text-decoration:none;font:800 21px/1 var(--font-display);letter-spacing:-.8px}
+.brand-mark{display:block;width:68px;height:68px;object-fit:contain;flex:0 0 68px}
 .new-chat-button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 12px;text-align:left;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:background .16s,border-color .16s,transform .16s}
 .new-chat-button:hover{background:#4cdae1;border-color:#4cdae1;transform:translateY(-1px)}
 .new-chat-button svg,.sidebar-item svg,.icon-button svg,.quiet-icon-button svg,.tool-button svg,.menu-item-icon svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
@@ -41,7 +41,7 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
 .sidebar-footer{padding-top:12px;border-top:1px solid #373737}
 .sidebar-item{display:flex;align-items:center;gap:11px;width:100%;min-height:40px;margin:0 0 12px;padding:9px 10px;text-align:left;border:1px solid transparent;border-radius:9px;background:transparent;color:#c4c4c4;font-size:12px;cursor:pointer}
 .sidebar-item:hover{background:#2d2d2d;color:#fff}
-.sidebar-item svg{color:#a7a7a7;width:17px;height:17px}
+.sidebar-item svg{color:#a7a7a7;width:17px;height:17px}.sidebar-item .memory-bulb-icon{width:20px;height:20px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .nav-count{margin-left:auto;color:#999;font-size:10px}
 .provider-status{display:flex;align-items:center;gap:10px;padding:12px 10px 2px;border-top:1px solid #353535}
 .status-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;flex:0 0 7px}
@@ -178,6 +178,30 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
 .toast{position:fixed;left:50%;bottom:22px;z-index:50;max-width:min(520px,calc(100vw - 32px));padding:11px 16px;border:1px solid #4c4c4c;border-radius:12px;background:#303030;color:#fff;font-size:12px;box-shadow:0 12px 35px rgba(0,0,0,.3);opacity:0;pointer-events:none;transform:translate(-50%,10px);transition:opacity .18s,transform .18s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .sidebar-scrim{display:none}
+
+/* Compact sidebar: a real icon rail, distinct from the fully hidden state. */
+.app-shell.sidebar-compact .sidebar{width:76px;flex-basis:76px;padding:24px 8px 16px;overflow:hidden}
+.app-shell.sidebar-compact .sidebar-head{justify-content:center;padding:0 0 24px}
+.app-shell.sidebar-compact .brand{justify-content:center;gap:0}
+.app-shell.sidebar-compact .brand-mark{width:48px;height:48px;flex-basis:48px}
+.app-shell.sidebar-compact .brand span,
+.app-shell.sidebar-compact .new-chat-button span,
+.app-shell.sidebar-compact .new-chat-button kbd,
+.app-shell.sidebar-compact .history-item span,
+.app-shell.sidebar-compact .sidebar-item>span:not(.nav-count),
+.app-shell.sidebar-compact .provider-status>span:not(.status-dot){display:none}
+.app-shell.sidebar-compact .new-chat-button{justify-content:center;padding:0;min-height:44px}
+.app-shell.sidebar-compact .new-chat-button svg{width:20px;height:20px}
+.app-shell.sidebar-compact .sidebar-section-heading{display:none}
+.app-shell.sidebar-compact .quiet-icon-button{display:none}
+.app-shell.sidebar-compact .history-item{justify-content:center;padding:10px 0}
+.app-shell.sidebar-compact .history-item svg{width:18px;height:18px}
+.app-shell.sidebar-compact .sidebar-item{justify-content:center;position:relative;padding:10px 0;margin-bottom:10px}
+.app-shell.sidebar-compact .sidebar-item svg{width:21px;height:21px}
+.app-shell.sidebar-compact .nav-count{position:absolute;top:2px;right:8px;font-size:9px}
+.app-shell.sidebar-compact .provider-status{justify-content:center;padding:13px 0 2px}
+.app-shell.sidebar-compact.sidebar-collapsed .sidebar{width:0;flex-basis:0;padding-left:0;padding-right:0}
+
 .app-shell.sidebar-collapsed .sidebar{width:0;flex-basis:0;padding-left:0;padding-right:0;border-right:0;overflow:hidden}
 .app-shell.sidebar-collapsed .sidebar>*{opacity:0;pointer-events:none}
 @keyframes fade-up{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -186,13 +210,27 @@ button, a, input, textarea{-webkit-tap-highlight-color:transparent}
 @media(max-width:760px){
   body{overflow:hidden}
   .sidebar{position:fixed;inset:0 auto 0 0;width:min(300px,86vw);height:100dvh;flex-basis:auto;transform:translateX(-105%);box-shadow:none;transition:transform .22s ease;z-index:41}
+  .app-shell.sidebar-compact .sidebar{width:min(300px,86vw);flex-basis:auto;padding:24px 14px 16px}
+  .app-shell.sidebar-compact .sidebar-head{justify-content:space-between;padding:0 8px 24px}
+  .app-shell.sidebar-compact .brand{justify-content:flex-start;gap:5.5px}
+  .app-shell.sidebar-compact .brand-mark{width:68px;height:68px;flex-basis:68px}
+  .app-shell.sidebar-compact .brand span,.app-shell.sidebar-compact .new-chat-button span,.app-shell.sidebar-compact .new-chat-button kbd,.app-shell.sidebar-compact .sidebar-section-heading>span,.app-shell.sidebar-compact .history-item span,.app-shell.sidebar-compact .sidebar-item>span:not(.nav-count),.app-shell.sidebar-compact .provider-status>span:not(.status-dot){display:initial}
+  .app-shell.sidebar-compact .new-chat-button{justify-content:flex-start;padding:0 12px}
+  .app-shell.sidebar-compact .new-chat-button kbd{display:block}
+  .app-shell.sidebar-compact .sidebar-section-heading{display:flex;justify-content:space-between;margin:29px 6px 9px 10px}
+  .app-shell.sidebar-compact .sidebar-section-heading>span{display:inline}
+  .app-shell.sidebar-compact .quiet-icon-button{display:grid}
+  .app-shell.sidebar-compact .history-item{justify-content:flex-start;padding:8px 10px}
+  .app-shell.sidebar-compact .sidebar-item{justify-content:flex-start;padding:9px 10px}
+  .app-shell.sidebar-compact .nav-count{position:static;margin-left:auto}
+  .app-shell.sidebar-compact .provider-status{justify-content:flex-start;padding:12px 10px 2px}
   .sidebar.open{transform:translateX(0);box-shadow:20px 0 60px rgba(0,0,0,.4)}
   .sidebar-scrim{position:fixed;inset:0;z-index:40;border:0;background:rgba(0,0,0,.56);opacity:0;pointer-events:none;display:block;transition:opacity .2s}
   .sidebar-scrim.open{opacity:1;pointer-events:auto}
   .sidebar-close,.mobile-menu{display:grid}
   .sidebar-toggle,.connection-label{display:none}
   .mobile-brand{display:flex;align-items:center;gap:8px;text-decoration:none;font:800 17px var(--font-display);letter-spacing:-.5px}
-  .mobile-brand img{width:27px;height:27px;object-fit:contain}
+  .mobile-brand img{width:54px;height:54px;object-fit:contain}.mobile-brand{gap:4px}
   .topbar{height:58px;flex-basis:58px;padding:0 12px}
   .topbar-leading,.topbar-actions{gap:7px}
   .desktop-chat-title{display:none}

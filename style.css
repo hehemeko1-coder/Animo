@@ -49,3 +49,35 @@ button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{
 @media(max-width:760px){.app-shell{padding:6px;gap:0}.chat-area{border-radius:16px}.sidebar{position:absolute;inset:6px auto 6px 6px;width:min(290px,86vw);height:auto;transform:translateX(-110%);transition:transform .2s ease;box-shadow:none}.sidebar.open{transform:translateX(0);box-shadow:15px 0 40px rgba(0,0,0,.35)}.mobile-menu{display:grid;width:33px;height:33px;gap:3px;align-content:center;padding:8px}.mobile-menu span{display:block;height:2px;background:currentColor;width:15px}.topbar{height:56px;flex-basis:56px;padding:0 13px;gap:10px}.topbar-title{margin-right:auto}.desktop-chat-title{display:none}.mobile-brand{display:flex;align-items:center;gap:7px;font:700 18px var(--font-display);letter-spacing:-.5px}.mobile-logo-image{width:24px;height:24px;object-fit:contain}.welcome{width:calc(100% - 34px);padding:27px 0}.welcome h1{font-size:clamp(39px,10vw,58px);letter-spacing:-2.4px}.welcome>p{font-size:13px}.suggestion-grid{grid-template-columns:1fr;gap:9px;margin-top:23px}.suggestion-card{min-height:67px;padding:11px 13px}.message-list,.composer-wrap{width:calc(100% - 26px)}.message-list{padding:22px 0;gap:20px}.message-body{max-width:94%}.composer-wrap{padding:8px 0 10px}.composer{padding:10px;border-radius:14px}.composer-tools{align-items:flex-start}.tool-left{gap:1px}.tool-button,.tool-toggle{padding:5px 4px;font-size:9px}.tool-note{display:none}.composer-hint{display:none}.disclaimer{font-size:9px}.modal-card{padding:19px}}
 @media(max-width:400px){.tool-toggle{gap:4px}.composer-actions{gap:7px}.character-count{font-size:8px}.message-content{padding:10px 11px}.welcome h1{letter-spacing:-2px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Final polish: clearer hierarchy, quieter surfaces, and more consistent controls. */
+:root{--panel-elevated:#151e32;--focus-ring:rgba(103,232,213,.28)}
+::selection{background:rgba(155,140,255,.32);color:var(--text)}
+.sidebar,.chat-area{box-shadow:0 18px 55px rgba(0,0,0,.16)}
+.sidebar{background:linear-gradient(165deg,rgba(20,28,48,.98),rgba(14,20,36,.96))}
+.topbar{backdrop-filter:blur(14px)}
+.welcome h1{line-height:1.04}
+.welcome>p{font-size:14px}
+.suggestion-card{box-shadow:inset 0 1px rgba(255,255,255,.025)}
+.suggestion-card:focus-visible,.tool-button:focus-visible,.primary-button:focus-visible,.send-button:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.message-content{font-size:13.5px;line-height:1.78}
+.composer{box-shadow:0 12px 34px rgba(0,0,0,.12)}
+.tool-button,.tool-toggle{transition:background .16s ease,color .16s ease,border-color .16s ease}
+.tool-toggle:hover{color:var(--text)}
+.modal-card{background:linear-gradient(160deg,#151e32,#101727);border-color:#35405b}
+.modal-description{font-size:12.5px}
+.memory-tip{display:flex;align-items:flex-start;gap:11px;margin:0 0 20px;padding:13px;border:1px solid rgba(103,232,213,.16);border-radius:12px;background:rgba(103,232,213,.045)}
+.memory-tip-icon{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:9px;background:rgba(103,232,213,.1);color:var(--teal);font-size:16px}
+.memory-tip strong,.memory-tip small{display:block}
+.memory-tip strong{margin:1px 0 4px;font-size:11px;color:var(--text)}
+.memory-tip small{font-size:11px;line-height:1.6;color:var(--muted)}
+.saved-memory-list{margin-top:18px}
+.saved-item{gap:18px;padding:14px 2px}
+.saved-item p{font-size:12.5px;line-height:1.65}
+.remove-item{padding:6px 9px;border:1px solid transparent}
+.remove-item:hover{border-color:rgba(255,130,152,.18);background:rgba(255,130,152,.07)}
+.primary-button{box-shadow:0 6px 18px rgba(124,104,246,.16);transition:transform .15s ease,background .15s ease}
+.primary-button:hover{transform:translateY(-1px)}
+.toast{backdrop-filter:blur(14px)}
+@media(max-width:760px){.sidebar{background:#11182a}.modal-backdrop{padding:10px}.modal-card{max-height:calc(100dvh - 20px)}.memory-tip{padding:11px}}

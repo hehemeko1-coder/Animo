@@ -241,3 +241,132 @@ a{color:inherit}
  .modal-card{padding:19px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+
+/* PLAYFUL EDITORIAL SYSTEM — inspired by the supplied reference */
+:root{
+  --bg:#8050FF;
+  --sidebar:#CCFF33;
+  --surface:#CCFF33;
+  --surface-hover:#FF6E6C;
+  --ink:#000000;
+  --muted:#242424;
+  --quiet:#444444;
+  --line:#000000;
+  --acid:#00AEEF;
+  --accent-pink:#FF6E6C;
+}
+html,body{background:#8050FF}
+body{padding:10px}
+.app-shell{
+  height:calc(100dvh - 20px);min-height:0;overflow:hidden;
+  border:2px solid #000;border-radius:26px;background:#CCFF33;
+  box-shadow:0 7px 0 #000
+}
+.sidebar{
+  background:#CCFF33;border-right:2px solid #000;
+  padding:24px 16px 16px
+}
+.brand{font-size:25px;letter-spacing:-1.4px}
+.brand-ai,.mobile-brand>span:last-child{color:#FF6E6C}
+.new-chat-button{
+  background:#00AEEF;border:2px solid #000;border-radius:13px;
+  min-height:46px;margin-top:27px;box-shadow:3px 3px 0 #000
+}
+.new-chat-button:hover{background:#FF6E6C}
+.new-chat-button kbd{border:1px solid #000;border-radius:5px}
+.sidebar-label{color:#000;font-weight:700;letter-spacing:1.2px;margin-top:29px}
+.sidebar-item{border:1.5px solid transparent;border-radius:12px;min-height:41px}
+.sidebar-item:hover{background:#00AEEF;border-color:#000}
+.sidebar-item.active{background:#FF6E6C;color:#000;border:2px solid #000;box-shadow:3px 3px 0 #000}
+.sidebar-item.active .sidebar-icon{color:#000}
+.live-dot,.status-dot{border-radius:50%;background:#FF6E6C;border:1px solid #000}
+.sidebar-bottom{border-top:2px solid #000}
+.chat-area{background:#CCFF33;min-width:0}
+.topbar{
+  background:#CCFF33;border-bottom:2px solid #000;
+  padding:0 28px
+}
+.topbar-title{font-weight:700}
+.desktop-chat-title:before{width:9px;height:9px;border:1.5px solid #000;background:#FF6E6C;border-radius:50%}
+.model-pill{border:1.5px solid #000;border-radius:999px;background:#fff;font-weight:600;color:#000}
+.model-pill span{background:#00AEEF;border-radius:50%}
+.icon-button,.mobile-menu{border:1.5px solid #000;border-radius:10px;background:#fff;color:#000;box-shadow:2px 2px 0 #000}
+.icon-button:hover,.mobile-menu:hover{background:#FF6E6C;border-color:#000;color:#000}
+.conversation{background:#CCFF33;scrollbar-color:#00AEEF transparent}
+.welcome{width:min(760px,calc(100% - 72px));padding:38px 0}
+.welcome-eyebrow{color:#000;font-weight:700;letter-spacing:1.5px}
+.welcome-eyebrow .status-dot{background:#00AEEF}
+.welcome h1{font-weight:700;letter-spacing:-4px;line-height:.98}
+.welcome h1 span{color:#FF6E6C;text-shadow:1.5px 1.5px 0 #000}
+.welcome>p{color:#222;max-width:520px}
+.suggestion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:640px;border:0;margin-top:30px}
+.suggestion-card{
+  position:relative;min-height:94px;padding:15px;
+  border:2px solid #000;border-radius:15px;background:#FF6E6C;
+  box-shadow:3px 3px 0 #000;gap:10px
+}
+.suggestion-card:nth-child(2n){background:#00AEEF}
+.suggestion-card:hover{padding:15px;background:#fff;color:#000;transform:translate(-1px,-1px);box-shadow:5px 5px 0 #000}
+.suggestion-card>span:nth-child(2){display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.suggestion-card strong{font-size:13px;font-weight:700}
+.suggestion-card small{font:10px/1.4 var(--font-mono);color:#000}
+.suggestion-arrow{color:#000}
+.message-list{padding-top:28px;gap:22px}
+.message{gap:12px}
+.message-avatar{border:1.5px solid #000;border-radius:9px;background:#00AEEF;color:#000}
+.message.user .message-avatar{background:#FF6E6C}
+.message-body{min-width:0}
+.message-meta strong{font-weight:700}
+.message-content{color:#000;line-height:1.75}
+.message-content h2,.message-content h3,.message-content h4{color:#000}
+.message-content pre{background:#fff;border:2px solid #000;border-left:7px solid #00AEEF;border-radius:12px;box-shadow:3px 3px 0 #000}
+.message-content code{background:#fff;border:1px solid #000;border-radius:4px}
+.message-content .response-table th{background:#FF6E6C;color:#000}
+.message-content .response-table tbody tr:nth-child(even){background:#fff}
+.message-content blockquote{border-left:5px solid #FF6E6C;color:#000}
+.message-sources{border-top:1.5px solid #000}
+.message-sources strong,.message-sources a{color:#000}
+.composer-wrap{padding:12px 0 16px}
+.composer{
+  padding:14px 15px 11px;background:#CCFF33;
+  border:2px solid #000;border-radius:17px;box-shadow:4px 4px 0 #000
+}
+.composer:focus-within{border-color:#000;box-shadow:4px 4px 0 #00AEEF}
+.composer textarea{color:#000}
+.composer textarea::placeholder{color:#333}
+.composer-tools{border-top:1.5px solid #000}
+.tool-button,.tool-toggle{color:#000;border-radius:8px}
+.tool-button:hover{background:#FF6E6C;color:#000}
+.toggle-track{border:1.5px solid #000;border-radius:999px;background:#FF6E6C}
+.toggle-track:after{border-radius:50%}
+.tool-toggle input:checked+.toggle-track{background:#00AEEF;border-color:#000}
+.tool-status,.composer-hint span{color:#000}
+.send-button{width:39px;height:37px;border:2px solid #000;border-radius:10px;background:#00AEEF;color:#000;box-shadow:2px 2px 0 #000}
+.send-button:hover{background:#FF6E6C}
+.disclaimer{color:#222}
+.modal-backdrop{background:rgba(30,15,70,.55)}
+.modal-card{background:#CCFF33;border:2px solid #000;border-top:7px solid #FF6E6C;border-radius:18px;box-shadow:7px 7px 0 #000}
+.modal-kicker{color:#000}
+.modal-close{border:1.5px solid #000;border-radius:8px;background:#fff}
+.stack-form input,.stack-form textarea{border:1.5px solid #000;border-radius:9px;background:#fff}
+.primary-button{border:2px solid #000;border-radius:10px;background:#00AEEF;color:#000;box-shadow:2px 2px 0 #000}
+.primary-button:hover{background:#FF6E6C}
+.toast{background:#FF6E6C;border:2px solid #000;border-radius:10px;box-shadow:4px 4px 0 #000;color:#000}
+.attachment-chip{background:#fff;border:1.5px solid #000;border-radius:9px}
+@media(max-width:760px){
+ body{padding:5px}
+ .app-shell{height:calc(100dvh - 10px);border-radius:20px}
+ .sidebar{border-right:2px solid #000}
+ .topbar{padding:0 14px}
+ .welcome{width:calc(100% - 34px);padding:28px 0}
+ .welcome h1{font-size:clamp(39px,9vw,60px);letter-spacing:-2.5px}
+ .suggestion-grid{grid-template-columns:1fr;gap:9px;margin-top:22px}
+ .suggestion-card{min-height:70px}
+ .message-list,.composer-wrap{width:calc(100% - 28px)}
+ .composer{border-radius:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ .suggestion-card,.send-button,.new-chat-button{transition:none}
+}

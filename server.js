@@ -16,12 +16,12 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.8-27b";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-6-astra";
+let OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-6-astra";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5-5";
 const AI_PROVIDER_SETTING = (process.env.AI_PROVIDER || "groq").toLowerCase();
 const AI_PROVIDER = AI_PROVIDER_SETTING === "auto" ? (OPENAI_API_KEY ? "openai" : ANTHROPIC_API_KEY ? "anthropic" : "groq") : AI_PROVIDER_SETTING;
-const AI_MODEL = AI_PROVIDER === "openai" ? OPENAI_MODEL : AI_PROVIDER === "anthropic" ? ANTHROPIC_MODEL : GROQ_MODEL;
+let AI_MODEL = AI_PROVIDER === "openai" ? OPENAI_MODEL : AI_PROVIDER === "anthropic" ? ANTHROPIC_MODEL : GROQ_MODEL;
 const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
 const AUTOMATION_WEBHOOK_URL = process.env.AUTOMATION_WEBHOOK_URL;
 const AUTOMATION_WEBHOOK_TOKEN = process.env.AUTOMATION_WEBHOOK_TOKEN;
@@ -245,11 +245,43 @@ app.post("/api/learning/train", learningLimiter, async (req, res) => {
     });
     const jobData = await jobResponse.json().catch(() => ({}));
     if (!jobResponse.ok) return res.status(502).json({ error: "OpenAI rejected the fine-tuning job: " + String(jobData.error?.message || jobResponse.statusText).slice(0, 300) });
+    await learningStore.saveTrainingJob(jobData.id, baseModel, jobData.status || "queued", examples.length);
     await learningStore.markExported(examples.map(example => example.id));
-    return res.status(202).json({ ok: true, jobId: jobData.id, status: jobData.status, baseModel, examples: examples.length, message: "Fine-tuning job submitted to OpenAI. Monitor its status in the OpenAI platform dashboard." });
+    return res.status(202).json({ ok: true, jobId: jobData.id, status: jobData.status, baseModel, examples: examples.length, statusEndpoint: "/api/learning/train/" + jobData.id, message: "Fine-tuning job submitted. Poll the status endpoint with the same admin token; a successful completed model is activated for this running service and persisted." });
   } catch (error) {
     console.error("Fine-tuning submission failed:", error.message);
     return res.status(500).json({ error: "Couldn't submit the fine-tuning job. Check database connectivity, OpenAI model eligibility, and API billing." });
+  }
+});
+
+app.get("/api/learning/train/:jobId", learningLimiter, async (req, res) => {
+  const adminToken = process.env.SEENAI_ADMIN_TOKEN;
+  if (!adminToken || req.get("authorization") !== "Bearer " + adminToken) return res.status(401).json({ error: "Admin authorization required." });
+  if (!learningStore.enabled || !OPENAI_API_KEY) return res.status(503).json({ error: "Persistent learning and OPENAI_API_KEY are required." });
+  const jobId = String(req.params.jobId || "");
+  if (!/^ftjob-[A-Za-z0-9_-]{4,120}$/.test(jobId)) return res.status(400).json({ error: "Invalid fine-tuning job ID." });
+  try {
+    const savedJob = await learningStore.getTrainingJob(jobId);
+    if (!savedJob) return res.status(404).json({ error: "Fine-tuning job not found in SeenAi." });
+    const response = await fetch("https://api.openai.com/v1/fine_tuning/jobs/" + encodeURIComponent(jobId), {
+      headers: { Authorization: "Bearer " + OPENAI_API_KEY }, signal: AbortSignal.timeout(30000)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return res.status(502).json({ error: "OpenAI job status request failed: " + String(data.error?.message || response.statusText).slice(0, 250) });
+    const status = String(data.status || savedJob.status);
+    const fineTunedModel = typeof data.fine_tuned_model === "string" ? data.fine_tuned_model : null;
+    await learningStore.updateTrainingJob(jobId, status, fineTunedModel);
+    let activated = false;
+    if (status === "succeeded" && fineTunedModel && AI_PROVIDER === "openai") {
+      await learningStore.setActiveModel(fineTunedModel);
+      OPENAI_MODEL = fineTunedModel;
+      AI_MODEL = fineTunedModel;
+      activated = true;
+    }
+    return res.json({ ok: true, jobId, status, fineTunedModel, activatedForChat: activated || (status === "succeeded" && fineTunedModel === OPENAI_MODEL && AI_PROVIDER === "openai"), trainedTokens: data.trained_tokens ?? null });
+  } catch (error) {
+    console.error("Fine-tuning status check failed:", error.message);
+    return res.status(500).json({ error: "Couldn't retrieve or save fine-tuning status." });
   }
 });
 
@@ -667,6 +699,11 @@ app.get("/seenai-logo.png", (_req, res) => { res.type("image/png").setHeader("Ca
 app.use((_req, res) => res.status(404).json({ error: "Not found." }));
 
 app.listen(PORT, "0.0.0.0", () => {
+  if (learningStore.enabled) {
+    learningStore.getActiveModel().then(model => {
+      if (model && AI_PROVIDER === "openai") { OPENAI_MODEL = model; AI_MODEL = model; console.log("Restored persisted fine-tuned model:", model); }
+    }).catch(error => console.error("Could not restore fine-tuned model:", error.message));
+  }
   console.log(`SeenAi is listening on port ${PORT}`);
   if (!(AI_PROVIDER === "openai" ? OPENAI_API_KEY : AI_PROVIDER === "anthropic" ? ANTHROPIC_API_KEY : GROQ_API_KEY)) console.warn("The selected AI provider API key is missing. Configure its key in the server environment.");
 });

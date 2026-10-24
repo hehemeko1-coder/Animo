@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, shouldForceCalculator } = require("../lib/agent-tools.js");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator } = require("../lib/agent-tools.js");
 
 function result(expression, expected, tolerance = 1e-10) {
   const actual = safeCalculate(expression);
@@ -128,4 +128,20 @@ test("solves percentage calculations with clear working", () => {
   assert.equal(solvePercentageProblem("15 out of 60").result, 25);
   assert.equal(solvePercentageProblem("15 out of 0").error, "Cannot calculate a percentage of a zero total.");
   assert.equal(solvePercentageProblem("Tell me a story about 20% of a dragon"), null);
+});
+
+
+test("fraction expressions simplify and calculate exactly", () => {
+  assert.equal(solveFractionExpression("1/2 + 1/3").result, "5/6");
+  assert.equal(solveFractionExpression("2/4").result, "1/2");
+  assert.equal(solveFractionExpression("3/4 - 1/4").result, "1/2");
+  assert.equal(solveFractionExpression("2/3 * 3/4").result, "1/2");
+  assert.equal(solveFractionExpression("1/0").error, "A fraction denominator cannot be zero.");
+  assert.equal(solveFractionExpression("Tell me a story"), null);
+});
+
+test("ratios simplify and unit-price questions scale correctly", () => {
+  assert.equal(solveRatioProblem("12:8").result, "3:2");
+  assert.equal(solveRatioProblem("If 2 cost 50 birr, how much would 6 cost?").result, 150);
+  assert.ok(solveRatioProblem("0:0").error);
 });

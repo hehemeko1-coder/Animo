@@ -145,3 +145,33 @@ test("ratios simplify and unit-price questions scale correctly", () => {
   assert.equal(solveRatioProblem("If 2 cost 50 birr, how much would 6 cost?").result, 150);
   assert.ok(solveRatioProblem("0:0").error);
 });
+
+test("fraction division, signed fractions, and zero-divisor validation", () => {
+  assert.equal(solveFractionExpression("1/2 / 3/4").result, "2/3");
+  assert.equal(solveFractionExpression("-2/4").result, "-1/2");
+  assert.equal(solveFractionExpression("1/-2").result, "-1/2");
+  assert.equal(solveFractionExpression("-1/-2").result, "1/2");
+  assert.equal(solveFractionExpression("1/2 / 0/5").error, "Cannot divide by a zero fraction.");
+});
+
+test("fraction arithmetic handles negative results and reduction to zero", () => {
+  assert.equal(solveFractionExpression("1/3 - 2/3").result, "-1/3");
+  assert.equal(solveFractionExpression("2/3 - 2/3").result, "0");
+  assert.equal(solveFractionExpression("1/2 + 1/-2").result, "0");
+});
+
+test("percentage parser normalizes repeated whitespace", () => {
+  assert.equal(solvePercentageProblem("What is  20%   of   150?").result, 30);
+  assert.equal(solvePercentageProblem("increase   80 by  15%").result, 92);
+});
+
+test("ratio simplification normalizes negative signs", () => {
+  assert.equal(solveRatioProblem("-12:8").result, "-3:2");
+  assert.equal(solveRatioProblem("12:-8").result, "-3:2");
+  assert.equal(solveRatioProblem("-12:-8").result, "3:2");
+});
+
+test("fraction and ratio solvers safely reject oversized values", () => {
+  assert.ok(solveFractionExpression("999999999/2 * 999999999/2").error);
+  assert.equal(solveRatioProblem("0:8").result, "0:1");
+});

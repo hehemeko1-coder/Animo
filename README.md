@@ -1,6 +1,6 @@
 # SeenAi AI Assistant
 
-SeenAi is a responsive AI assistant built with Express. It supports configurable OpenAI, Anthropic Claude, and Groq model providers, live web search through Firecrawl, PDF/DOCX/TXT extraction, image input, browser-local saved memory, and user-approved automation webhooks.
+SeenAi is a responsive AI assistant built with Express. It supports configurable OpenAI, Anthropic Claude, and Groq model providers, live web search through Firecrawl, PDF/DOCX/TXT extraction, image input, persistent PostgreSQL memories and learning examples, OpenAI fine-tuning job tracking, and user-approved automation webhooks.
 
 Provider API keys stay in server environment variables. Never put them in frontend files or commit them to GitHub.
 
@@ -114,7 +114,7 @@ It checks arithmetic, coding edge cases, honest uncertainty, prompt-injection re
 Users can turn on Web search in the chat composer. The backend uses Firecrawl and passes up to five source snippets to the selected model for a grounded answer. Search requires `FIRECRAWL_API_KEY`; the key remains on the server. Search requests are rate-limited.
 
 ### Saved memory
-Saved memories are stored in the browser's `localStorage` and added to future prompts from that same browser. This works on the same browser profile, is not synced between devices, is not tied to a user account, and can be lost if browser storage is cleared. Users can inspect and delete saved memories in the Saved memory panel. Do not store secrets or highly sensitive information.
+Saved memories use PostgreSQL when `DATABASE_URL` is configured and can be inspected, added, and deleted in the Saved memory panel. Otherwise, memory remains in browser `localStorage`. When **Learn from chats** is enabled, SeenAi conservatively extracts explicit, durable preferences and project facts from user messages, excludes obvious sensitive-data patterns, and adds saved memories to later prompts. The same toggle controls automatic memory extraction and saving training examples; users can switch it off and delete saved memories. The browser-generated client ID is not account authentication, so do not treat memories as private account data until sign-in is implemented. Do not store secrets or highly sensitive information.
 
 ### File uploads
 PDF, DOCX and TXT files are uploaded to the backend for text extraction. Uploads are processed in memory and are not saved to disk by this application. Extracted text is truncated to 30,000 characters per file. Scanned/image-only PDFs need OCR before text extraction can work. Document text is treated as untrusted content in the AI prompt.
@@ -142,7 +142,7 @@ Set `DATABASE_URL` to a PostgreSQL database connection string in Render Environm
 
 When the database is configured, chat examples are stored under a browser-generated client ID. The chat UI offers **Helpful** and **Improve** feedback controls. Positive ratings and explicit corrections are eligible for training; unreviewed conversations are not automatically treated as correct. The client ID separates browser profiles but is not account authentication, so add a proper sign-in system before treating stored memory as private account data.
 
-OpenAI fine-tuning is a separate, paid operation. To submit a job, configure `OPENAI_API_KEY` and a strong `SEENAI_ADMIN_TOKEN` in Render Environment, then send an authenticated POST to `/api/learning/train` with header `Authorization: Bearer YOUR_ADMIN_TOKEN`. The endpoint requires at least 10 eligible, unrated-as-bad training examples, uploads a JSONL training file, and submits an OpenAI fine-tuning job. This endpoint does not run automatically; an administrator explicitly starts each paid training job. Check model eligibility, pricing, and job status in the OpenAI dashboard. A fine-tuned model is not automatically selected for chat; deploying it requires setting `OPENAI_MODEL` to the completed fine-tuned model ID and using the OpenAI provider.
+OpenAI fine-tuning is a separate, paid operation. To submit a job, configure `OPENAI_API_KEY` and a strong `SEENAI_ADMIN_TOKEN` in Render Environment, then send an authenticated POST to `/api/learning/train` with header `Authorization: Bearer YOUR_ADMIN_TOKEN`. The endpoint requires at least 10 positively rated or corrected training examples, uploads a JSONL training file, and submits an OpenAI fine-tuning job. This is actual provider-side fine-tuning, not merely retrieval or prompt memory, and it may incur charges. An administrator explicitly starts each paid job. Poll `GET /api/learning/train/JOB_ID` with the same Bearer token to retrieve status. When a job succeeds, SeenAi stores the resulting fine-tuned model ID in PostgreSQL and activates it for chat if `AI_PROVIDER=openai`; the selected model is restored after a server restart. Confirm model eligibility and pricing before starting. Fine-tuning is not automatic; the app deliberately does not start paid training jobs without administrator action.
 
 Learning endpoints include:
 - `GET /api/learning/memories?clientId=...`
@@ -150,4 +150,4 @@ Learning endpoints include:
 - `DELETE /api/learning/memories/:id` with a JSON body containing `clientId`
 - `DELETE /api/learning/memories` with `{ "clientId": "..." }`
 - `POST /api/learning/feedback` for ratings and corrections
-- `POST /api/learning/train` for admin-only fine-tuning submission
+- `POST /api/learning/train` for admin-only fine-tuning submission\n- `GET /api/learning/train/JOB_ID` for admin-only status polling and activation of a completed fine-tuned model

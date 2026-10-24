@@ -399,6 +399,7 @@
   async function sendMessage(rawText) {
     const content = rawText.trim();
     if ((!content && !images.length && !documents.length) || busy) return;
+    if (!activeConversationId) activeConversationId = "animo_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
     if (content.length > 4000) { showToast("Please keep your message under 4,000 characters."); return; }
     welcome.hidden = true;
     let userContent = content;

@@ -196,6 +196,33 @@
   function updateCount() { characterCount.textContent = input.value.length + " / 4000"; characterCount.style.color = input.value.length > 3700 ? "#f0b97e" : ""; }
 
   function getMemories() { return readStore(STORAGE.memory).filter(x => x && typeof x.text === "string" && x.text.trim()); }
+  function explicitMemoryText(message) {
+    const match = String(message || "").trim().match(/^(?:please\s+)?(?:remember|keep in mind)\s+that\s+(.{8,300})$/i);
+    if (!match || /\b(password|passcode|secret|api[_ -]?key|token|credit card|bank account|medical|diagnos(?:is|ed)|medication|religion|political party|sexual orientation|social security|passport number)\b/i.test(match[1])) return "";
+    return match[1].trim().replace(/[.!?]+$/, "").replace(/^./, character => character.toUpperCase());
+  }
+  async function saveExplicitMemoryFromChat(message, serverMemory) {
+    const memoryText = serverMemory?.memory || explicitMemoryText(message);
+    if (!memoryText) return false;
+    if (features.persistentLearning) {
+      if (serverMemory?.memory) {
+        persistentMemories = [serverMemory, ...persistentMemories.filter(item => item.memory !== serverMemory.memory)].slice(0, 40);
+      } else {
+        const response = await fetch("/api/learning/memories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, memory: memoryText }) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "SeenAi couldn't save that memory.");
+        persistentMemories = [data.memory, ...persistentMemories.filter(item => item.memory !== data.memory.memory)].slice(0, 40);
+      }
+    } else {
+      const memories = getMemories();
+      if (!memories.some(item => item.text.toLowerCase() === memoryText.toLowerCase())) {
+        memories.unshift({ text: memoryText, createdAt: new Date().toISOString() });
+        if (!writeStore(STORAGE.memory, memories.slice(0, 40))) return false;
+      }
+    }
+    renderMemories();
+    return true;
+  }
   function getWorkflows() { return readStore(STORAGE.workflows).filter(x => x && typeof x.name === "string" && typeof x.details === "string"); }
   async function loadPersistentMemories() {
     if (!features.persistentLearning) return;
@@ -332,6 +359,12 @@
       if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("SeenAi returned an empty reply. Please try again.");
       typing.remove(); messages.push({ role: "assistant", content: data.reply });
       makeMessage("assistant", data.reply, { sources, exampleId: data.exampleId });
+      if (explicitMemoryText(userContent) || data.memorySaved?.memory) {
+        try {
+          const saved = await saveExplicitMemoryFromChat(userContent, data.memorySaved);
+          if (saved) showToast("Saved to Memory. You can review or delete it in Saved memory.");
+        } catch (memoryError) { showToast(memoryError.message || "The memory couldn't be saved."); }
+      }
     } catch (error) {
       typing.remove(); const errorText = error.message || "Couldn't connect to SeenAi. Check your connection and try again.";
       makeMessage("assistant", errorText); showToast(errorText);
@@ -360,7 +393,7 @@
     } catch (error) { showToast(error.message || "Automation failed."); }
   }
 
-  learningToggle.addEventListener("change", () => { try { localStorage.setItem(STORAGE.learning, String(learningToggle.checked)); } catch {} showToast(learningToggle.checked ? "Chat learning enabled for this browser. Use Improve or Helpful to curate training examples." : "Chat learning disabled. New conversations will not be saved for training."); });
+  learningToggle.addEventListener("change", () => { try { localStorage.setItem(STORAGE.learning, String(learningToggle.checked)); } catch {} showToast(learningToggle.checked ? "Chat learning enabled. Useful preferences can be saved automatically; training examples require this setting." : "Chat training is off. Explicit ‘Remember that…’ requests will still be saved."); });
   form.addEventListener("submit", event => { event.preventDefault(); sendMessage(input.value); });
   input.addEventListener("input", () => { resizeInput(); updateCount(); });
   input.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });

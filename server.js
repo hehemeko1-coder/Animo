@@ -313,7 +313,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     .map(s => ({ title: s.title.slice(0, 200), url: s.url, content: String(s.content || "").slice(0, 1800) }));
   const clientId = learningStore.validClientId(req.body?.clientId);
   let memory = typeof req.body.memory === "string" ? req.body.memory.trim().slice(0, 6000) : "";
-  if (learningStore.enabled && clientId && req.body?.learningOptIn === true) {
+  if (learningStore.enabled && clientId) {
     try {
       const savedMemories = await learningStore.listMemories(clientId);
       const persistentContext = savedMemories.map(item => "- " + item.memory).join("\\n").slice(0, 4000);

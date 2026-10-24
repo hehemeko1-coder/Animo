@@ -133,6 +133,10 @@ test("solves percentage calculations with clear working", () => {
 
 test("fraction expressions simplify and calculate exactly", () => {
   assert.equal(solveFractionExpression("1/2 + 1/3").result, "5/6");
+  const unlikeDenominators = solveFractionExpression("3/4 + 2/5");
+  assert.equal(unlikeDenominators.result, "23/20");
+  assert.match(unlikeDenominators.steps[1], /already in simplest form/);
+  assert.doesNotMatch(unlikeDenominators.steps[1], /dividing.*by 1/);
   assert.equal(solveFractionExpression("2/4").result, "1/2");
   assert.equal(solveFractionExpression("3/4 - 1/4").result, "1/2");
   assert.equal(solveFractionExpression("2/3 * 3/4").result, "1/2");

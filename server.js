@@ -674,16 +674,27 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     }
     if (typeof reply !== "string" || !reply.trim()) return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
     let exampleId = null;
+    let memorySaved = null;
     const learningClientId = clientId;
     const latestUserMessage = messages[messages.length - 1]?.content || "";
+    const explicitRememberRequest = /^\s*(?:please\s+)?(?:remember|keep in mind)\s+that\b/i.test(latestUserMessage);
+    // Explicit "remember that..." requests are a user-directed memory action, not model-training consent.
+    // Save them even when "Learn from chats" is off; only training examples require that opt-in.
+    if (learningStore.enabled && learningClientId && latestUserMessage && !images.length && explicitRememberRequest) {
+      try {
+        const candidate = extractMemoryCandidate(latestUserMessage);
+        if (candidate) memorySaved = await learningStore.addMemory(learningClientId, candidate);
+      } catch (memoryError) { console.error("Explicit memory save failed:", memoryError.message); }
+    }
     if (learningStore.enabled && req.body?.learningOptIn === true && learningClientId && latestUserMessage && !images.length) {
       try {
         exampleId = await learningStore.saveExample(learningClientId, latestUserMessage, reply.trim());
+        // Non-explicit preference/project extraction remains opt-in.
         const candidate = extractMemoryCandidate(latestUserMessage);
-        if (candidate) await learningStore.addMemory(learningClientId, candidate);
+        if (candidate && !explicitRememberRequest) await learningStore.addMemory(learningClientId, candidate);
       } catch (learningError) { console.error("Learning save failed:", learningError.message); }
     }
-    return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL, exampleId });
+    return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL, exampleId, memorySaved });
   } catch (error) {
     if (error.name === "TimeoutError" || error.name === "AbortError") return res.status(504).json({ error: "That response took too long. Please try again." });
     console.error("Chat request failed:", error.message);

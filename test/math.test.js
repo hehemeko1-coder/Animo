@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, shouldForceCalculator } = require("../lib/agent-tools.js");
+const { safeCalculate, solveLinearEquation, shouldForceCalculator } = require("../lib/agent-tools.js");
 
 function result(expression, expected, tolerance = 1e-10) {
   const actual = safeCalculate(expression);
@@ -55,6 +55,19 @@ test("rejects invalid or unsafe math", () => {
   assert.ok(safeCalculate("0^-1").error);
   assert.ok(safeCalculate("sqrt()").error);
   assert.ok(safeCalculate("1..2 + 3").error);
+});
+
+test("solves and verifies linear equations", () => {
+  const solved = solveLinearEquation("2x + 5 = 15");
+  assert.equal(solved.error, undefined, solved.error);
+  assert.equal(solved.result, 5);
+  assert.match(solved.steps[3], /left and .* on the right/);
+
+  assert.equal(solveLinearEquation("3*x - 2 = 10").result, 4);
+  assert.equal(solveLinearEquation("x + 2 = x + 2").result, "all real numbers");
+  assert.ok(solveLinearEquation("x + 2 = x + 3").error);
+  assert.ok(solveLinearEquation("x^2 = 9").error);
+  assert.ok(solveLinearEquation("x = 2 = 3").error);
 });
 
 test("calculator intent detection", () => {

@@ -478,10 +478,25 @@
   sidebarClose.addEventListener("click", closeMobileSidebar); sidebarScrim.addEventListener("click", closeMobileSidebar);
   sidebarToggle.addEventListener("click", () => {
     if (window.innerWidth <= 760) { const open = sidebar.classList.toggle("open"); mobileMenu.setAttribute("aria-expanded", String(open)); sidebarScrim.classList.toggle("open", open); return; }
-    const collapsed = appShell.classList.toggle("sidebar-collapsed");
-    sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
-    sidebarToggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
-    sidebarToggle.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+    const isCompact = appShell.classList.contains("sidebar-compact");
+    const isCollapsed = appShell.classList.contains("sidebar-collapsed");
+    if (!isCompact && !isCollapsed) {
+      appShell.classList.add("sidebar-compact");
+      sidebarToggle.setAttribute("aria-label", "Hide sidebar");
+      sidebarToggle.title = "Hide sidebar";
+      sidebarToggle.setAttribute("aria-expanded", "true");
+    } else if (isCompact) {
+      appShell.classList.remove("sidebar-compact");
+      appShell.classList.add("sidebar-collapsed");
+      sidebarToggle.setAttribute("aria-label", "Expand sidebar");
+      sidebarToggle.title = "Expand sidebar";
+      sidebarToggle.setAttribute("aria-expanded", "false");
+    } else {
+      appShell.classList.remove("sidebar-collapsed");
+      sidebarToggle.setAttribute("aria-label", "Compact sidebar");
+      sidebarToggle.title = "Compact sidebar";
+      sidebarToggle.setAttribute("aria-expanded", "true");
+    }
   });
   plusMenuButton.addEventListener("click", event => {
     event.stopPropagation(); const open = plusMenu.hidden; plusMenu.hidden = !open; plusMenuButton.setAttribute("aria-expanded", String(open));

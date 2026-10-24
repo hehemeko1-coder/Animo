@@ -438,3 +438,25 @@ button,a,input,textarea{font-weight:700}
  .topbar{background:#FF6E6C}
  .welcome h1{font-weight:800}
 }
+
+/* Chat alignment and clean, avatar-free message rows */
+.message-list{width:min(820px,calc(100% - 72px));}
+.message{display:flex;align-items:flex-start;gap:0;width:100%;}
+.message-avatar{display:none!important;}
+.message-body{min-width:0;max-width:88%;display:flex;flex-direction:column;}
+.message.user{justify-content:flex-end;}
+.message.user .message-body{align-items:flex-end;}
+.message.user .message-meta{justify-content:flex-end;text-align:right;}
+.message.user .message-content{align-self:flex-end;max-width:100%;text-align:left;border-radius:16px 16px 3px 16px;background:#FF6E6C;color:#000;border:2px solid #000;box-shadow:3px 3px 0 #000;}
+.message:not(.user){justify-content:flex-start;}
+.message:not(.user) .message-body{align-items:flex-start;}
+.message:not(.user) .message-content{align-self:flex-start;max-width:100%;background:#fff;color:#000;border:2px solid #000;border-radius:3px 16px 16px 16px;box-shadow:3px 3px 0 #000;}
+.message-meta{color:#fff;}
+.message-meta strong{color:#fff;font-weight:800;}
+.message-meta time{color:#D9F5E7;}
+.message.user .message-meta strong,.message.user .message-meta time{color:#fff;}
+.message-action{color:#D9F5E7;}
+@media(max-width:760px){
+ .message-list{width:calc(100% - 28px);}
+ .message-body{max-width:94%;}
+}

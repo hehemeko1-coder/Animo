@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, shouldForceCalculator } = require("../lib/agent-tools.js");
+const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, shouldForceCalculator } = require("../lib/agent-tools.js");
 
 function result(expression, expected, tolerance = 1e-10) {
   const actual = safeCalculate(expression);
@@ -114,4 +114,18 @@ test("calculator intent detection", () => {
   assert.equal(shouldForceCalculator("Calculate sqrt(144)"), true);
   assert.equal(shouldForceCalculator("2 + 2"), true);
   assert.equal(shouldForceCalculator("Tell me a story about 2 dragons"), false);
+});
+
+
+test("solves percentage calculations with clear working", () => {
+  const of = solvePercentageProblem("What is 20% of 150?");
+  assert.equal(of.result, 30);
+  assert.equal(of.error, undefined);
+  assert.equal(of.steps.length, 2);
+  assert.equal(solvePercentageProblem("increase 80 by 15%").result, 92);
+  assert.equal(solvePercentageProblem("decrease 80 by 15%").result, 68);
+  assert.equal(solvePercentageProblem("discount 25% from 400").result, 300);
+  assert.equal(solvePercentageProblem("15 out of 60").result, 25);
+  assert.equal(solvePercentageProblem("15 out of 0").error, "Cannot calculate a percentage of a zero total.");
+  assert.equal(solvePercentageProblem("Tell me a story about 20% of a dragon"), null);
 });

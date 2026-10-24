@@ -378,15 +378,15 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       const latestUserText = messages[messages.length - 1].content;
       if (!images.length && /=/.test(latestUserText) && /x/i.test(latestUserText)) {
         const equation = latestUserText.trim()
-          .replace(/^(?:(?:please\\s+)?solve(?:\\s+for\\s+x)?\\s*:?\\s*)/i, "")
+          .replace(/^(?:(?:please\s+)?solve(?:\s+for\s+x)?\s*:?\s*)/i, "")
           .replace(/[?]$/, "")
           .trim();
         const quadratic = solveQuadraticEquation(equation);
         const solution = quadratic.error === undefined ? quadratic : solveLinearEquation(equation);
         if (solution.error === undefined) {
           const answer = Array.isArray(solution.roots) ? solution.roots.map(root => "x = " + root).join(", ") : "x = " + solution.result;
-          const steps = Array.isArray(solution.steps) ? "\\n" + solution.steps.map((step, index) => (index + 1) + ". " + step).join("\\n") : "";
-          const explanation = solution.explanation ? "\\n" + solution.explanation : "";
+          const steps = Array.isArray(solution.steps) ? "\n" + solution.steps.map((step, index) => (index + 1) + ". " + step).join("\n") : "";
+          const explanation = solution.explanation ? "\n" + solution.explanation : "";
           return res.json({ reply: (Array.isArray(solution.roots) && solution.roots.length > 1 ? "Solutions: " : "Solution: ") + answer + steps + explanation, provider: AI_PROVIDER, model: AI_MODEL });
         }
       }

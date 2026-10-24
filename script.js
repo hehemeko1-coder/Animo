@@ -124,9 +124,26 @@
     }
     container.append(document.createTextNode(source.slice(last)));
   }
+  // Convert common LaTeX math into readable plain text before Markdown rendering.
+  // This keeps responses legible without adding a heavy math-rendering dependency.
+  function normalizeMathText(value) {
+    let text = String(value || "");
+    text = text.replace(/\\\\\[|\\\\\]|\\\\\(|\\\\\)/g, "");
+    text = text.replace(/\\\\boxed\{([^{}]*)\}/g, "$1");
+    text = text.replace(/\\\\frac\{([^{}]*)\}\{([^{}]*)\}/g, "$1/$2");
+    text = text.replace(/\\\\text\{([^{}]*)\}/g, "$1");
+    text = text.replace(/\\\\(times|cdot)\b/g, "×");
+    text = text.replace(/\\\\div\b/g, "÷");
+    text = text.replace(/\\\\(leq|le)\b/g, "≤").replace(/\\\\(geq|ge)\b/g, "≥");
+    text = text.replace(/\\\\neq\b/g, "≠").replace(/\\\\approx\b/g, "≈");
+    text = text.replace(/\\\\%/g, "%").replace(/\\\\;/g, " ").replace(/\\\\,/g, " ");
+    text = text.replace(/\\\\quad\b/g, "  ").replace(/\\\\displaystyle\b/g, "");
+    text = text.replace(/\$\$([\s\S]*?)\$\$/g, "$1").replace(/\$([^$\n]+)\$/g, "$1");
+    return text;
+  }
   function renderMarkdown(container, content) {
     container.replaceChildren();
-    const lines = String(content || "").replace(/\r\n?/g, "\n").split("\n");
+    const lines = normalizeMathText(content).replace(/\r\n?/g, "\n").split("\n");
     let paragraph = [], list = null, codeLines = null;
     const flushParagraph = () => {
       if (!paragraph.length) return;

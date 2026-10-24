@@ -10,7 +10,18 @@
   const memoryForm = $("#memoryForm"), memoryInput = $("#memoryInput"), savedMemoryList = $("#savedMemoryList");
   const memoryCount = $("#memoryCount"), workflowForm = $("#automationForm"), workflowName = $("#workflowName");
   const workflowDetails = $("#workflowDetails"), workflowList = $("#workflowList");
-  const STORAGE = { memory: "seenai.memory.v1", workflows: "seenai.workflows.v1" };
+  const STORAGE = { memory: "seenai.memory.v1", workflows: "seenai.workflows.v1", clientId: "seenai.client-id.v1" };
+  function getClientId() {
+    try {
+      let id = localStorage.getItem(STORAGE.clientId);
+      if (!id || !/^[a-zA-Z0-9_-]{12,80}$/.test(id)) {
+        id = "sai_" + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "") : Math.random().toString(36).slice(2) + Date.now().toString(36));
+        localStorage.setItem(STORAGE.clientId, id);
+      }
+      return id;
+    } catch { return "sai_" + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+  }
+  const clientId = getClientId();
   let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {};
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
@@ -139,7 +150,31 @@
         try { await navigator.clipboard.writeText(content); copy.textContent = "Copied"; setTimeout(() => { copy.textContent = "Copy"; }, 1400); }
         catch { showToast("Copy failed. Select the response text and copy it manually."); }
       });
-      actions.append(copy); body.append(actions);
+      actions.append(copy);
+      if (options.exampleId) {
+        const helpful = document.createElement("button"); helpful.type = "button"; helpful.className = "message-action"; helpful.textContent = "👍 Helpful";
+        helpful.addEventListener("click", async () => {
+          try {
+            const response = await fetch("/api/learning/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, exampleId: options.exampleId, rating: 1 }) });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.error || "Feedback couldn't be saved.");
+            helpful.textContent = "✓ Saved"; helpful.disabled = true;
+          } catch (error) { showToast(error.message || "Feedback couldn't be saved."); }
+        });
+        const improve = document.createElement("button"); improve.type = "button"; improve.className = "message-action"; improve.textContent = "Improve";
+        improve.addEventListener("click", async () => {
+          const correction = window.prompt("What should SeenAi have answered instead? This correction may be used for model training.");
+          if (!correction || !correction.trim()) return;
+          try {
+            const response = await fetch("/api/learning/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ clientId, exampleId: options.exampleId, rating: -1, correction: correction.trim() }) });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.error || "Correction couldn't be saved.");
+            improve.textContent = "✓ Correction saved"; improve.disabled = true;
+          } catch (error) { showToast(error.message || "Correction couldn't be saved."); }
+        });
+        actions.append(helpful, improve);
+      }
+      body.append(actions);
     }
     if (options.sources?.length) {
       const sourceBox = document.createElement("div"); sourceBox.className = "message-sources";
@@ -265,13 +300,13 @@
       } else { webSources = []; }
       const response = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: messages.slice(-11), images: attachedImages, memory: memoryContext(), webSources: sources })
+        body: JSON.stringify({ messages: messages.slice(-11), images: attachedImages, memory: memoryContext(), webSources: sources, clientId })
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "Something went wrong. Please try again.");
       if (typeof data.reply !== "string" || !data.reply.trim()) throw new Error("SeenAi returned an empty reply. Please try again.");
       typing.remove(); messages.push({ role: "assistant", content: data.reply });
-      makeMessage("assistant", data.reply, { sources });
+      makeMessage("assistant", data.reply, { sources, exampleId: data.exampleId });
     } catch (error) {
       typing.remove(); const errorText = error.message || "Couldn't connect to SeenAi. Check your connection and try again.";
       makeMessage("assistant", errorText); showToast(errorText);

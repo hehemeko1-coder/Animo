@@ -25,6 +25,23 @@
   }
   const clientId = getClientId();
   try { learningToggle.checked = localStorage.getItem(STORAGE.learning) === "true"; } catch {}
+  let learningConsentSync = Promise.resolve();
+  function syncLearningConsent(enabled) {
+    learningConsentSync = learningConsentSync.catch(() => {}).then(async () => {
+      const response = await fetch("/api/learning/consent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId, enabled })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Training consent couldn't be updated.");
+      return data;
+    });
+    return learningConsentSync;
+  }
+  // Restore consent for existing users who had already opted in before server-side
+  // consent tracking was added. Revoked examples are never re-consented by this call.
+  if (learningToggle.checked) syncLearningConsent(true).catch(() => {});
   let messages = [], busy = false, toastTimeout, images = [], documents = [], webSources = [], features = {}, persistentMemories = [], memoryStorageFallback = false;
   const now = () => new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   const HISTORY_KEY = "animo.conversations.v1";
@@ -485,7 +502,22 @@
     } catch (error) { showToast(error.message || "Automation failed."); }
   }
 
-  learningToggle.addEventListener("change", () => { try { localStorage.setItem(STORAGE.learning, String(learningToggle.checked)); } catch {} showToast(learningToggle.checked ? "Chat learning enabled. Useful preferences can be saved automatically; training examples require this setting." : "Chat training is off. Explicit ‘Remember that…’ requests will still be saved."); });
+  learningToggle.addEventListener("change", async () => {
+    const enabled = learningToggle.checked;
+    try { localStorage.setItem(STORAGE.learning, String(enabled)); } catch {}
+    try {
+      const result = await syncLearningConsent(enabled);
+      if (enabled) {
+        showToast("Chat learning enabled for new examples. Previously withdrawn examples remain excluded from future training.");
+      } else {
+        showToast("Chat training is off. " + result.revoked + " saved examples were excluded from future training. Explicit ‘Remember that…’ requests still work.");
+      }
+    } catch {
+      showToast(enabled
+        ? "Chat learning is on in this browser, but server consent could not be confirmed. New training examples may not be saved until the connection is restored."
+        : "Chat training is off in this browser, but server-side withdrawal could not be confirmed. Retry when the connection is restored.");
+    }
+  });
   form.addEventListener("submit", event => { event.preventDefault(); sendMessage(input.value); });
   input.addEventListener("input", () => { resizeInput(); updateCount(); });
   input.addEventListener("keydown", event => { if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); form.requestSubmit(); } });

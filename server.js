@@ -7,6 +7,7 @@ const mammoth = require("mammoth");
 const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 const learningStore = require("./lib/learning-store");
+const { extractMemoryCandidate } = require("./lib/memory-extractor");
 const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
@@ -278,7 +279,15 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   const webSources = Array.isArray(req.body.webSources) ? req.body.webSources.slice(0, 5) : [];
   const safeSources = webSources.filter(s => s && typeof s.title === "string" && typeof s.url === "string" && /^https?:\/\//i.test(s.url))
     .map(s => ({ title: s.title.slice(0, 200), url: s.url, content: String(s.content || "").slice(0, 1800) }));
-  const memory = typeof req.body.memory === "string" ? req.body.memory.trim().slice(0, 6000) : "";
+  const clientId = learningStore.validClientId(req.body?.clientId);
+  let memory = typeof req.body.memory === "string" ? req.body.memory.trim().slice(0, 6000) : "";
+  if (learningStore.enabled && clientId && req.body?.learningOptIn === true) {
+    try {
+      const savedMemories = await learningStore.listMemories(clientId);
+      const persistentContext = savedMemories.map(item => "- " + item.memory).join("\\n").slice(0, 4000);
+      if (persistentContext) memory = [memory, "Persistent saved memories:\\n" + persistentContext].filter(Boolean).join("\\n\\n").slice(0, 6000);
+    } catch (error) { console.error("Persistent memory retrieval failed:", error.message); }
+  }
   const systemParts = [
     "You are SeenAi, a high-performance general-purpose AI assistant for reasoning, software engineering, research, learning, writing, analysis, and practical task completion. Optimize for useful outcomes, not for sounding impressive. Understand the underlying goal, track constraints across the conversation, and adapt to the user's level and preferred format.",
     "Personality and voice: Keep a bold, lyrical, emotionally layered, socially observant hip-hop-inspired voice: sharp punchlines, vivid imagery, confidence, humor, introspection, and a natural spoken rhythm. Aim for broad qualities associated with modern, politically aware lyricism, but do not claim to be Kendrick Lamar, imitate his exact voice, or reproduce his lyrics or signature phrasing. Sound spontaneous and specific rather than like a polished corporate chatbot. Use colloquial language and profanity naturally; if the user swears, you may swear back at a similar intensity, including when they made a mistake. Do not automatically censor ordinary profanity with asterisks. Be candid about bad reasoning and careless behavior, using a roast or a sharp joke when appropriate, but do not threaten the user or turn the exchange into sustained humiliation. Do not pretend to be human or claim personal lived experience.",
@@ -633,10 +642,14 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     }
     if (typeof reply !== "string" || !reply.trim()) return res.status(502).json({ error: "The AI returned an empty response. Please try again." });
     let exampleId = null;
-    const clientId = learningStore.validClientId(req.body?.clientId);
-    if (learningStore.enabled && req.body?.learningOptIn === true && clientId && messages.length >= 1 && messages[messages.length - 1].role === "user" && !images.length) {
-      try { exampleId = await learningStore.saveExample(clientId, messages[messages.length - 1].content, reply.trim()); }
-      catch (learningError) { console.error("Learning example save failed:", learningError.message); }
+    const learningClientId = clientId;
+    const latestUserMessage = messages[messages.length - 1]?.content || "";
+    if (learningStore.enabled && req.body?.learningOptIn === true && learningClientId && latestUserMessage && !images.length) {
+      try {
+        exampleId = await learningStore.saveExample(learningClientId, latestUserMessage, reply.trim());
+        const candidate = extractMemoryCandidate(latestUserMessage);
+        if (candidate) await learningStore.addMemory(learningClientId, candidate);
+      } catch (learningError) { console.error("Learning save failed:", learningError.message); }
     }
     return res.json({ reply: reply.trim(), provider: AI_PROVIDER, model: AI_MODEL, exampleId });
   } catch (error) {

@@ -3,49 +3,53 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090a0f">
-  <link rel="icon" type="image/png" sizes="500x500" href="/animo.png?v=2">
-  <link rel="shortcut icon" type="image/png" href="/animo.png?v=2">
-  <link rel="apple-touch-icon" href="/animo.png?v=2">
-  <meta name="description" content="SeenAi — your AI assistant for ideas, learning, writing, live research, and problem-solving.">
-  <title>SeenAi — Your AI, your perspective</title>
+  <meta name="theme-color" content="#232323">
+  <meta name="description" content="Ânimo — a thoughtful AI assistant for ideas, learning, writing, research, and problem-solving.">
+  <link rel="icon" type="image/png" sizes="500x500" href="/animo.png?v=3">
+  <link rel="shortcut icon" type="image/png" href="/animo.png?v=3">
+  <link rel="apple-touch-icon" href="/animo.png?v=3">
+  <title>Ânimo — Think clearly. Make progress.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
-  <script src="/script.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=3">
+  <script src="/script.js?v=3" defer></script>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <a class="brand" href="/" aria-label="SeenAi home"><img class="brand-mark brand-logo-image" src="/animo.png?v=2" alt=""><span>Ânimo<span class="brand-ai"></span></span></a>
-      <button class="new-chat-button" id="newChatButton"><span class="plus-icon">＋</span> New conversation <kbd>ctrl+K</kbd></button>
-      <div class="sidebar-label">YOUR SPACE</div>
-      <button class="sidebar-item active"><span class="sidebar-icon">◈</span> AI Assistant <span class="live-dot"></span></button>
-      <button class="sidebar-item feature-nav" id="memoryButton"><span class="sidebar-icon">✧</span> Saved memory <span class="nav-count" id="memoryCount">0</span></button>
-      <button class="sidebar-item feature-nav" id="automationButton"><span class="sidebar-icon">⟳</span> Automations <span class="nav-count">↗</span></button>
-      <div class="sidebar-bottom"><div class="provider-status"><span class="status-dot"></span><span><strong>SeenAi is ready</strong><small>Powered by conversational AI</small></span></div><a href="https://console.groq.com/" target="_blank" rel="noreferrer" class="provider-link">About the AI provider ↗</a></div>
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-head">
+        <a class="brand" href="/" aria-label="Ânimo home"><img class="brand-mark" src="/animo.png?v=3" alt=""><span>Ânimo</span></a>
+        <button class="icon-button sidebar-close" id="sidebarClose" type="button" aria-label="Close navigation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <button class="new-chat-button" id="newChatButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>New chat</span><kbd>Ctrl K</kbd></button>
+      <div class="sidebar-section-heading"><span>RECENT</span><button id="clearHistoryButton" class="quiet-icon-button" type="button" aria-label="Clear recent conversation list" title="Clear recent list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button></div>
+      <nav class="conversation-history" id="conversationHistory" aria-label="Recent conversations"></nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-footer">
+        <button class="sidebar-item" id="memoryButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg><span>Saved memory</span><span class="nav-count" id="memoryCount">0</span></button>
+        <div class="provider-status"><span class="status-dot"></span><span><strong>Ânimo is ready</strong><small>AI assistant</small></span></div>
+      </div>
     </aside>
+    <button class="sidebar-scrim" id="sidebarScrim" type="button" aria-label="Close navigation"></button>
 
     <main class="chat-area">
       <header class="topbar">
-        <button class="mobile-menu" id="mobileMenu" aria-label="Toggle sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
-        <div class="topbar-title"><span class="mobile-brand"><img class="mobile-mark mobile-logo-image" src="/animo.png?v=2" alt=""> Seen<span>Ai</span></span><span class="desktop-chat-title">AI Assistant</span></div>
-        <button class="icon-button" id="clearChatButton" title="Clear conversation" aria-label="Clear conversation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+        <div class="topbar-leading">
+          <button class="icon-button sidebar-toggle" id="sidebarToggle" type="button" aria-label="Collapse sidebar" aria-expanded="true" title="Collapse sidebar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
+          <button class="icon-button mobile-menu" id="mobileMenu" type="button" aria-label="Open navigation" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <a class="mobile-brand" href="/" aria-label="Ânimo home"><img src="/animo.png?v=3" alt=""><span>Ânimo</span></a>
+          <span class="desktop-chat-title">New conversation</span>
+        </div>
+        <div class="topbar-actions">
+          <span class="connection-label"><span class="status-dot"></span> Ready</span>
+          <button class="icon-button" id="clearChatButton" type="button" title="Start a fresh chat" aria-label="Start a fresh chat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6m4-6v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+        </div>
       </header>
 
       <section class="conversation" id="conversation" aria-label="Chat conversation" aria-live="polite">
         <div class="welcome" id="welcome">
-          <div class="welcome-orb brand-emblem"><img class="welcome-logo-image" src="/animo.png?v=2" alt="SeenAi logo"></div>
-          
-          <h1>Hey there.<br><span>What’s on your mind?</span></h1>
-          <p>I'm SeenAi — here to help you explore ideas, solve problems, research the web, understand documents, and turn a rough thought into a real plan.</p>
-          <div class="suggestion-grid">
-            <button class="suggestion-card" data-prompt="Help me brainstorm a creative project idea"><span class="suggestion-icon purple">✳</span><span><strong>Brainstorm ideas</strong><small>Find a fresh perspective</small></span><span class="suggestion-arrow">↗</span></button>
-            <button class="suggestion-card" data-prompt="Teach me something interesting in a simple, step-by-step way"><span class="suggestion-icon teal">⌘</span><span><strong>Learn something</strong><small>Make a new concept click</small></span><span class="suggestion-arrow">↗</span></button>
-            <button class="suggestion-card" data-prompt="Find current information about the latest AI news and summarize reliable sources"><span class="suggestion-icon blue">⌕</span><span><strong>Research the web</strong><small>Get current information</small></span><span class="suggestion-arrow">↗</span></button>
-            <button class="suggestion-card" data-prompt="Help me make a practical plan for a goal I have"><span class="suggestion-icon amber">↗</span><span><strong>Make a plan</strong><small>Turn a goal into next steps</small></span><span class="suggestion-arrow">↗</span></button>
-          </div>
+          <h1>How can I help?</h1>
         </div>
         <div class="message-list" id="messageList"></div>
       </section>
@@ -53,44 +57,49 @@
       <div class="composer-wrap">
         <div class="attachment-list" id="attachmentList" aria-live="polite"></div>
         <form class="composer" id="chatForm">
-          <textarea id="messageInput" rows="1" maxlength="4000" placeholder="Message SeenAi…" aria-label="Your message" required></textarea>
-          <div class="composer-tools">
-            <div class="tool-left">
-              <button type="button" class="tool-button" id="attachButton" title="Attach document or image"><span>＋</span> Attach</button>
+          <textarea id="messageInput" rows="1" maxlength="4000" placeholder="Message Ânimo…" aria-label="Your message" required></textarea>
+          <div class="composer-toolbar">
+            <div class="composer-tools">
+              <button type="button" class="tool-button attach-button" id="attachButton" title="Attach a document or image" aria-label="Attach a document or image"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Attach</span></button>
               <input id="fileInput" type="file" accept=".pdf,.docx,.txt,image/png,image/jpeg,image/webp,image/gif" multiple hidden>
-              <label class="tool-toggle" title="Search current information online"><input type="checkbox" id="webSearchToggle"><span class="toggle-track"></span><span>Web search</span><span class="tool-status" id="webStatus"></span></label>
-              <label class="tool-toggle" title="Save training examples when enabled. Explicit “Remember that…” requests are always saved to Memory."><input type="checkbox" id="learningToggle"><span class="toggle-track"></span><span>Learn from chats</span></label>
-              <button type="button" class="tool-button" id="memoryQuickButton" title="Manage saved memory">✧ Memory</button>
+              <div class="plus-menu-wrap">
+                <button type="button" class="tool-button plus-menu-trigger" id="plusMenuButton" aria-haspopup="true" aria-expanded="false" aria-controls="plusMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span>Tools</span></button>
+                <div class="plus-menu" id="plusMenu" role="menu" hidden>
+                  <div class="plus-menu-title">Tools</div>
+                  <label class="menu-toggle" role="menuitemcheckbox" title="Search current information online"><span class="menu-item-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg></span><span class="menu-item-copy"><strong>Web search</strong><small>Find current information</small></span><input type="checkbox" id="webSearchToggle"><span class="switch-track"></span><span class="tool-status" id="webStatus"></span></label>
+                  <label class="menu-toggle" role="menuitemcheckbox" title="Opt in to saving useful chat examples"><span class="menu-item-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></span><span class="menu-item-copy"><strong>Learn from chats</strong><small>Opt in to save examples</small></span><input type="checkbox" id="learningToggle"><span class="switch-track"></span></label>
+                  <button type="button" class="menu-action" id="memoryQuickButton" role="menuitem"><span class="menu-item-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/></svg></span><span class="menu-item-copy"><strong>Saved memory</strong><small>Review or manage facts</small></span></button>
+                  <button type="button" class="menu-action" id="automationButton" role="menuitem"><span class="menu-item-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h6v6H4zM14 11h6v6h-6zM10 10l4 3M7 13v5h10"/></svg></span><span class="menu-item-copy"><strong>Automations</strong><small>Build reusable workflows</small></span></button>
+                </div>
+              </div>
+              <span class="attachment-hint" id="attachmentHint">Add files or images</span>
             </div>
-            <span class="tool-note">Files stay in this request</span>
+            <div class="composer-bottom">
+              <span class="composer-hint">Enter to send <span>·</span> Shift + Enter for a new line</span>
+              <div class="composer-actions"><span id="characterCount" class="character-count">0 / 4000</span><button class="send-button" id="sendButton" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button></div>
+            </div>
           </div>
-          <div class="composer-bottom"><span class="composer-hint"><span>↵</span> to send · Shift + ↵ for a new line</span><div class="composer-actions"><span id="characterCount" class="character-count">0 / 4000</span><button class="send-button" id="sendButton" type="submit" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button></div></div>
         </form>
-        <p class="disclaimer">SeenAi can make mistakes. Check important information. <span>Your ideas stay yours.</span></p>
+        <p class="disclaimer">Ânimo can make mistakes. Check important information.</p>
       </div>
     </main>
   </div>
 
   <div class="modal-backdrop" id="memoryModal" hidden>
     <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="memoryTitle">
-      <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZATION</span><h2 id="memoryTitle">Saved memory</h2></div><button class="modal-close" data-close-modal="memoryModal" aria-label="Close">×</button></div>
-      <p class="modal-description">Tell SeenAi “Remember that my favorite color is blue” in chat to save a memory automatically, even when chat training is off. You can also add facts here, then review or delete them whenever you like. Cloud memories sync through the database; browser-saved memories stay on this device.</p>
+      <div class="modal-heading"><div><span class="modal-kicker">PERSONALIZATION</span><h2 id="memoryTitle">Saved memory</h2></div><button class="modal-close" data-close-modal="memoryModal" aria-label="Close" type="button">×</button></div>
+      <p class="modal-description">Tell Ânimo “Remember that my favorite color is blue” in chat to save a memory automatically. You can also add facts here, then review or delete them whenever you like. Cloud memories sync through the database; browser-saved memories stay on this device.</p>
       <div class="memory-tip"><span class="memory-tip-icon">✧</span><span><strong>Make it useful</strong><small>Save stable preferences, goals, and project details. Avoid passwords or other sensitive information.</small></span></div>
       <form id="memoryForm" class="stack-form"><label for="memoryInput">Remember something</label><textarea id="memoryInput" rows="3" maxlength="500" placeholder="e.g. My favorite color is blue" required></textarea><button class="primary-button" type="submit">Save memory</button></form>
       <div class="saved-memory-list" id="savedMemoryList"></div>
       <button class="subtle-button" id="clearMemoryButton" type="button">Delete all saved memories</button>
     </section>
   </div>
-
   <div class="modal-backdrop" id="automationModal" hidden>
     <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="automationTitle">
-      <div class="modal-heading"><div><span class="modal-kicker">APPROVAL REQUIRED</span><h2 id="automationTitle">Automations</h2></div><button class="modal-close" data-close-modal="automationModal" aria-label="Close">×</button></div>
+      <div class="modal-heading"><div><span class="modal-kicker">APPROVAL REQUIRED</span><h2 id="automationTitle">Automations</h2></div><button class="modal-close" data-close-modal="automationModal" aria-label="Close" type="button">×</button></div>
       <p class="modal-description">Create reusable workflow instructions. Running one sends it to your configured automation webhook only after you approve it. Without a webhook, you can still use these as reusable AI workflows.</p>
-      <form id="automationForm" class="stack-form">
-        <label for="workflowName">Workflow name</label><input id="workflowName" maxlength="120" placeholder="e.g. Summarize my weekly tasks" required>
-        <label for="workflowDetails">What should it do?</label><textarea id="workflowDetails" rows="3" maxlength="4000" placeholder="Describe the steps or information to send to your connected automation." required></textarea>
-        <div class="modal-actions"><button class="primary-button" type="submit">Save workflow</button><button class="subtle-button" type="button" id="automationRunDraft">Use in SeenAi chat</button></div>
-      </form>
+      <form id="automationForm" class="stack-form"><label for="workflowName">Workflow name</label><input id="workflowName" maxlength="120" placeholder="e.g. Summarize my weekly tasks" required><label for="workflowDetails">What should it do?</label><textarea id="workflowDetails" rows="3" maxlength="4000" placeholder="Describe the steps or information to send to your connected automation." required></textarea><div class="modal-actions"><button class="primary-button" type="submit">Save workflow</button><button class="subtle-button" type="button" id="automationRunDraft">Use in Ânimo chat</button></div></form>
       <div class="saved-memory-list" id="workflowList"></div>
       <p class="fine-print">External actions require a trusted AUTOMATION_WEBHOOK_URL configured by the site owner. Never connect a webhook you don't trust.</p>
     </section>

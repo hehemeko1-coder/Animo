@@ -81,3 +81,10 @@ button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{
 .primary-button:hover{transform:translateY(-1px)}
 .toast{backdrop-filter:blur(14px)}
 @media(max-width:760px){.sidebar{background:#11182a}.modal-backdrop{padding:10px}.modal-card{max-height:calc(100dvh - 20px)}.memory-tip{padding:11px}}
+
+
+/* Make the brand logo twice as large and visible in the sidebar and mobile header. */
+.brand-logo-image,.brand-mark{width:64px!important;height:64px!important;}
+.mobile-logo-image{width:48px!important;height:48px!important;}
+.brand{gap:12px;}
+@media(max-width:760px){.mobile-brand{gap:9px;}}

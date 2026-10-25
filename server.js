@@ -8,6 +8,7 @@ const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 const learningStore = require("./lib/learning-store");
 const { extractMemoryCandidate } = require("./lib/memory-extractor");
+const { rankMemories } = require("./lib/memory-retrieval");
 const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
@@ -339,7 +340,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   if (learningStore.enabled && clientId) {
     try {
       const savedMemories = await learningStore.listMemories(clientId);
-      const persistentContext = savedMemories.map(item => "- " + item.memory).join("\n").slice(0, 4000);
+      const relevantMemories = rankMemories(savedMemories, messages[messages.length - 1].content, 12);
+      const persistentContext = relevantMemories.map(item => "- " + item.memory).join("\n").slice(0, 4000);
       if (persistentContext) memory = [memory, "Persistent saved memories:\n" + persistentContext].filter(Boolean).join("\n\n").slice(0, 6000);
     } catch (error) { console.error("Persistent memory retrieval failed:", error.message); }
   }

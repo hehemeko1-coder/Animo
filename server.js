@@ -8,6 +8,7 @@ const { CanvasFactory } = require("pdf-parse/worker");
 const { PDFParse } = require("pdf-parse");
 const learningStore = require("./lib/learning-store");
 const { extractMemoryCandidate } = require("./lib/memory-extractor");
+const { rankMemories } = require("./lib/memory-retrieval");
 const { safeCalculate, solveLinearEquation, solveQuadraticEquation, solveLinearSystem, solveLinearInequality, solvePercentageProblem, solveFractionExpression, solveRatioProblem, shouldForceCalculator, normalizeFirecrawlResults } = require("./lib/agent-tools");
 
 const app = express();
@@ -249,6 +250,7 @@ app.post("/api/learning/train", learningLimiter, async (req, res) => {
   if (!adminToken || req.get("authorization") !== "Bearer " + adminToken) return res.status(401).json({ error: "Admin authorization required." });
   if (!learningStore.enabled) return res.status(503).json({ error: "Persistent learning needs DATABASE_URL in Render Environment." });
   if (!OPENAI_API_KEY) return res.status(503).json({ error: "OpenAI fine-tuning requires OPENAI_API_KEY." });
+  if (AI_PROVIDER !== "openai") return res.status(409).json({ error: "Fine-tuned models can only serve chat when AI_PROVIDER=openai. Set AI_PROVIDER=openai in Render Environment before submitting a job; the current provider is " + AI_PROVIDER + "." });
   const baseModel = process.env.OPENAI_FINE_TUNE_BASE_MODEL || "gpt-4o-mini-2024-07-18";
   try {
     const examples = await learningStore.trainingExamples();
@@ -339,7 +341,8 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
   if (learningStore.enabled && clientId) {
     try {
       const savedMemories = await learningStore.listMemories(clientId);
-      const persistentContext = savedMemories.map(item => "- " + item.memory).join("\n").slice(0, 4000);
+      const relevantMemories = rankMemories(savedMemories, messages[messages.length - 1].content, 12);
+      const persistentContext = relevantMemories.map(item => "- " + item.memory).join("\n").slice(0, 4000);
       if (persistentContext) memory = [memory, "Persistent saved memories:\n" + persistentContext].filter(Boolean).join("\n\n").slice(0, 6000);
     } catch (error) { console.error("Persistent memory retrieval failed:", error.message); }
   }

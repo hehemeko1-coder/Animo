@@ -250,6 +250,7 @@ app.post("/api/learning/train", learningLimiter, async (req, res) => {
   if (!adminToken || req.get("authorization") !== "Bearer " + adminToken) return res.status(401).json({ error: "Admin authorization required." });
   if (!learningStore.enabled) return res.status(503).json({ error: "Persistent learning needs DATABASE_URL in Render Environment." });
   if (!OPENAI_API_KEY) return res.status(503).json({ error: "OpenAI fine-tuning requires OPENAI_API_KEY." });
+  if (AI_PROVIDER !== "openai") return res.status(409).json({ error: "Fine-tuned models can only serve chat when AI_PROVIDER=openai. Set AI_PROVIDER=openai in Render Environment before submitting a job; the current provider is " + AI_PROVIDER + "." });
   const baseModel = process.env.OPENAI_FINE_TUNE_BASE_MODEL || "gpt-4o-mini-2024-07-18";
   try {
     const examples = await learningStore.trainingExamples();

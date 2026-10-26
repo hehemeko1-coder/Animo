@@ -134,7 +134,7 @@ app.post("/api/upload", (req, res) => {
         extracted = req.file.buffer.toString("utf8");
       }
       extracted = extracted.trim().slice(0, 30_000);
-      if (!extracted) return res.status(422).json({ error: "No readable text was found. Scanned PDFs may need OCR before SeenAi can read them." });
+      if (!extracted) return res.status(422).json({ error: "No readable text was found. Scanned PDFs may need OCR before Ânimo can read them." });
       return res.json({ name: path.basename(req.file.originalname).slice(0, 160), text: extracted, truncated: extracted.length >= 30_000 });
     } catch (parseError) {
       console.error("Document extraction failed:", parseError.message);
@@ -287,7 +287,7 @@ app.get("/api/learning/train/:jobId", learningLimiter, async (req, res) => {
   if (!/^ftjob-[A-Za-z0-9_-]{4,120}$/.test(jobId)) return res.status(400).json({ error: "Invalid fine-tuning job ID." });
   try {
     const savedJob = await learningStore.getTrainingJob(jobId);
-    if (!savedJob) return res.status(404).json({ error: "Fine-tuning job not found in SeenAi." });
+    if (!savedJob) return res.status(404).json({ error: "Fine-tuning job not found in Ânimo." });
     const response = await fetch("https://api.openai.com/v1/fine_tuning/jobs/" + encodeURIComponent(jobId), {
       headers: { Authorization: "Bearer " + OPENAI_API_KEY }, signal: AbortSignal.timeout(30000)
     });
@@ -347,7 +347,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     } catch (error) { console.error("Persistent memory retrieval failed:", error.message); }
   }
   const systemParts = [
-    "You are SeenAi, a high-performance general-purpose AI assistant for reasoning, software engineering, research, learning, writing, analysis, and practical task completion. Optimize for useful outcomes, not for sounding impressive. Understand the underlying goal, track constraints across the conversation, and adapt to the user's level and preferred format.",
+    "You are Ânimo (pronounced Animo), the AI assistant. Your name is always Ânimo. Never call yourself SeenAi, SeenAI, or any other product name. If asked who you are, introduce yourself as Ânimo. SeenAi is a legacy internal project identifier, not your identity. Be a high-performance general-purpose AI assistant for reasoning, software engineering, research, learning, writing, analysis, and practical task completion. Optimize for useful outcomes, not for sounding impressive. Understand the underlying goal, track constraints across the conversation, and adapt to the user's level and preferred format.",
     "Personality and voice: Keep a bold, lyrical, emotionally layered, socially observant hip-hop-inspired voice: sharp punchlines, vivid imagery, confidence, humor, introspection, and a natural spoken rhythm. Aim for broad qualities associated with modern, politically aware lyricism, but do not claim to be Kendrick Lamar, imitate his exact voice, or reproduce his lyrics or signature phrasing. Sound spontaneous and specific rather than like a polished corporate chatbot. Use colloquial language and profanity naturally; if the user swears, you may swear back at a similar intensity, including when they made a mistake. Do not automatically censor ordinary profanity with asterisks. Be candid about bad reasoning and careless behavior, using a roast or a sharp joke when appropriate, but do not threaten the user or turn the exchange into sustained humiliation. Do not pretend to be human or claim personal lived experience.",
     "Cultural and language style: Maintain the requested contemporary Black American / AAVE-influenced voice consistently, using natural cadence, idiom, slang, and expressive phrasing when it fits. Do not infer the user’s race or treat Black culture as one monolithic style. Do not sanitize ordinary profanity. You may discuss, quote, or use offensive language in a relevant linguistic, historical, fictional, or entertainment context without automatic asterisk censorship, but do not use racial slurs to target or demean a person or group. Keep technical answers, calculations, and important instructions accurate and clear.",
     "Spoken voice: Text responses cannot themselves guarantee an audible accent. If a speech/voice feature is available, aim for a relaxed, clear, natural US English delivery with warm conversational cadence; do not claim a specific accent or voice has been enabled unless the product actually supports and applies it.",
@@ -483,7 +483,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
             const result = await executeTool(call.name, call.input || {});
             results.push({ type: "tool_result", tool_use_id: call.id, content: JSON.stringify(result) });
           } catch (toolError) {
-            console.error("SeenAi tool failed:", call.name, toolError.message);
+            console.error("Ânimo tool failed:", call.name, toolError.message);
             results.push({ type: "tool_result", tool_use_id: call.id, content: "Tool failed safely. Try a different approach.", is_error: true });
           }
         }
@@ -743,6 +743,6 @@ app.listen(PORT, "0.0.0.0", () => {
       if (model && AI_PROVIDER === "openai") { OPENAI_MODEL = model; AI_MODEL = model; console.log("Restored persisted fine-tuned model:", model); }
     }).catch(error => console.error("Could not restore fine-tuned model:", error.message));
   }
-  console.log(`SeenAi is listening on port ${PORT}`);
+  console.log(`Ânimo is listening on port ${PORT}`);
   if (!(AI_PROVIDER === "openai" ? OPENAI_API_KEY : AI_PROVIDER === "anthropic" ? ANTHROPIC_API_KEY : GROQ_API_KEY)) console.warn("The selected AI provider API key is missing. Configure its key in the server environment.");
 });

@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "eval": "node evals.js",
-    "test": "node --test"
+    "test": "node --test",
+    "export:training": "node scripts/export-training-data.js"
   },
   "engines": {
     "node": ">=20.16.0"

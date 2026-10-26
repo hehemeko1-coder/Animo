@@ -1,6 +1,6 @@
-# SeenAi AI Assistant
+# Ânimo AI Assistant
 
-SeenAi is a responsive AI assistant built with Express. It supports configurable OpenAI, Anthropic Claude, and Groq model providers, live web search through Firecrawl, PDF/DOCX/TXT extraction, image input, persistent PostgreSQL memories and learning examples, OpenAI fine-tuning job tracking, and user-approved automation webhooks.
+Ânimo is a responsive AI assistant built with Express. It supports configurable OpenAI, Anthropic Claude, and Groq model providers, live web search through Firecrawl, PDF/DOCX/TXT extraction, image input, persistent PostgreSQL memories and learning examples, OpenAI fine-tuning job tracking, and user-approved automation webhooks.
 
 Provider API keys stay in server environment variables. Never put them in frontend files or commit them to GitHub.
 
@@ -87,7 +87,7 @@ Add provider keys in Render → Environment. Never commit keys to the repository
 ### Model providers and reasoning
 The selected provider is configured server-side. By default, `AI_PROVIDER=auto` chooses OpenAI if `OPENAI_API_KEY` exists, otherwise Anthropic if `ANTHROPIC_API_KEY` exists, otherwise Groq. To force a provider, set `AI_PROVIDER` explicitly. The app reports its selected provider and model through `/api/health`.
 
-The system prompt emphasizes careful reasoning, software-engineering discipline, grounded research, explicit uncertainty, context tracking, security, and testable recommendations. When Anthropic is selected, SeenAi can call a bounded live web-search tool (requires FIRECRAWL_API_KEY) and a restricted arithmetic calculator. Tool execution is server-side, search calls are capped per response, and retrieved content is treated as untrusted data. A prompt and tool loop can improve behavior but cannot reproduce another model's training or guarantee equal benchmark performance.
+The system prompt emphasizes careful reasoning, software-engineering discipline, grounded research, explicit uncertainty, context tracking, security, and testable recommendations. When Anthropic is selected, Ânimo can call a bounded live web-search tool (requires FIRECRAWL_API_KEY) and a restricted arithmetic calculator. Tool execution is server-side, search calls are capped per response, and retrieved content is treated as untrusted data. A prompt and tool loop can improve behavior but cannot reproduce another model's training or guarantee equal benchmark performance.
 
 ### Automated tests
 
@@ -118,7 +118,7 @@ The suite checks arithmetic, equations, inequality direction, word problems, fra
 Users can turn on Web search in the chat composer. The backend uses Firecrawl and passes up to five source snippets to the selected model for a grounded answer. Search requires `FIRECRAWL_API_KEY`; the key remains on the server. Search requests are rate-limited.
 
 ### Saved memory
-Saved memories use PostgreSQL when `DATABASE_URL` is configured and can be inspected, added, and deleted in the Saved memory panel. Otherwise, memory remains in browser `localStorage`. When **Learn from chats** is enabled, SeenAi conservatively extracts explicit, durable preferences and project facts from user messages, excludes obvious sensitive-data patterns, and adds saved memories to later prompts. The same toggle controls automatic memory extraction and saving training examples; users can switch it off and delete saved memories. The browser-generated client ID is not account authentication, so do not treat memories as private account data until sign-in is implemented. Do not store secrets or highly sensitive information.
+Saved memories use PostgreSQL when `DATABASE_URL` is configured and can be inspected, added, and deleted in the Saved memory panel. Otherwise, memory remains in browser `localStorage`. When **Learn from chats** is enabled, Ânimo conservatively extracts explicit, durable preferences and project facts from user messages, excludes obvious sensitive-data patterns, and adds saved memories to later prompts. The same toggle controls automatic memory extraction and saving training examples; users can switch it off and delete saved memories. The browser-generated client ID is not account authentication, so do not treat memories as private account data until sign-in is implemented. Do not store secrets or highly sensitive information.
 
 ### File uploads
 PDF, DOCX and TXT files are uploaded to the backend for text extraction. Uploads are processed in memory and are not saved to disk by this application. Extracted text is truncated to 30,000 characters per file. Scanned/image-only PDFs need OCR before text extraction can work. Document text is treated as untrusted content in the AI prompt.
@@ -127,7 +127,7 @@ PDF, DOCX and TXT files are uploaded to the backend for text extraction. Uploads
 Attach up to three JPG, PNG, WEBP or GIF images (under 4 MB each). OpenAI and Anthropic provider paths accept image input with supported models; the Groq path uses the configured vision model. Images are not stored by this application after request processing.
 
 ### Approved automation
-Users can save reusable workflow instructions in their browser. Without a webhook, they can run a workflow as an AI chat task. To send a workflow to an external system, the site owner must configure `AUTOMATION_WEBHOOK_URL` and optionally `AUTOMATION_WEBHOOK_TOKEN` in Render. SeenAi requires confirmation before sending a workflow. Only connect a webhook you control and trust. This generic webhook is a connector point, not a preconfigured integration with email, calendars, or other services.
+Users can save reusable workflow instructions in their browser. Without a webhook, they can run a workflow as an AI chat task. To send a workflow to an external system, the site owner must configure `AUTOMATION_WEBHOOK_URL` and optionally `AUTOMATION_WEBHOOK_TOKEN` in Render. Ânimo requires confirmation before sending a workflow. Only connect a webhook you control and trust. This generic webhook is a connector point, not a preconfigured integration with email, calendars, or other services.
 
 ## Security and limits
 
@@ -142,11 +142,11 @@ Users can save reusable workflow instructions in their browser. Without a webhoo
 
 ## Persistent learning and fine-tuning
 
-Set `DATABASE_URL` to a PostgreSQL database connection string in Render Environment. On startup, SeenAi creates its learning tables automatically. Without this variable, the existing browser-local memory still works, while persistent learning endpoints return a setup message.
+Set `DATABASE_URL` to a PostgreSQL database connection string in Render Environment. On startup, Ânimo creates its learning tables automatically. Without this variable, the existing browser-local memory still works, while persistent learning endpoints return a setup message.
 
 When the database is configured, chat examples are stored under a browser-generated client ID. The chat UI offers **Helpful** and **Improve** feedback controls. Positive ratings and explicit corrections are eligible for training; unreviewed conversations are not automatically treated as correct. The client ID separates browser profiles but is not account authentication, so add a proper sign-in system before treating stored memory as private account data.
 
-OpenAI fine-tuning is a separate, paid operation. To submit a job, configure `OPENAI_API_KEY` and a strong `SEENAI_ADMIN_TOKEN` in Render Environment, then send an authenticated POST to `/api/learning/train` with header `Authorization: Bearer YOUR_ADMIN_TOKEN`. The endpoint requires at least 10 positively rated or corrected training examples, uploads a JSONL training file, and submits an OpenAI fine-tuning job. This is actual provider-side fine-tuning, not merely retrieval or prompt memory, and it may incur charges. An administrator explicitly starts each paid job. Poll `GET /api/learning/train/JOB_ID` with the same Bearer token to retrieve status. When a job succeeds, SeenAi stores the resulting fine-tuned model ID in PostgreSQL and activates it for chat if `AI_PROVIDER=openai`; the selected model is restored after a server restart. Confirm model eligibility and pricing before starting. Fine-tuning is not automatic; the app deliberately does not start paid training jobs without administrator action.
+OpenAI fine-tuning is a separate, paid operation. To submit a job, configure `OPENAI_API_KEY` and a strong `SEENAI_ADMIN_TOKEN` in Render Environment, then send an authenticated POST to `/api/learning/train` with header `Authorization: Bearer YOUR_ADMIN_TOKEN`. The endpoint requires at least 10 positively rated or corrected training examples, uploads a JSONL training file, and submits an OpenAI fine-tuning job. This is actual provider-side fine-tuning, not merely retrieval or prompt memory, and it may incur charges. An administrator explicitly starts each paid job. Poll `GET /api/learning/train/JOB_ID` with the same Bearer token to retrieve status. When a job succeeds, Ânimo stores the resulting fine-tuned model ID in PostgreSQL and activates it for chat if `AI_PROVIDER=openai`; the selected model is restored after a server restart. Confirm model eligibility and pricing before starting. Fine-tuning is not automatic; the app deliberately does not start paid training jobs without administrator action.
 
 Learning endpoints include:
 - `GET /api/learning/memories?clientId=...`

@@ -155,3 +155,15 @@ Learning endpoints include:
 - `DELETE /api/learning/memories` with `{ "clientId": "..." }`
 - `POST /api/learning/feedback` for ratings and corrections
 - `POST /api/learning/train` for admin-only fine-tuning submission\n- `GET /api/learning/train/JOB_ID` for admin-only status polling and activation of a completed fine-tuned model
+
+
+### Local training dataset export (no upload)
+
+For an open-source LoRA/QLoRA workflow or for manual inspection, export eligible examples from the configured PostgreSQL database to a local JSONL file:
+
+```powershell
+$env:DATABASE_URL="your-Neon-connection-string"
+npm run export:training -- --confirm
+```
+
+The exporter reuses Ânimo's server-side selection and safety screening: only examples with active training consent that were positively rated or corrected are eligible. It requires at least 10 eligible examples, writes to `training-data/` with restrictive local file permissions where supported, and does not upload the file or start a paid training job. The directory is ignored by Git so user-derived examples are not accidentally committed. Review the generated file and your privacy/legal obligations before using it with any external training service. Pattern-based screening is not perfect; do not treat the export as guaranteed free of personal or sensitive data. Training consent can be withdrawn for future exports, but cannot retract data already sent to a provider or remove its influence from an already trained model.
